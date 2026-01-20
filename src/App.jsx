@@ -4,6 +4,8 @@ import Hub from './hub/Hub'
 import EducationPage from './education/EducationPage'
 import ProjectsPage from './projects/ProjectsPage'
 import ProfessionalDiary from './professionaldiary/ProfessionalDiary'
+import OpenFoamBookshelf from './OpenFoamBookshelf/OpenFoamBookshelf'
+import { openfoamData } from './OpenFoamBookshelf/openfoamData'
 
 function App() {
   return (
@@ -14,6 +16,10 @@ function App() {
         <Route path="/education" element={<EducationPage />} />
         <Route path="/projects" element={<ProjectsPage />} />
         <Route path="/professionaldiary" element={<ProfessionalDiary />} />
+        <Route 
+          path="/openfoam" 
+          element={<OpenFoamBookshelf data={openfoamData} />} 
+        />
       </Routes>
     </BrowserRouter>
   )

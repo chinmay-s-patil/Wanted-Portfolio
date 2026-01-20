@@ -1,0 +1,295 @@
+/* OpenFoamBookshelf.module.css */
+.bookshelf {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #1a1a1a 0%, #2a2a2a 100%); /* Dark but not pure black */
+  color: #e0e0e0;
+  padding: 2rem;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  overflow: hidden;
+}
+
+/* Header */
+.header {
+  text-align: center;
+  margin-bottom: 3rem;
+}
+
+.header h1 {
+  font-size: 3rem;
+  font-weight: 300;
+  letter-spacing: 3px;
+  margin-bottom: 0.5rem;
+  text-transform: uppercase;
+  background: linear-gradient(135deg, #fff 0%, #ccc 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.header p {
+  color: #888;
+  font-size: 1.1rem;
+  font-weight: 300;
+}
+
+/* Tag Filter */
+.filterContainer {
+  display: flex;
+  justify-content: center;
+  gap: 0.75rem;
+  margin-bottom: 4rem;
+  flex-wrap: wrap;
+}
+
+.filterButton {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: #aaa;
+  padding: 0.5rem 1.5rem;
+  border-radius: 20px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-size: 0.875rem;
+}
+
+.filterButton:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.4);
+  color: #fff;
+  transform: translateY(-2px);
+}
+
+.filterButton.active {
+  background: rgba(255, 255, 255, 0.15);
+  border-color: #fff;
+  color: #fff;
+}
+
+/* Main Container */
+.mainContainer {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  min-height: 60vh;
+  perspective: 1000px; /* For 3D effect */
+}
+
+/* Shelf Container - redesigned with realistic shelf */
+.shelfContainer {
+  position: relative;
+  width: 100%;
+  max-width: 1000px;
+  margin: 0 auto;
+}
+
+/* Realistic wooden shelf */
+.shelfWood {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 20px;
+  transform: translateY(100%);
+}
+
+.shelfSurface {
+  height: 12px;
+  background: linear-gradient(to bottom, #3a2a1a, #2a1a0a);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.5);
+}
+
+.shelfFront {
+  height: 8px;
+  background: linear-gradient(to bottom, #4a3a2a, #3a2a1a);
+  border-top: 1px solid #5a4a3a;
+}
+
+/* Books Container */
+.booksContainer {
+  display: flex;
+  gap: 1.5rem;
+  justify-content: center;
+  align-items: flex-end;
+  padding: 0 2rem 2rem 2rem;
+  min-height: 280px;
+}
+
+/* Redesigned Book Spine - realistic book look */
+.bookSpine {
+  position: relative;
+  width: 70px;
+  height: 220px;
+  background: var(--book-color);
+  border: 1px solid rgba(0, 0, 0, 0.3);
+  border-radius: 3px 3px 0 0;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  transform-origin: bottom center;
+  box-shadow: 
+    0 4px 8px rgba(0, 0, 0, 0.4),
+    inset 2px 0 4px rgba(255, 255, 255, 0.1),
+    inset -2px 0 4px rgba(0, 0, 0, 0.2);
+  flex-shrink: 0;
+}
+
+.bookSpine:hover {
+  transform: translateY(-12px) rotateX(-5deg);
+  box-shadow: 
+    0 12px 24px rgba(0, 0, 0, 0.6),
+    0 0 0 2px rgba(255, 255, 255, 0.8),
+    inset 2px 0 4px rgba(255, 255, 255, 0.1),
+    inset -2px 0 4px rgba(0, 0, 0, 0.2);
+  z-index: 10;
+}
+
+.bookSpine.active {
+  transform: translateY(-16px) rotateX(-5deg);
+  box-shadow: 
+    0 16px 32px rgba(0, 0, 0, 0.7),
+    0 0 0 3px rgba(255, 255, 255, 1),
+    inset 2px 0 4px rgba(255, 255, 255, 0.2),
+    inset -2px 0 4px rgba(0, 0, 0, 0.3);
+  z-index: 20;
+}
+
+/* Book spine inner content */
+.spineInner {
+  writing-mode: vertical-rl;
+  text-orientation: mixed;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.5rem 0.5rem;
+  gap: 1rem;
+}
+
+.spineTitle {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #fff;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.7);
+  letter-spacing: 0.5px;
+}
+
+.spineYear {
+  font-size: 0.75rem;
+  color: #ccc;
+  font-weight: 400;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.7);
+}
+
+.spineTag {
+  font-size: 0.625rem;
+  color: #fff;
+  background: rgba(255, 255, 255, 0.15);
+  padding: 0.25rem 0.5rem;
+  border-radius: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  font-weight: 500;
+  backdrop-filter: blur(4px);
+}
+
+/* Project Card Overlay */
+.cardOverlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.85);
+  backdrop-filter: blur(10px);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+}
+
+.projectCard {
+  background: #1f1f1f;
+  border: 1px solid #444;
+  border-radius: 12px;
+  max-width: 800px;
+  max-height: 90vh;
+  overflow-y: auto;
+  position: relative;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.8);
+}
+
+.closeButton {
+  position: absolute;
+  top: 1.5rem;
+  right: 1.5rem;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  color: #fff;
+  font-size: 1.5rem;
+  cursor: pointer;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  z-index: 10;
+}
+
+.closeButton:hover {
+  background: rgba(255, 255, 255, 0.2);
+  border-color: #fff;
+}
+
+.cardContent {
+  padding: 3rem;
+}
+
+/* Mobile Responsiveness */
+@media (max-width: 768px) {
+  .bookshelf {
+    padding: 1rem;
+  }
+  
+  .header h1 {
+    font-size: 2rem;
+  }
+  
+  .filterContainer {
+    margin-bottom: 2rem;
+  }
+  
+  .booksContainer {
+    gap: 0.75rem;
+    padding: 0 1rem 1.5rem 1rem;
+    flex-wrap: wrap;
+  }
+  
+  .bookSpine {
+    width: 60px;
+    height: 180px;
+  }
+  
+  .projectCard {
+    max-height: 100vh;
+    border-radius: 0;
+    margin: 1rem;
+  }
+  
+  .cardOverlay {
+    padding: 0;
+  }
+}
+
+/* Reduced Motion */
+@media (prefers-reduced-motion: reduce) {
+  .bookSpine {
+    transition: none;
+  }
+  
+  .bookSpine:hover {
+    transform: none;
+  }
+}
