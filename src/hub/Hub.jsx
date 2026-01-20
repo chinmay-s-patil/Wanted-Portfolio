@@ -1,11 +1,11 @@
 'use client'
 
 import React, { useState, useMemo } from 'react'
-import { useRouter } from 'next/navigation'
+import { useNavigate } from 'react-router-dom'
 
 export default function HubPage() {
   const [hoveredItem, setHoveredItem] = useState(null)
-  const router = useRouter()
+  const navigate = useNavigate()
 
   // Memoize hub items to prevent recreation on every render
   const hubItems = useMemo(() => [
@@ -21,7 +21,7 @@ export default function HubPage() {
   ], [])
 
   const handleClick = (path) => {
-    router.push(path)
+    navigate(path)
   }
 
   return (

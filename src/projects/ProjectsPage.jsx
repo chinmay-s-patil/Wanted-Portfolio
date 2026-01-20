@@ -1,7 +1,7 @@
 'use client'
 
 import React, { useState, useCallback, lazy, Suspense } from 'react'
-import { useRouter } from 'next/navigation'
+import { useNavigate } from 'react-router-dom'
 import projectsData from './projectsData'
 
 // Lazy load the project folder component
@@ -10,7 +10,7 @@ const ProjectFolder = lazy(() => import('./ProjectFolder'))
 export default function ProjectsPage() {
   const [openDrawer, setOpenDrawer] = useState(null)
   const [selectedProject, setSelectedProject] = useState(null)
-  const router = useRouter()
+  const navigate = useNavigate()
 
   const handleDrawerClick = useCallback((drawerId) => {
     setOpenDrawer(prev => prev === drawerId ? null : drawerId)

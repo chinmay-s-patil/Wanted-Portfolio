@@ -1,18 +1,10 @@
-import { BrowserRouter, Routes, Route } from 'react-router-dom'
-import WantedPosterLanding from './components/WantedPosterLanding'
-import Hub from './hub/Hub'
-import EducationPage from './education/EducationPage'
-import ProjectsPage from './projects/ProjectsPage'
+import { StrictMode } from 'react'
+import { createRoot } from 'react-dom/client'
+import './index.css'
+import App from './App.jsx'
 
-function App() {
-  return (
-    <BrowserRouter>
-      <Routes>
-        <Route path="/" element={<WantedPosterLanding />} />
-        <Route path="/hub" element={<Hub />} />
-        <Route path="/education" element={<EducationPage />} />
-        <Route path="/projects" element={<ProjectsPage />} />
-      </Routes>
-    </BrowserRouter>
-  )
-}
+createRoot(document.getElementById('root')).render(
+  <StrictMode>
+    <App />
+  </StrictMode>,
+)

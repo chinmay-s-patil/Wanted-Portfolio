@@ -1,7 +1,7 @@
 'use client'
 
 import React, { useState, useEffect, useCallback, useMemo } from 'react'
-import { useRouter } from 'next/navigation'
+import { useNavigate } from 'react-router-dom'
 
 // Lazy image component with intersection observer
 const LazyImage = ({ src, alt, className, style }) => {
@@ -66,7 +66,7 @@ const LazyImage = ({ src, alt, className, style }) => {
 export default function EducationPage() {
   const [openLocker, setOpenLocker] = useState(null)
   const [currentImageIndex, setCurrentImageIndex] = useState({})
-  const router = useRouter()
+  const navigate = useNavigate()
 
   // Memoize lockers data
   const lockers = useMemo(() => [

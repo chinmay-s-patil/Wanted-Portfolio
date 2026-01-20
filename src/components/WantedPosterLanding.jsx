@@ -1,6 +1,10 @@
 'use client';
 
+import React, { useState, useCallback, lazy, Suspense } from 'react'
+import { useNavigate } from 'react-router-dom'
+
 export default function WantedPosterLanding() {
+  const navigate = useNavigate();
   return (
     <div className="min-h-screen bg-black flex items-center justify-center p-2 md:p-4">
       {/* Wanted Poster */}
@@ -144,8 +148,7 @@ export default function WantedPosterLanding() {
                 padding: 'clamp(0.5rem, 1.5vh, 1rem) clamp(1rem, 3vw, 2rem)'
               }}
               onClick={() => {
-                // Replace with your navigation logic
-                console.log('Navigate to hub/portfolio');
+                navigate('/hub')
               }}
             >
               INVESTIGATE CASE →
