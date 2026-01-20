@@ -1,8 +1,7 @@
+// src/OpenFoamBookshelf/OpenFoamBookshelf.jsx
 import React, { useState, useCallback } from 'react';
-
+import { useNavigate } from 'react-router-dom';
 import simulationsList from './OpenfoamList';
-
-
 
 const BookSpine = ({ book, onClick }) => {
   return (
@@ -36,7 +35,6 @@ const BookSpine = ({ book, onClick }) => {
         e.currentTarget.style.boxShadow = 'inset -2px 0 8px rgba(0, 0, 0, 0.3), 2px 4px 12px rgba(0, 0, 0, 0.4)';
       }}
     >
-      {/* Title */}
       <div style={{
         fontSize: '14px',
         fontWeight: '600',
@@ -48,7 +46,6 @@ const BookSpine = ({ book, onClick }) => {
         {book.title}
       </div>
       
-      {/* Year */}
       <div style={{
         fontSize: '11px',
         color: 'rgba(255, 255, 255, 0.8)',
@@ -58,7 +55,6 @@ const BookSpine = ({ book, onClick }) => {
         {book.year}
       </div>
       
-      {/* Decorative line */}
       <div style={{
         width: '2px',
         height: '30px',
@@ -69,7 +65,44 @@ const BookSpine = ({ book, onClick }) => {
   );
 };
 
-const BlurredShelf = ({ position }) => {
+const PlaceholderBook = ({ index }) => {
+  const placeholderColors = ['#5a5a5a', '#6a6a6a', '#4a4a4a', '#7a7a7a', '#3a3a3a'];
+  const placeholderTitles = ['Archive', 'Records', 'Notes', 'Data', 'Files'];
+  
+  return (
+    <div style={{
+      width: '80px',
+      height: '280px',
+      background: `linear-gradient(135deg, ${placeholderColors[index % 5]}dd 0%, ${placeholderColors[index % 5]}88 100%)`,
+      border: '2px solid rgba(0, 0, 0, 0.3)',
+      borderLeft: '4px solid rgba(0, 0, 0, 0.5)',
+      borderRight: '1px solid rgba(255, 255, 255, 0.1)',
+      position: 'relative',
+      boxShadow: 'inset -2px 0 8px rgba(0, 0, 0, 0.3), 2px 4px 12px rgba(0, 0, 0, 0.4)',
+      display: 'flex',
+      flexDirection: 'column',
+      justifyContent: 'center',
+      alignItems: 'center',
+      padding: '20px 8px',
+      writingMode: 'vertical-rl',
+      textOrientation: 'mixed',
+      opacity: 0.5
+    }}>
+      <div style={{
+        fontSize: '14px',
+        fontWeight: '600',
+        color: '#fff',
+        textShadow: '0 1px 3px rgba(0, 0, 0, 0.5)',
+        marginBottom: '12px',
+        letterSpacing: '0.5px'
+      }}>
+        {placeholderTitles[index % 5]}
+      </div>
+    </div>
+  );
+};
+
+const BlurredShelf = ({ position, bookCount }) => {
   return (
     <div style={{
       position: 'absolute',
@@ -89,7 +122,7 @@ const BlurredShelf = ({ position }) => {
         gap: '12px',
         padding: '0 80px'
       }}>
-        {[1, 2, 3, 4, 5, 6, 7, 8].map((i) => (
+        {Array.from({ length: bookCount }).map((_, i) => (
           <div
             key={i}
             style={{
@@ -106,10 +139,28 @@ const BlurredShelf = ({ position }) => {
   );
 };
 
+const getYouTubeEmbedUrl = (url) => {
+  const patterns = [
+    /(?:youtube\.com\/watch\?v=)([^&\s]+)/,
+    /(?:youtube\.com\/embed\/)([^?\s]+)/,
+    /(?:youtu\.be\/)([^?\s]+)/,
+  ];
+  
+  for (const pattern of patterns) {
+    const match = url.match(pattern);
+    if (match && match[1]) {
+      return `https://www.youtube.com/embed/${match[1]}?autoplay=1&mute=1&loop=1&playlist=${match[1]}`;
+    }
+  }
+  return url;
+};
+
 export default function OpenFOAMBookshelf() {
+  const navigate = useNavigate();
   const [activeFilter, setActiveFilter] = useState('all');
   const [shelfIndex, setShelfIndex] = useState(0);
   const [selectedBook, setSelectedBook] = useState(null);
+  const [currentMediaIndex, setCurrentMediaIndex] = useState(0);
 
   const solvers = ['all', ...new Set(simulationsList.map(s => s.solver))];
   
@@ -125,6 +176,12 @@ export default function OpenFOAMBookshelf() {
     (shelfIndex + 1) * BOOKS_PER_SHELF
   );
 
+  // Fill remaining slots with placeholders if needed
+  const shelfWithPlaceholders = [...currentShelfBooks];
+  while (shelfWithPlaceholders.length < BOOKS_PER_SHELF) {
+    shelfWithPlaceholders.push({ isPlaceholder: true, id: `placeholder-${shelfWithPlaceholders.length}` });
+  }
+
   const navigateUp = useCallback(() => {
     setShelfIndex((prev) => (prev - 1 + totalShelves) % totalShelves);
   }, [totalShelves]);
@@ -132,6 +189,30 @@ export default function OpenFOAMBookshelf() {
   const navigateDown = useCallback(() => {
     setShelfIndex((prev) => (prev + 1) % totalShelves);
   }, [totalShelves]);
+
+  const handleBookClick = useCallback((book) => {
+    if (!book.isPlaceholder) {
+      setSelectedBook(book);
+      setCurrentMediaIndex(0);
+    }
+  }, []);
+
+  const handleCloseBook = useCallback(() => {
+    setSelectedBook(null);
+    setCurrentMediaIndex(0);
+  }, []);
+
+  const nextMedia = useCallback(() => {
+    if (selectedBook?.media) {
+      setCurrentMediaIndex((prev) => (prev + 1) % selectedBook.media.length);
+    }
+  }, [selectedBook]);
+
+  const prevMedia = useCallback(() => {
+    if (selectedBook?.media) {
+      setCurrentMediaIndex((prev) => (prev - 1 + selectedBook.media.length) % selectedBook.media.length);
+    }
+  }, [selectedBook]);
 
   return (
     <div style={{
@@ -154,6 +235,37 @@ export default function OpenFOAMBookshelf() {
         opacity: 0.3,
         pointerEvents: 'none'
       }} />
+
+      {/* Back to Hub Button */}
+      <button
+        onClick={() => navigate('/hub')}
+        style={{
+          position: 'absolute',
+          top: '40px',
+          left: '40px',
+          background: 'rgba(196, 165, 116, 0.2)',
+          border: '2px solid #8b7355',
+          color: '#f4e8d0',
+          padding: '0.75rem 1.5rem',
+          borderRadius: '8px',
+          fontSize: '1rem',
+          cursor: 'pointer',
+          zIndex: 100,
+          fontFamily: "'Special Elite', monospace",
+          transition: 'all 0.3s ease',
+          boxShadow: '0 4px 12px rgba(0,0,0,0.5)'
+        }}
+        onMouseEnter={(e) => {
+          e.currentTarget.style.background = 'rgba(196, 165, 116, 0.3)';
+          e.currentTarget.style.transform = 'translateX(-4px)';
+        }}
+        onMouseLeave={(e) => {
+          e.currentTarget.style.background = 'rgba(196, 165, 116, 0.2)';
+          e.currentTarget.style.transform = 'translateX(0)';
+        }}
+      >
+        ← Back to Hub
+      </button>
 
       {/* Header */}
       <div style={{
@@ -227,7 +339,7 @@ export default function OpenFOAMBookshelf() {
       </div>
 
       {/* Blurred top shelf */}
-      <BlurredShelf position="top" />
+      <BlurredShelf position="top" bookCount={BOOKS_PER_SHELF} />
 
       {/* Main shelf area */}
       <div style={{
@@ -276,12 +388,16 @@ export default function OpenFOAMBookshelf() {
             borderTop: 'none'
           }} />
 
-          {currentShelfBooks.map((book) => (
-            <BookSpine
-              key={book.id}
-              book={book}
-              onClick={() => setSelectedBook(book)}
-            />
+          {shelfWithPlaceholders.map((book, index) => (
+            book.isPlaceholder ? (
+              <PlaceholderBook key={book.id} index={index} />
+            ) : (
+              <BookSpine
+                key={book.id}
+                book={book}
+                onClick={() => handleBookClick(book)}
+              />
+            )
           ))}
         </div>
 
@@ -350,21 +466,22 @@ export default function OpenFOAMBookshelf() {
       </div>
 
       {/* Blurred bottom shelf */}
-      <BlurredShelf position="bottom" />
+      <BlurredShelf position="bottom" bookCount={BOOKS_PER_SHELF} />
 
-      {/* Simple modal for selected book */}
+      {/* Book details modal */}
       {selectedBook && (
         <div
-          onClick={() => setSelectedBook(null)}
+          onClick={handleCloseBook}
           style={{
             position: 'fixed',
             inset: 0,
-            background: 'rgba(0, 0, 0, 0.85)',
+            background: 'rgba(0, 0, 0, 0.92)',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
             zIndex: 100,
-            padding: '40px'
+            padding: '40px',
+            backdropFilter: 'blur(8px)'
           }}
         >
           <div
@@ -373,14 +490,16 @@ export default function OpenFOAMBookshelf() {
               background: 'linear-gradient(135deg, #f6efe2 0%, #e8dcc8 100%)',
               padding: '40px',
               borderRadius: '12px',
-              maxWidth: '600px',
+              maxWidth: '1200px',
               width: '100%',
+              maxHeight: '90vh',
+              overflowY: 'auto',
               border: '8px solid #3d2817',
               position: 'relative'
             }}
           >
             <button
-              onClick={() => setSelectedBook(null)}
+              onClick={handleCloseBook}
               style={{
                 position: 'absolute',
                 top: '16px',
@@ -437,10 +556,163 @@ export default function OpenFOAMBookshelf() {
               fontSize: '16px',
               color: '#2a2a2a',
               lineHeight: '1.6',
-              marginTop: '20px'
+              marginTop: '20px',
+              marginBottom: '20px'
             }}>
               {selectedBook.description}
             </p>
+
+            {/* Media Section */}
+            {selectedBook.media && selectedBook.media.length > 0 && (
+              <div style={{
+                marginTop: '30px',
+                marginBottom: '20px'
+              }}>
+                <h3 style={{
+                  fontSize: '20px',
+                  color: '#1a1a1a',
+                  marginBottom: '16px'
+                }}>
+                  Media
+                </h3>
+                
+                <div style={{
+                  position: 'relative',
+                  width: '100%',
+                  aspectRatio: '16/9',
+                  background: '#000',
+                  borderRadius: '8px',
+                  overflow: 'hidden'
+                }}>
+                  {selectedBook.media.map((media, idx) => {
+                    const isActive = idx === currentMediaIndex;
+                    
+                    return (
+                      <div
+                        key={idx}
+                        style={{
+                          position: 'absolute',
+                          inset: 0,
+                          opacity: isActive ? 1 : 0,
+                          transition: 'opacity 0.3s ease',
+                          pointerEvents: isActive ? 'auto' : 'none'
+                        }}
+                      >
+                        {media.type === 'video' && (
+                          <video
+                            src={media.src}
+                            controls
+                            autoPlay={isActive}
+                            loop
+                            muted
+                            style={{
+                              width: '100%',
+                              height: '100%',
+                              objectFit: 'contain'
+                            }}
+                          />
+                        )}
+                        
+                        {media.type === 'link' && (
+                          <iframe
+                            src={getYouTubeEmbedUrl(media.src)}
+                            title={selectedBook.title}
+                            style={{
+                              width: '100%',
+                              height: '100%',
+                              border: 'none'
+                            }}
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                            allowFullScreen
+                          />
+                        )}
+                      </div>
+                    );
+                  })}
+
+                  {/* Media Navigation */}
+                  {selectedBook.media.length > 1 && (
+                    <>
+                      <button
+                        onClick={prevMedia}
+                        style={{
+                          position: 'absolute',
+                          left: '16px',
+                          top: '50%',
+                          transform: 'translateY(-50%)',
+                          width: '48px',
+                          height: '48px',
+                          borderRadius: '50%',
+                          background: 'rgba(61, 40, 23, 0.8)',
+                          border: '2px solid #8b7355',
+                          color: '#f6efe2',
+                          cursor: 'pointer',
+                          fontSize: '24px',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          zIndex: 10
+                        }}
+                      >
+                        ‹
+                      </button>
+
+                      <button
+                        onClick={nextMedia}
+                        style={{
+                          position: 'absolute',
+                          right: '16px',
+                          top: '50%',
+                          transform: 'translateY(-50%)',
+                          width: '48px',
+                          height: '48px',
+                          borderRadius: '50%',
+                          background: 'rgba(61, 40, 23, 0.8)',
+                          border: '2px solid #8b7355',
+                          color: '#f6efe2',
+                          cursor: 'pointer',
+                          fontSize: '24px',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          zIndex: 10
+                        }}
+                      >
+                        ›
+                      </button>
+
+                      <div style={{
+                        position: 'absolute',
+                        bottom: '16px',
+                        left: '50%',
+                        transform: 'translateX(-50%)',
+                        display: 'flex',
+                        gap: '8px',
+                        zIndex: 10
+                      }}>
+                        {selectedBook.media.map((_, idx) => (
+                          <button
+                            key={idx}
+                            onClick={() => setCurrentMediaIndex(idx)}
+                            style={{
+                              width: idx === currentMediaIndex ? '32px' : '8px',
+                              height: '8px',
+                              borderRadius: '4px',
+                              background: idx === currentMediaIndex 
+                                ? '#c4a574' 
+                                : 'rgba(255, 255, 255, 0.4)',
+                              border: 'none',
+                              cursor: 'pointer',
+                              transition: 'all 0.3s ease'
+                            }}
+                          />
+                        ))}
+                      </div>
+                    </>
+                  )}
+                </div>
+              </div>
+            )}
             
             <div style={{
               display: 'flex',
