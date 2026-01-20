@@ -515,7 +515,6 @@ export default function ProfessionalDiary() {
                 background: isActive 
                   ? 'linear-gradient(135deg, #3d2817 0%, #2a1a10 100%)' 
                   : 'linear-gradient(135deg, #2a1a10 0%, #1e120a 100%)',
-                border: 'none',
                 borderRadius: '8px',
                 cursor: 'pointer',
                 transition: 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)',
