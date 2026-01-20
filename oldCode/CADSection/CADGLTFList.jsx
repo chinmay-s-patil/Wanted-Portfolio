@@ -1,0 +1,148 @@
+// app/consts/CADGLTFList.jsx
+
+const CADGLTFList = [
+  {
+    id: 1,
+    title: 'Guitar Design',
+    category: 'Product Design',
+    year: '2022',
+    description: 'Detailed CAD model of an acoustic guitar featuring advanced surface modeling techniques, assembly design, and precise component integration. Showcases realistic detailing.',
+    coverPhoto: '/Projects/Guitar Design Project/Guitar Design Project (1).jpg',
+    gltfFile: '/CAD/Guitar/Guitar.gltf',
+    color: '#ff6b35',
+    modelColor: '#8B4513',
+    transparency: 0
+  },
+  {
+    id: 2,
+    title: 'Bicycle Frame',
+    category: 'Transportation',
+    year: '2024',
+    description: 'Complete bicycle frame model with accurate geometry and structural components. Demonstrates mechanical assembly and frame design principles for two-wheeled transportation.',
+    coverPhoto: '/CAD/bike/bike-preview.jpeg',
+    gltfFile: '/CAD/bike/bike.gltf',
+    color: '#4ecdc4',
+    modelColor: '#2C2C2C',
+    modelRotation: { x: Math.PI / 2, y: 0, z: Math.PI / 2 },
+    transparency: 0
+  },
+  {
+    id: 3,
+    title: 'Burner Head Assembly',
+    category: 'Thermal Systems',
+    year: '2024',
+    description: 'A standard Indian gas burner model designed for combustion simulation studies. This CAD assembly replicates geometric accuracy and flow distribution characteristics for analysis of burner performance.',
+    coverPhoto: '/CAD/Burner Head/burner-perview.jpg',
+    gltfFile: '/CAD/Burner Head/BurnerAssem.gltf',
+    color: '#ff7b00',
+    modelColor: 'rgb(69, 250, 241)',
+    modelRotation: { x: Math.PI / 2, y: 0, z: Math.PI / 2 },
+    transparency: 0
+  },
+  {
+    id: 4,
+    title: 'Propeller Blade',
+    category: 'Aerodynamics',
+    year: '2024',
+    description: 'A 10x4.5 propeller reconstructed from a real-life prototype using 3D scanning and point cloud data. The model captures detailed surface geometry for aerodynamic and structural evaluation.',
+    coverPhoto: '/CAD/Propeller/Propeller-preview.jpg',
+    gltfFile: '/CAD/Propeller/Propeller.gltf',
+    color: '#48cae4',
+    modelColor: '#708090',
+    modelRotation: { x: Math.PI / 2, y: Math.PI*3 / 2, z: Math.PI / 2 },
+    transparency: 0
+  },
+  {
+    id: 5,
+    title: 'S500 Drone Frame',
+    category: 'UAV Systems',
+    year: '2024',
+    description: 'Complete reverse-engineered S500 quadcopter frame from 3D scans with 0.01mm tolerance. Includes motor mounts, landing gear, and electronics housing with optimized weight distribution.',
+    coverPhoto: '/Projects/Reverse Engineering of a S500 Drone/Reverse Engineering of a S500 Drone (1).jpg',
+    gltfFile: '/CAD/S500-Frame/Base Frame.gltf',
+    color: '#00ffa2',
+    modelColor: '#afafaf',
+    // modelRotation: { x: Math.PI / 2, y: 0, z: Math.PI / 2 },
+    transparency: 0
+  },
+  {
+    id: 6,
+    title: 'Roof Mounted Solar Panel',
+    category: 'Renewable Energy',
+    year: '2024',
+    description: 'Parapet-mounted solar panel assembly designed for wind load analysis. Features adjustable tilt angles, structural reinforcement, and modular mounting system for rooftop installations.',
+    coverPhoto: '/CAD/SolarPanelOnARoof/Solar-panels-on-flat-roof-1.jpeg',
+    gltfFile: '/CAD/SolarPanelonaRoof/Unnamed6-assemFusion.gltf',
+    color: '#90e0ef',
+    modelColor: '#4169E1',
+    modelRotation: { x: Math.PI / 2, y: 0, z: Math.PI / 2 },
+    transparency: 30
+  },
+  {
+    id: 7,
+    title: 'Solar Vortex Engine',
+    category: 'Energy Systems',
+    year: '2024',
+    description: 'Research-grade CAD model of solar vortex engine with complete internal flow path. Designed for CFD baseline studies and parametric optimization of thermal-to-mechanical energy conversion.',
+    coverPhoto: '/Projects/SVE/SVE (1).png',
+    gltfFile: '/CAD/SVE/SVE.gltf',
+    color: '#ffbe0b',
+    modelColor: '#4e8eb9',
+    modelRotation: { x: Math.PI / 2, y: 0, z: Math.PI / 2 },
+    transparency: 10
+  },
+  {
+    id: 8,
+    title: 'Tire Design',
+    category: 'Automotive',
+    year: '2024',
+    description: 'Detailed tire model featuring realistic tread pattern, sidewall geometry, and structural components. Suitable for vehicle dynamics simulation and contact mechanics analysis.',
+    coverPhoto: '/CAD/Tire/Tire.jpg',
+    gltfFile: '/CAD/Tire/Tire.gltf',
+    color: '#65ce45',
+    modelColor: '#79acb3',
+    modelRotation: { x: Math.PI / 2, y: 0, z: Math.PI / 2 },
+    transparency: 0
+  },
+  {
+    id: 9,
+    title: 'Toroidal Propeller',
+    category: 'Advanced Aerodynamics',
+    year: '2024',
+    description: 'Novel toroidal propeller design for reduced noise and improved efficiency. Features continuous blade geometry in a ring configuration for next-generation drone applications.',
+    coverPhoto: '/CAD/toroidalProp/ToroidalProp.png',
+    gltfFile: '/CAD/toroidalProp/5040 NACA2415 Toroidal Propeller CCW.gltf',
+    color: '#9d4edd',
+    modelColor: '#e14184ff',
+    modelRotation: { x: Math.PI / 2, y: 0, z: Math.PI / 2 },
+    transparency: 0
+  },
+  {
+    id: 10,
+    title: 'Truck Model',
+    category: 'Transportation',
+    year: '2024',
+    description: 'Complete truck model for aerodynamic analysis and platooning simulations. Includes cab and trailer for drag reduction studies.',
+    coverPhoto: '/CAD/TruckModel/Truck.jpeg',
+    gltfFile: '/CAD/TruckModel/Truck.gltf',
+    color: '#ef233c',
+    modelColor: '#e5f137ff',
+    modelRotation: { x: Math.PI / 2, y: 0, z: Math.PI / 2 },
+    transparency: 0
+  },
+  {
+    id: 11,
+    title: 'Wind Tunnel Test Section',
+    category: 'Experimental Equipment',
+    year: '2024',
+    description: 'Precision 3D model of wind tunnel test section from field measurements with 0.01mm tolerance. Includes flow conditioning elements and measurement instrumentation mounting points.',
+    coverPhoto: '/Projects/CAD Modeling of Wind Tunnel Test Section/CAD Modeling of Wind Tunnel Test Section.jpg',
+    gltfFile: '/CAD/WindTunnelModelling/Wind Tunnel.gltf',
+    color: '#8338ec',
+    modelColor: '#C0C0C0',
+    modelRotation: { x: Math.PI / 2, y: 0, z: Math.PI / 2 },
+    transparency: 30
+  },
+]
+
+export default CADGLTFList
