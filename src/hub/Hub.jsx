@@ -11,7 +11,7 @@ export default function HubPage() {
   const hubItems = useMemo(() => [
     { id: 'landing', label: 'Landing', theme: 'Map Spread on a Table', icon: '🗺️', path: '/' },
     { id: 'education', label: 'Education', theme: 'Lockers', icon: '🔒', path: '/education' },
-    { id: 'professionaldiary', label: 'Professional Timeline', theme: 'Diary', icon: '📔', path: '/timeline' },
+    { id: 'professionaldiary', label: 'Professional Timeline', theme: 'Diary', icon: '📔', path: '/professionaldiary' },
     { id: 'projects', label: 'Projects', theme: 'Police-like Archive Drawers', icon: '🗄️', path: '/projects' },
     { id: 'openfoam', label: 'OpenFOAM', theme: 'Bookshelf', icon: '📚', path: '/openfoam' },
     { id: 'cad', label: 'CAD', theme: 'CRT', icon: '🖥️', path: '/cad' },

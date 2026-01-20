@@ -222,7 +222,7 @@ export default function WantedPosterLanding() {
                 {[
                   { label: 'NAME:', value: 'CHINMAY S. PATIL' },
                   { label: 'ALIAS:', value: '"CHIN DOES SIMS"' },
-                  { label: 'LAST SEEN:', value: 'CFD LAB / TERMINAL' },
+                  { label: 'LAST SEEN AT:', value: 'CFD LAB / TERMINAL' },
                   { label: 'SPECIALTY:', value: 'SIMULATION & OPTIMIZATION' }
                 ].map((item, i) => (
                   <div key={i} style={{
@@ -426,8 +426,8 @@ export default function WantedPosterLanding() {
                   transition: 'transform 0.3s ease'
                 }}>
                   <div style={{
-                    width: '180px',
-                    height: '220px',
+                    width: '280px',
+                    height: '310px',
                     background: 'linear-gradient(135deg, #9ca3af 0%, #6b7280 100%)',
                     display: 'flex',
                     alignItems: 'center',
