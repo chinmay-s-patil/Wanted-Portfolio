@@ -5,20 +5,21 @@ const diaryEntries = [
     role: 'Mechanical Research Engineer',
     location: 'Bangalore, India',
     type: 'Full-time',
-    dates: { start: '2025-06', end: '2025-09' },
-    summary: 'Led drone design and manufacturing with focus on DFAM principles.',
-    tools: ['DFAM', 'Python', 'Mechanical Design'],
+    dates: { start: 'Jun 2025', end: 'Sep 2025' },
+    summary: 'Led drone design and manufacturing with focus on design for additive manufacturing (DFAM). Developed multiple drone platforms from concept to production.',
+    tools: ['DFAM', 'Python', 'Mechanical Design', 'Additive Manufacturing'],
     photos: [
-      { url: '/photos/drone-design.jpg', caption: 'Drone assembly line' },
-      { url: '/photos/3d-printed-parts.jpg', caption: 'DFAM optimized parts' }
+      '/Experience/Raphe/slideshow/Raphe1.jpg',
+      '/Experience/Raphe/slideshow/Raphe2.jpg',
+      '/Experience/Raphe/slideshow/Raphe3.jpg',
     ],
     notes: [
-      'Led end-to-end drone platform design and manufacturing',
-      'Implemented DFAM with self-supporting structures',
-      'Optimized data post-processing workflows using Python',
-      'Coordinated multidisciplinary teams on project milestones'
+      'Led end-to-end design and manufacturing of multiple drone platforms',
+      'Implemented DFAM principles focusing on self-supporting structures and minimum layer height optimization',
+      'Developed Python-based automation tools for data post-processing workflows',
+      'Coordinated multidisciplinary teams across mechanical, electronics, and software domains'
     ],
-    insight: 'Automation in manufacturing matters as much as the design itself.'
+    insight: 'Manufacturing constraints should drive design decisions from day one—DFAM isn\'t an afterthought, it\'s a design philosophy.'
   },
   {
     id: 'iisc-2025',
@@ -26,20 +27,21 @@ const diaryEntries = [
     role: 'Research Intern',
     location: 'Bangalore, India',
     type: 'Internship',
-    dates: { start: '2025-04', end: '2025-06' },
-    summary: 'Advanced aeroacoustic simulations for rotor-wake interactions.',
-    tools: ['OpenFOAM', 'Ansys Fluent', 'LES', 'FW-H'],
+    dates: { start: 'Apr 2025', end: 'Jun 2025' },
+    summary: 'Advanced aeroacoustic simulations studying rotor-wake interactions using hybrid CFD/CAA approaches in OpenFOAM and ANSYS Fluent.',
+    tools: ['OpenFOAM', 'ANSYS Fluent', 'LES', 'Aeroacoustics', 'FW-H Analogy'],
     photos: [
-      { url: '/photos/simulation-viz.jpg', caption: 'Rotor wake simulation' },
-      { url: '/photos/acoustic-analysis.jpg', caption: 'Noise propagation analysis' }
+      '/Experience/IISc/Slideshow/IISc (1).jpg',
+      '/Experience/IISc/Slideshow/IISc (2).jpg',
+      '/Experience/IISc/Slideshow/IISc (3).jpg',
     ],
     notes: [
-      'Simulated high-fidelity rotor-wake interactions in OpenFOAM',
-      'Conducted LES-based aeroacoustic analysis in Ansys Fluent',
-      'Applied Ffowcs Williams–Hawkings analogy for noise prediction',
-      'Collaborated with faculty on aerospace research projects'
+      'Simulated high-fidelity rotor-wake interactions in OpenFOAM with custom boundary conditions',
+      'Conducted LES-based aeroacoustic analysis in ANSYS Fluent for noise prediction',
+      'Integrated Ffowcs Williams–Hawkings analogy for propeller noise characterization',
+      'Collaborated with leading aerospace faculty on cutting-edge research projects'
     ],
-    insight: 'Hybrid CFD/CAA approaches reveal physics that pure simulations miss.'
+    insight: 'Hybrid CFD/CAA methods reveal acoustic physics that pure simulations miss—the coupling between flow and sound is everything.'
   },
   {
     id: 'csir-2024',
@@ -47,20 +49,39 @@ const diaryEntries = [
     role: 'Research Intern',
     location: 'Chennai, India',
     type: 'Internship',
-    dates: { start: '2024-06', end: '2024-07' },
-    summary: 'Wind engineering CFD for drone propeller efficiency analysis.',
-    tools: ['OpenFOAM', 'Wind Engineering', 'Python'],
+    dates: { start: 'Jun 2024', end: 'Jul 2024' },
+    summary: 'Wind engineering CFD analysis for drone propeller efficiency assessment using OpenFOAM in the Wind Engineering Laboratory.',
+    tools: ['OpenFOAM', 'Wind Engineering', 'Python', 'CFD Post-Processing'],
     photos: [
-      { url: '/photos/wind-tunnel.jpg', caption: 'Wind tunnel validation' },
-      { url: '/photos/propeller-cfd.jpg', caption: 'Propeller efficiency study' }
+      '/Experience/CSIR SERC/CSIR SERC (1).jpg',
+      '/Experience/CSIR SERC/CSIR SERC (2).jpg',
+      '/Experience/CSIR SERC/CSIR SERC (3).jpg',
+      '/Experience/CSIR SERC/CSIR SERC (4).jpg',
+      '/Experience/CSIR SERC/CSIR SERC (5).jpg',
+      '/Experience/CSIR SERC/CSIR SERC (6).jpg',
+      '/Experience/CSIR SERC/CSIR SERC (7).jpg',
+      '/Experience/CSIR SERC/CSIR SERC (8).jpg',
+      '/Experience/CSIR SERC/CSIR SERC (9).jpg',
+      '/Experience/CSIR SERC/CSIR SERC (10).jpg',
+      '/Experience/CSIR SERC/CSIR SERC (11).jpg',
+      '/Experience/CSIR SERC/CSIR SERC (12).jpg',
+      '/Experience/CSIR SERC/CSIR SERC (13).jpg',
+      '/Experience/CSIR SERC/CSIR SERC (14).jpg',
+      '/Experience/CSIR SERC/CSIR SERC (15).jpg',
+      '/Experience/CSIR SERC/CSIR SERC (16).jpg',
+      '/Experience/CSIR SERC/CSIR SERC (17).jpg',
+      '/Experience/CSIR SERC/CSIR SERC (18).jpg',
+      '/Experience/CSIR SERC/CSIR SERC (19).jpg',
+      '/Experience/CSIR SERC/CSIR SERC (20).jpg',
+      '/Experience/CSIR SERC/CSIR SERC (21).jpg',
     ],
     notes: [
-      'Independently learned and applied OpenFOAM for drone simulations',
-      'Ran propeller efficiency analysis in wind tunnel conditions',
-      'Validated CFD results against experimental measurements',
-      'Gained exposure to advanced materials characterization labs'
+      'Independently learned OpenFOAM through self-study and applied it to drone propeller simulations',
+      'Executed CFD analysis to assess drone propeller efficiency under various wind conditions',
+      'Validated simulation results against experimental measurements from wind tunnel tests',
+      'Gained exposure to advanced materials characterization labs and testing facilities'
     ],
-    insight: 'Self-learning OpenFOAM was steep, but opened countless doors.'
+    insight: 'Self-learning OpenFOAM was a steep climb, but it opened the door to every CFD opportunity that followed.'
   },
   {
     id: 'vitc-2023',
@@ -68,20 +89,24 @@ const diaryEntries = [
     role: 'Project Intern',
     location: 'Chennai, India',
     type: 'Internship',
-    dates: { start: '2023-11', end: '2023-12' },
-    summary: 'Fracture mechanics simulation with ML prediction models.',
-    tools: ['COMSOL', 'Python', 'Machine Learning'],
+    dates: { start: 'Nov 2023', end: 'Dec 2023' },
+    summary: 'Fracture mechanics research combining COMSOL simulations with machine learning for crack propagation prediction.',
+    tools: ['COMSOL', 'Python', 'Machine Learning', 'Neural Networks', 'Data Science'],
     photos: [
-      { url: '/photos/fracture-simulation.jpg', caption: 'Crack propagation analysis' },
-      { url: '/photos/ml-accuracy.jpg', caption: '99.99% accuracy model results' }
+      '/Experience/VIT/VIT (1).jpg',
+      '/Experience/VIT/VIT (2).jpg',
+      '/Experience/VIT/VIT (3).jpg',
+      '/Experience/VIT/VIT (4).jpg',
+      '/Experience/VIT/VIT (5).jpg',
+      '/Experience/VIT/VIT (6).jpg',
     ],
     notes: [
-      'Simulated angled crack propagation using J-integral method',
-      'Compiled 172k+ fracture simulation data points',
-      'Developed neural networks achieving 99.99% accuracy',
-      'Automated simulation data processing workflows'
+      'Simulated angled crack propagation for fracture mechanics using J-integral method in COMSOL',
+      'Compiled and processed 172,000+ fracture simulation data points for machine learning',
+      'Developed neural network models achieving exceptional prediction accuracy',
+      'Automated simulation data workflows using Python scripting'
     ],
-    insight: 'Large datasets transform simulation from art to predictive science.'
+    insight: 'Large, well-structured datasets transform simulation from an art into predictive science—data quality matters more than model complexity.'
   },
   {
     id: 'appbell-2023',
@@ -89,20 +114,36 @@ const diaryEntries = [
     role: 'Full Stack Development Intern',
     location: 'Remote',
     type: 'Internship',
-    dates: { start: '2023-09', end: '2023-11' },
-    summary: 'Enhanced facial recognition systems and API development.',
-    tools: ['Python', 'API Development', 'Android', 'ML'],
+    dates: { start: 'Sep 2023', end: 'Nov 2023' },
+    summary: 'Full-stack development focusing on facial recognition systems for attendance tracking and API integration with legacy systems.',
+    tools: ['Python', 'API Development', 'Android', 'Facial Recognition', 'Machine Learning'],
     photos: [
-      { url: '/photos/facial-recog.jpg', caption: 'Face recognition system' },
-      { url: '/photos/api-dashboard.jpg', caption: 'API performance dashboard' }
+      '/Experience/AppBell/AppBell (1).png',
+      '/Experience/AppBell/AppBell (2).png',
+      '/Experience/AppBell/AppBell (3).png',
+      '/Experience/AppBell/AppBell (1).jpg',
     ],
     notes: [
-      'Improved facial recognition accuracy for attendance systems',
-      'Developed robust API for facial recognition integration',
-      'Contributed to Android app frontend enhancements',
-      'Learned production deployment and real-world ML challenges'
+      'Enhanced facial recognition algorithms using Python to improve attendance system accuracy',
+      'Developed robust REST API for integrating facial recognition into legacy enterprise systems',
+      'Contributed to Android app development with focus on UI/UX improvements',
+      'Learned practical challenges of deploying ML models in production environments'
     ],
-    insight: 'Real-world ML is 90% data cleaning, 10% modeling.'
+    insight: 'Real-world ML is 90% data cleaning and edge case handling, 10% modeling—production deployment teaches what textbooks can\'t.'
+  },
+  {
+    id: 'phd-future',
+    locked: true,
+    organization: 'Future Research',
+    role: 'PhD Candidate',
+    location: 'TBD',
+    type: 'Research',
+    dates: { start: 'TBD', end: 'TBD' },
+    summary: '',
+    tools: [],
+    photos: [],
+    notes: [],
+    insight: ''
   }
 ];
 

@@ -1,16 +1,18 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import diaryEntries from './diaryList.jsx';
 
 export default function ProfessionalDiary() {
+  const navigate = useNavigate();
   const [currentEntryIndex, setCurrentEntryIndex] = useState(0);
   const [hoveredTab, setHoveredTab] = useState(null);
+  const [currentPhotoIndex, setCurrentPhotoIndex] = useState(0);
 
   const currentEntry = diaryEntries[currentEntryIndex];
   const isLocked = currentEntry?.locked;
 
-  // Extract years from all entries for tabs
   const yearTabs = diaryEntries.map((entry, index) => {
     const year = entry.dates.start.split('-')[0];
     const shortYear = `'${year.slice(-2)}`;
@@ -22,7 +24,18 @@ export default function ProfessionalDiary() {
     };
   });
 
-  // Keyboard navigation
+  useEffect(() => {
+    if (!currentEntry?.photos || currentEntry.photos.length === 0) return;
+    const timer = setInterval(() => {
+      setCurrentPhotoIndex((prev) => (prev + 1) % currentEntry.photos.length);
+    }, 4000);
+    return () => clearInterval(timer);
+  }, [currentEntry?.photos]);
+
+  useEffect(() => {
+    setCurrentPhotoIndex(0);
+  }, [currentEntryIndex]);
+
   useEffect(() => {
     const handleKeyPress = (e) => {
       if (e.key === 'ArrowLeft' && currentEntryIndex > 0) {
@@ -31,22 +44,18 @@ export default function ProfessionalDiary() {
         setCurrentEntryIndex(prev => prev + 1);
       }
     };
-
     window.addEventListener('keydown', handleKeyPress);
     return () => window.removeEventListener('keydown', handleKeyPress);
   }, [currentEntryIndex]);
 
-  const goToNext = () => {
-    if (currentEntryIndex < diaryEntries.length - 1) {
-      setCurrentEntryIndex(prev => prev + 1);
-    }
-  };
-
-  const goToPrevious = () => {
-    if (currentEntryIndex > 0) {
-      setCurrentEntryIndex(prev => prev - 1);
-    }
-  };
+  // LOCK BODY SCROLLING - FORCE NO SCROLL
+  useEffect(() => {
+    const originalOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    return () => {
+      document.body.style.overflow = originalOverflow;
+    };
+  }, []);
 
   return (
     <div style={{
@@ -56,27 +65,60 @@ export default function ProfessionalDiary() {
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'center',
-      padding: '1rem',
       position: 'relative',
-      overflow: 'hidden'
+      overflow: 'hidden' // Prevent any scrolling on container
     }}>
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Special+Elite&display=swap');
         @import url('https://fonts.googleapis.com/css2?family=Crimson+Text:wght@400;600;700&display=swap');
         @import url('https://fonts.googleapis.com/css2?family=Courier+Prime:wght@400;700&display=swap');
+        
+        * {
+          -ms-overflow-style: none;
+          scrollbar-width: none;
+        }
+        *::-webkit-scrollbar {
+          display: none;
+        }
+        
+        /* Force no scroll on html and body */
+        html, body {
+          overflow: hidden !important;
+          height: 100vh !important;
+          width: 100vw !important;
+        }
       `}</style>
 
-      {/* Ambient lighting effect */}
-      <div style={{
-        position: 'absolute',
-        top: '-50%',
-        left: '-50%',
-        width: '200%',
-        height: '200%',
-        background: 'radial-gradient(circle, rgba(139, 69, 19, 0.05) 0%, transparent 70%)',
-        pointerEvents: 'none',
-        zIndex: 0
-      }} />
+      {/* Back Button - NOW USING NAVIGATE FOR VITE */}
+      <button 
+        onClick={() => navigate('/hub')}
+        style={{
+          position: 'absolute',
+          top: '1.5rem',
+          left: '1.5rem',
+          zIndex: 20,
+          background: 'linear-gradient(135deg, #3d2817 0%, #2a1a10 100%)',
+          color: '#f4e8d0',
+          border: '1px solid #4a3020',
+          padding: '0.8rem 1.5rem',
+          borderRadius: '8px',
+          cursor: 'pointer',
+          fontFamily: "'Special Elite', monospace",
+          fontSize: '1rem',
+          boxShadow: '0 4px 12px rgba(0,0,0,0.4)',
+          transition: 'all 0.3s ease'
+        }}
+        onMouseEnter={(e) => {
+          e.currentTarget.style.transform = 'scale(1.05)';
+          e.currentTarget.style.boxShadow = '0 6px 16px rgba(0,0,0,0.5)';
+        }}
+        onMouseLeave={(e) => {
+          e.currentTarget.style.transform = 'scale(1)';
+          e.currentTarget.style.boxShadow = '0 4px 12px rgba(0,0,0,0.4)';
+        }}
+      >
+        ← Back
+      </button>
 
       {/* Diary Book */}
       <div style={{
@@ -89,7 +131,7 @@ export default function ProfessionalDiary() {
         zIndex: 1
       }}>
         
-        {/* Leather cover (extends beyond pages) */}
+        {/* Leather cover */}
         <div style={{
           position: 'absolute',
           top: '-12px',
@@ -102,7 +144,6 @@ export default function ProfessionalDiary() {
           zIndex: -1,
           border: '1px solid #4a3020'
         }}>
-          {/* Leather texture overlay */}
           <div style={{
             position: 'absolute',
             inset: 0,
@@ -122,7 +163,7 @@ export default function ProfessionalDiary() {
           display: 'grid',
           gridTemplateColumns: '1fr 1px 1fr',
           position: 'relative',
-          overflow: 'hidden',
+          overflow: 'hidden', // Prevent any overflow scrolling
           boxShadow: 'inset 0 0 20px rgba(139, 69, 19, 0.1)'
         }}>
           
@@ -135,7 +176,7 @@ export default function ProfessionalDiary() {
             zIndex: 0
           }} />
 
-          {/* Center binding/crease */}
+          {/* Center binding */}
           <div style={{
             position: 'absolute',
             left: '50%',
@@ -148,7 +189,6 @@ export default function ProfessionalDiary() {
             borderRadius: '4px',
             zIndex: 2
           }}>
-            {/* Binding staples */}
             {[20, 35, 50, 65, 80].map((top) => (
               <div key={top} style={{
                 position: 'absolute',
@@ -159,21 +199,20 @@ export default function ProfessionalDiary() {
                 height: '3px',
                 background: 'linear-gradient(to right, #8b7355, #6b5d4d, #8b7355)',
                 borderRadius: '2px',
-                boxShadow: '0 1px 2px rgba(0, 0, 0, 0.4)'
+                boxShadow: '0 1px 2px rgba(0,0,0,0.4)'
               }} />
             ))}
           </div>
 
-          {/* Left Page */}
+          {/* Left Page - Metadata + Field Notes */}
           <div style={{
             padding: '2rem',
-            overflowY: 'auto',
             fontFamily: "'Special Elite', monospace",
             position: 'relative',
             background: 'linear-gradient(to bottom, #f9f3e9 0%, #f4e8d0 100%)',
-            borderRight: '1px solid rgba(139, 69, 19, 0.1)'
+            borderRight: '1px solid rgba(139, 69, 19, 0.1)',
+            overflow: 'hidden'
           }}>
-            {/* Page edge shadow */}
             <div style={{
               position: 'absolute',
               top: 0,
@@ -218,11 +257,12 @@ export default function ProfessionalDiary() {
                   fontStyle: 'italic',
                   fontFamily: "'Courier Prime', monospace"
                 }}>
-                  (PhD ideas brewing...)
+                  (Ideas brewing...)
                 </div>
               </div>
             ) : (
               <>
+                {/* Metadata Section */}
                 <div style={{
                   fontSize: '1.8rem',
                   fontWeight: '700',
@@ -270,100 +310,6 @@ export default function ProfessionalDiary() {
                   {currentEntry.dates.start} — {currentEntry.dates.end}
                 </div>
 
-                <div style={{
-                  padding: '1rem',
-                  background: 'rgba(139, 115, 85, 0.08)',
-                  borderRadius: '6px',
-                  marginBottom: '1.5rem',
-                  border: '1px solid #c9b8a0',
-                  borderLeft: '4px solid #8b7355'
-                }}>
-                  <div style={{
-                    fontSize: '0.7rem',
-                    textTransform: 'uppercase',
-                    letterSpacing: '0.12em',
-                    color: '#8b7355',
-                    marginBottom: '0.5rem',
-                    fontWeight: '600',
-                    fontFamily: "'Courier Prime', monospace"
-                  }}>
-                    Project Focus
-                  </div>
-                  <div style={{
-                    fontSize: '0.95rem',
-                    color: '#3d2817',
-                    lineHeight: '1.6'
-                  }}>
-                    {currentEntry.summary}
-                  </div>
-                </div>
-
-                {currentEntry.photos && currentEntry.photos.length > 0 && (
-                  <div style={{ marginBottom: '1.5rem' }}>
-                    <div style={{
-                      fontSize: '0.7rem',
-                      textTransform: 'uppercase',
-                      letterSpacing: '0.12em',
-                      color: '#8b7355',
-                      marginBottom: '0.75rem',
-                      fontWeight: '600',
-                      fontFamily: "'Courier Prime', monospace"
-                    }}>
-                      Project Photos
-                    </div>
-                    <div style={{
-                      display: 'grid',
-                      gridTemplateColumns: 'repeat(auto-fit, minmax(120px, 1fr))',
-                      gap: '0.75rem'
-                    }}>
-                      {currentEntry.photos.map((photo, i) => (
-                        <div key={i} style={{
-                          position: 'relative',
-                          aspectRatio: '4/3',
-                          borderRadius: '4px',
-                          overflow: 'hidden',
-                          border: '1px solid #c9b8a0',
-                          cursor: 'pointer',
-                          transition: 'all 0.3s ease'
-                        }}
-                        onMouseEnter={(e) => {
-                          e.currentTarget.style.transform = 'scale(1.05)';
-                          e.currentTarget.style.boxShadow = '0 4px 12px rgba(0,0,0,0.2)';
-                        }}
-                        onMouseLeave={(e) => {
-                          e.currentTarget.style.transform = 'scale(1)';
-                          e.currentTarget.style.boxShadow = 'none';
-                        }}
-                        >
-                          <img 
-                            src={photo.url} 
-                            alt={photo.caption}
-                            style={{
-                              width: '100%',
-                              height: '100%',
-                              objectFit: 'cover'
-                            }}
-                          />
-                          <div style={{
-                            position: 'absolute',
-                            bottom: 0,
-                            left: 0,
-                            right: 0,
-                            background: 'rgba(61, 40, 23, 0.85)',
-                            color: '#f4e8d0',
-                            fontSize: '0.7rem',
-                            padding: '0.25rem',
-                            fontFamily: "'Courier Prime', monospace",
-                            textAlign: 'center'
-                          }}>
-                            {photo.caption}
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                )}
-
                 {currentEntry.tools.length > 0 && (
                   <div>
                     <div style={{
@@ -380,7 +326,8 @@ export default function ProfessionalDiary() {
                     <div style={{
                       display: 'flex',
                       flexWrap: 'wrap',
-                      gap: '0.5rem'
+                      gap: '0.5rem',
+                      marginBottom: '2.5rem'
                     }}>
                       {currentEntry.tools.map((tool, i) => (
                         <span
@@ -402,44 +349,13 @@ export default function ProfessionalDiary() {
                     </div>
                   </div>
                 )}
-              </>
-            )}
-          </div>
 
-          {/* Center line */}
-          <div style={{ 
-            background: 'linear-gradient(to bottom, #d4c4a8, #b8a58c, #d4c4a8)',
-            position: 'relative',
-            zIndex: 3
-          }} />
-
-          {/* Right Page */}
-          <div style={{
-            padding: '2rem',
-            overflowY: 'auto',
-            fontFamily: "'Crimson Text', serif",
-            position: 'relative',
-            background: 'linear-gradient(to bottom, #f9f3e9 0%, #f4e8d0 100%)',
-            borderLeft: '1px solid rgba(139, 69, 19, 0.1)'
-          }}>
-            {/* Page edge shadow */}
-            <div style={{
-              position: 'absolute',
-              top: 0,
-              bottom: 0,
-              left: 0,
-              width: '8px',
-              background: 'linear-gradient(to right, rgba(0,0,0,0.05), transparent)',
-              pointerEvents: 'none'
-            }} />
-            
-            {!isLocked && (
-              <>
+                {/* Field Notes Section - NOW BELOW metadata */}
                 <div style={{
                   fontSize: '1.4rem',
                   fontWeight: '700',
                   color: '#3d2817',
-                  marginBottom: '2rem',
+                  marginBottom: '1.5rem',
                   textAlign: 'center',
                   fontFamily: "'Special Elite', monospace",
                   letterSpacing: '0.1em',
@@ -460,7 +376,7 @@ export default function ProfessionalDiary() {
                 </div>
 
                 <div style={{
-                  marginBottom: '2.5rem'
+                  marginBottom: '1rem'
                 }}>
                   {currentEntry.notes.map((note, i) => (
                     <div
@@ -473,7 +389,8 @@ export default function ProfessionalDiary() {
                         paddingLeft: '1.5rem',
                         position: 'relative',
                         borderLeft: '2px solid transparent',
-                        transition: 'all 0.3s ease'
+                        transition: 'all 0.3s ease',
+                        fontFamily: "'Crimson Text', serif"
                       }}
                       onMouseEnter={(e) => {
                         e.currentTarget.style.borderLeftColor = '#c9b8a0';
@@ -494,245 +411,182 @@ export default function ProfessionalDiary() {
                     </div>
                   ))}
                 </div>
+              </>
+            )}  
+          </div>
 
-                {currentEntry.insight && (
-                  <div style={{
-                    padding: '1.5rem',
-                    background: 'linear-gradient(135deg, rgba(139, 115, 85, 0.08) 0%, rgba(196, 165, 116, 0.05) 100%)',
-                    border: '1px solid #c9b8a0',
-                    borderRadius: '8px',
-                    marginTop: '2rem',
-                    position: 'relative',
-                    boxShadow: 'inset 0 0 10px rgba(0,0,0,0.05)'
-                  }}>
-                    <div style={{
-                      position: 'absolute',
-                      top: '-10px',
-                      left: '1.5rem',
-                      background: '#f4e8d0',
-                      padding: '0 0.5rem',
-                      fontSize: '0.7rem',
-                      textTransform: 'uppercase',
-                      letterSpacing: '0.1em',
-                      color: '#8b7355',
-                      fontWeight: '600',
-                      fontFamily: "'Courier Prime', monospace"
-                    }}>
-                      Key Insight
-                    </div>
-                    <div style={{
-                      fontSize: '1.05rem',
-                      lineHeight: '1.7',
-                      color: '#3d2817',
-                      fontStyle: 'italic',
-                      paddingTop: '0.5rem'
-                    }}>
-                      {currentEntry.insight}
-                    </div>
-                  </div>
-                )}
+          {/* Center line */}
+          <div style={{ 
+            background: 'linear-gradient(to bottom, #d4c4a8, #b8a58c, #d4c4a8)',
+            position: 'relative',
+            zIndex: 3
+          }} />
+
+          {/* Right Page - ONLY Project Gallery */}
+          <div style={{
+            padding: '2rem',
+            fontFamily: "'Special Elite', monospace",
+            position: 'relative',
+            background: 'linear-gradient(to bottom, #f9f3e9 0%, #f4e8d0 100%)',
+            borderLeft: '1px solid rgba(139, 69, 19, 0.1)',
+            overflow: 'hidden'
+          }}>
+            <div style={{
+              position: 'absolute',
+              top: 0,
+              bottom: 0,
+              left: 0,
+              width: '8px',
+              background: 'linear-gradient(to right, rgba(0,0,0,0.05), transparent)',
+              pointerEvents: 'none'
+            }} />
+            
+            {!isLocked && currentEntry.photos && currentEntry.photos.length > 0 && (
+              <>
+                <div style={{
+                  fontSize: '0.7rem',
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.12em',
+                  color: '#8b7355',
+                  marginBottom: '0.75rem',
+                  fontWeight: '600',
+                  fontFamily: "'Courier Prime', monospace"
+                }}>
+                  Project Gallery
+                </div>
+                <div style={{
+                  position: 'relative',
+                  width: '100%',
+                  aspectRatio: '4/3',
+                  borderRadius: '8px',
+                  overflow: 'hidden',
+                  border: '2px solid #c9b8a0',
+                  boxShadow: '0 4px 12px rgba(0,0,0,0.15)'
+                }}>
+                  {currentEntry.photos.map((photo, i) => (
+                    <img
+                      key={i}
+                      src={photo}
+                      alt={`${currentEntry.organization} photo ${i + 1}`}
+                      style={{
+                        position: 'absolute',
+                        inset: 0,
+                        width: '100%',
+                        height: '100%',
+                        objectFit: 'cover',
+                        opacity: i === currentPhotoIndex ? 1 : 0,
+                        transition: 'opacity 1s ease-in-out'
+                      }}
+                    />
+                  ))}
+                </div>
               </>
             )}
-          </div>
-
-          {/* Navigation Controls */}
-          <div style={{
-            position: 'absolute',
-            bottom: '1rem',
-            left: '0',
-            right: '0',
-            display: 'flex',
-            justifyContent: 'space-between',
-            padding: '0 2rem',
-            zIndex: 4
-          }}>
-            <button
-              onClick={goToPrevious}
-              disabled={currentEntryIndex === 0}
-              style={{
-                padding: '0.75rem 1.5rem',
-                background: currentEntryIndex === 0 ? 'rgba(61, 40, 23, 0.15)' : '#3d2817',
-                color: currentEntryIndex === 0 ? '#8b7355' : '#f4e8d0',
-                border: 'none',
-                borderRadius: '6px',
-                cursor: currentEntryIndex === 0 ? 'not-allowed' : 'pointer',
-                fontFamily: "'Special Elite', monospace",
-                fontSize: '0.85rem',
-                transition: 'all 0.3s ease',
-                opacity: currentEntryIndex === 0 ? 0.5 : 1,
-                boxShadow: currentEntryIndex === 0 ? 'none' : '0 4px 8px rgba(0,0,0,0.2)',
-                border: '1px solid #2a1a10'
-              }}
-              onMouseEnter={(e) => {
-                if (currentEntryIndex !== 0) {
-                  e.currentTarget.style.transform = 'translateY(-2px)';
-                  e.currentTarget.style.boxShadow = '0 6px 12px rgba(0,0,0,0.25)';
-                }
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.transform = 'translateY(0)';
-                e.currentTarget.style.boxShadow = currentEntryIndex === 0 ? 'none' : '0 4px 8px rgba(0,0,0,0.2)';
-              }}
-            >
-              ← Previous Entry
-            </button>
-
-            <div style={{
-              fontFamily: "'Special Elite', monospace",
-              color: '#8b7355',
-              fontSize: '0.85rem',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '0.75rem',
-              background: 'rgba(139, 115, 85, 0.1)',
-              padding: '0.5rem 1rem',
-              borderRadius: '4px',
-              border: '1px solid #c9b8a0'
-            }}>
-              <span>{currentEntryIndex + 1}</span>
-              <span>/</span>
-              <span>{diaryEntries.length}</span>
-            </div>
-
-            <button
-              onClick={goToNext}
-              disabled={currentEntryIndex === diaryEntries.length - 1}
-              style={{
-                padding: '0.75rem 1.5rem',
-                background: currentEntryIndex === diaryEntries.length - 1 ? 'rgba(61, 40, 23, 0.15)' : '#3d2817',
-                color: currentEntryIndex === diaryEntries.length - 1 ? '#8b7355' : '#f4e8d0',
-                border: 'none',
-                borderRadius: '6px',
-                cursor: currentEntryIndex === diaryEntries.length - 1 ? 'not-allowed' : 'pointer',
-                fontFamily: "'Special Elite', monospace",
-                fontSize: '0.85rem',
-                transition: 'all 0.3s ease',
-                opacity: currentEntryIndex === diaryEntries.length - 1 ? 0.5 : 1,
-                boxShadow: currentEntryIndex === diaryEntries.length - 1 ? 'none' : '0 4px 8px rgba(0,0,0,0.2)',
-                border: '1px solid #2a1a10'
-              }}
-              onMouseEnter={(e) => {
-                if (currentEntryIndex !== diaryEntries.length - 1) {
-                  e.currentTarget.style.transform = 'translateY(-2px)';
-                  e.currentTarget.style.boxShadow = '0 6px 12px rgba(0,0,0,0.25)';
-                }
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.transform = 'translateY(0)';
-                e.currentTarget.style.boxShadow = currentEntryIndex === diaryEntries.length - 1 ? 'none' : '0 4px 8px rgba(0,0,0,0.2)';
-              }}
-            >
-              Next Entry →
-            </button>
-          </div>
-
-          {/* Keyboard hints */}
-          <div style={{
-            position: 'absolute',
-            bottom: '0.25rem',
-            left: '50%',
-            transform: 'translateX(-50%)',
-            fontSize: '0.7rem',
-            color: '#8b7355',
-            fontFamily: "'Special Elite', monospace",
-            opacity: '0.7',
-            background: 'rgba(139, 115, 85, 0.1)',
-            padding: '0.25rem 0.75rem',
-            borderRadius: '4px',
-            border: '1px solid #c9b8a0'
-          }}>
-            Use ← → arrow keys to navigate
           </div>
         </div>
       </div>
 
-      {/* Right-side Year Tabs */}
+      {/* Right-side Year Tabs - FLUSH AGAINST RIGHT EDGE */}
       <div style={{
         position: 'absolute',
-        right: '2rem',
+        right: 'calc((100vw - min(95vw, 1400px)) / 2)',
         top: '50%',
-        transform: 'translateY(-50%)',
-        zIndex: 5,
+        transform: 'translateY(-50%) translateX(100%)',
+        zIndex: 10,
         display: 'flex',
         flexDirection: 'column',
-        gap: '0.5rem'
+        gap: '0.75rem'
       }}>
-        {yearTabs.map((tab) => (
-          <button
-            key={tab.index}
-            onClick={() => setCurrentEntryIndex(tab.index)}
-            onMouseEnter={() => setHoveredTab(tab.index)}
-            onMouseLeave={() => setHoveredTab(null)}
-            style={{
-              position: 'relative',
-              width: hoveredTab === tab.index ? '220px' : '45px',
-              height: '45px',
-              background: currentEntryIndex === tab.index 
-                ? '#3d2817' 
-                : hoveredTab === tab.index 
-                  ? '#5d4a2a' 
-                  : '#2a1a10',
-              border: 'none',
-              borderRadius: '8px 0 0 8px',
-              cursor: 'pointer',
-              transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
-              boxShadow: '0 3px 10px rgba(0,0,0,0.3)',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: hoveredTab === tab.index ? 'flex-start' : 'center',
-              paddingLeft: hoveredTab === tab.index ? '1rem' : '0',
-              color: '#f4e8d0',
-              fontFamily: "'Special Elite', monospace",
-              fontWeight: currentEntryIndex === tab.index ? 'bold' : 'normal'
-            }}
-          >
-            {hoveredTab === tab.index || currentEntryIndex === tab.index ? (
-              <div style={{
+        {yearTabs.map((tab) => {
+          const isActive = currentEntryIndex === tab.index;
+          const isHovered = hoveredTab === tab.index;
+          const shouldExpand = isHovered || isActive;
+          
+          return (
+            <button
+              key={tab.index}
+              onClick={() => setCurrentEntryIndex(tab.index)}
+              onMouseEnter={() => setHoveredTab(tab.index)}
+              onMouseLeave={() => setHoveredTab(null)}
+              style={{
+                position: 'relative',
+                width: shouldExpand ? '240px' : '50px',
+                height: shouldExpand ? '70px' : '50px',
+                background: isActive 
+                  ? 'linear-gradient(135deg, #3d2817 0%, #2a1a10 100%)' 
+                  : 'linear-gradient(135deg, #2a1a10 0%, #1e120a 100%)',
+                border: 'none',
+                borderRadius: '8px',
+                cursor: 'pointer',
+                transition: 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)',
+                boxShadow: isActive
+                  ? '0 6px 20px rgba(0,0,0,0.5), inset 0 2px 4px rgba(255,255,255,0.1)'
+                  : '0 4px 12px rgba(0,0,0,0.4)',
                 display: 'flex',
-                flexDirection: 'column',
-                alignItems: 'flex-start',
-                gap: '0.25rem',
-                whiteSpace: 'nowrap'
-              }}>
+                alignItems: 'center',
+                justifyContent: 'center',
+                padding: shouldExpand ? '1rem' : '0',
+                color: '#f4e8d0',
+                fontFamily: "'Special Elite', monospace",
+                fontWeight: isActive ? 'bold' : 'normal',
+                overflow: 'hidden',
+                border: `2px solid ${isActive ? "#8b7355" : "#4a3020"}`
+              }}
+            >
+              {shouldExpand ? (
                 <div style={{
-                  fontSize: '0.9rem',
-                  letterSpacing: '0.05em'
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignItems: 'center',
+                  gap: '0.5rem',
+                  textAlign: 'center',
+                  width: '100%'
                 }}>
-                  {tab.fullRange}
+                  <div style={{
+                    fontSize: '1.1rem',
+                    letterSpacing: '0.05em',
+                    fontWeight: 'bold'
+                  }}>
+                    {tab.fullRange}
+                  </div>
+                  <div style={{
+                    fontSize: '0.75rem',
+                    color: '#c9b8a0',
+                    fontFamily: "'Courier Prime', monospace",
+                    whiteSpace: 'nowrap',
+                    overflow: 'hidden',
+                    textOverflow: 'ellipsis',
+                    maxWidth: '100%',
+                    padding: '0 0.5rem'
+                  }}>
+                    {diaryEntries[tab.index].organization}
+                  </div>
                 </div>
+              ) : (
                 <div style={{
-                  fontSize: '0.7rem',
-                  color: '#c9b8a0',
-                  fontFamily: "'Courier Prime', monospace"
+                  fontSize: '1.4rem',
+                  fontWeight: 'bold',
+                  color: isActive ? '#c4a574' : '#f4e8d0'
                 }}>
-                  {diaryEntries[tab.index].organization}
+                  {tab.shortYear}
                 </div>
-              </div>
-            ) : (
-              <div style={{
-                fontSize: '1.2rem',
-                fontWeight: 'bold',
-                color: '#f4e8d0'
-              }}>
-                {tab.shortYear}
-              </div>
-            )}
-            
-            {/* Active indicator */}
-            {currentEntryIndex === tab.index && (
-              <div style={{
-                position: 'absolute',
-                left: '-2px',
-                top: '50%',
-                transform: 'translateY(-50%)',
-                width: '4px',
-                height: '60%',
-                background: '#8b7355',
-                borderRadius: '2px'
-              }} />
-            )}
-          </button>
-        ))}
+              )}
+              {isActive && (
+                <div style={{
+                  position: 'absolute',
+                  left: '-3px',
+                  top: '50%',
+                  transform: 'translateY(-50%)',
+                  width: '5px',
+                  height: '70%',
+                  background: '#c4a574',
+                  borderRadius: '0 3px 3px 0',
+                  boxShadow: '0 0 10px rgba(196, 165, 116, 0.5)'
+                }} />
+              )}
+            </button>
+          );
+        })}
       </div>
     </div>
   );

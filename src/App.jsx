@@ -3,7 +3,7 @@ import WantedPosterLanding from './components/WantedPosterLanding'
 import Hub from './hub/Hub'
 import EducationPage from './education/EducationPage'
 import ProjectsPage from './projects/ProjectsPage'
-import ProfessionalDiaryPage from './professionaldiary/ProfessionalDiary'
+import ProfessionalDiary from './professionaldiary/ProfessionalDiary'
 
 function App() {
   return (
@@ -13,7 +13,7 @@ function App() {
         <Route path="/hub" element={<Hub />} />
         <Route path="/education" element={<EducationPage />} />
         <Route path="/projects" element={<ProjectsPage />} />
-        <Route path="/professionaldiary" element={<ProfessionalDiaryPage />} />
+        <Route path="/professionaldiary" element={<ProfessionalDiary />} />
       </Routes>
     </BrowserRouter>
   )
