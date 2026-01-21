@@ -6,6 +6,7 @@ import ProjectsPage from './projects/ProjectsPage'
 import ProfessionalDiary from './professionaldiary/ProfessionalDiary'
 import OpenFoamBookshelf from './OpenFoamBookshelf/OpenFoamBookshelf'
 import { openfoamData } from './OpenFoamBookshelf/openfoamData'
+import CADSection from './CAD/CADSection'
 
 function App() {
   return (
@@ -19,6 +20,10 @@ function App() {
         <Route 
           path="/openfoam" 
           element={<OpenFoamBookshelf data={openfoamData} />} 
+        />
+        <Route 
+          path="/cad" 
+          element={<CADSection />} 
         />
       </Routes>
     </BrowserRouter>
