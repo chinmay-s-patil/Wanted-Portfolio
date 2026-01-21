@@ -6,6 +6,7 @@ import { useRef, useEffect, useState } from 'react'
 export default function GLTFViewerModal({ project, onClose }) {
   const containerRef = useRef(null)
   const sceneRef = useRef(null)
+  const cameraRef = useRef(null)
   const rendererRef = useRef(null)
   const meshRef = useRef(null)
   const animationRef = useRef(null)
@@ -44,7 +45,7 @@ export default function GLTFViewerModal({ project, onClose }) {
   const isGLTF = fileExtension === 'gltf' || fileExtension === 'glb'
   const effectiveTransparency = project.transparency > 0 ? project.transparency : 50
 
-  // Load Three.js
+  // Load Three.js and loaders
   useEffect(() => {
     if (typeof window === 'undefined') return
     setIsTouchDevice('ontouchstart' in window || navigator.maxTouchPoints > 0)
@@ -116,7 +117,7 @@ export default function GLTFViewerModal({ project, onClose }) {
     loadThreeJS()
   }, [isSTL, isGLTF])
 
-  // Scene setup (keeping existing setup code from CADglTBNormalized.jsx)
+  // Scene setup
   useEffect(() => {
     if (!threeReady || !containerRef.current) return
 
@@ -177,15 +178,85 @@ export default function GLTFViewerModal({ project, onClose }) {
       document.body.style.overflow = ''
       window.removeEventListener('resize', onResize)
       if (animationRef.current) cancelAnimationFrame(animationRef.current)
-      if (rendererRef.current && containerRef.current) {
+      if (rendererRef.current && containerRef.current && containerRef.current.contains(rendererRef.current.domElement)) {
         containerRef.current.removeChild(rendererRef.current.domElement)
       }
       rendererRef.current?.dispose()
     }
   }, [project, threeReady])
 
-  // (Include all the loading functions, touch handlers, and other methods from CADglTBNormalized.jsx)
-  // For brevity, I'm showing the JSX structure. The full implementation would include all methods.
+  // Touch handlers
+  const handleTouchStart = (e) => {
+    e.preventDefault()
+    const touches = e.touches
+    touchStateRef.current.isTouching = true
+    
+    if (touches.length === 1) {
+      ctrlRef.current.isRotating = true
+      ctrlRef.current.lastX = touches[0].clientX
+      ctrlRef.current.lastY = touches[0].clientY
+    } else if (touches.length === 2) {
+      const dx = touches[0].clientX - touches[1].clientX
+      const dy = touches[0].clientY - touches[1].clientY
+      touchStateRef.current.initialPinchDistance = Math.sqrt(dx * dx + dy * dy)
+      touchStateRef.current.lastCenterX = (touches[0].clientX + touches[1].clientX) / 2
+      touchStateRef.current.lastCenterY = (touches[0].clientY + touches[1].clientY) / 2
+      ctrlRef.current.isPanning = true
+    }
+  }
+
+  const handleTouchMove = (e) => {
+    e.preventDefault()
+    const touches = e.touches
+    const c = ctrlRef.current
+    const t = touchStateRef.current
+
+    if (!t.isTouching) return
+
+    if (touches.length === 1 && c.isRotating) {
+      const dx = touches[0].clientX - c.lastX
+      const dy = touches[0].clientY - c.lastY
+      c.spherical.theta -= dx * 0.01
+      c.spherical.phi += dy * 0.01
+      c.spherical.phi = window.THREE.MathUtils.clamp(c.spherical.phi, 0.1, Math.PI - 0.1)
+      c.lastX = touches[0].clientX
+      c.lastY = touches[0].clientY
+    } else if (touches.length === 2) {
+      const dx = touches[0].clientX - touches[1].clientX
+      const dy = touches[0].clientY - touches[1].clientY
+      const distance = Math.sqrt(dx * dx + dy * dy)
+      
+      if (t.initialPinchDistance) {
+        const scale = distance / t.initialPinchDistance
+        const delta = (scale - 1) * 2
+        c.spherical.radius = Math.max(1, Math.min(20, c.spherical.radius - delta))
+        t.initialPinchDistance = distance
+      }
+
+      const centerX = (touches[0].clientX + touches[1].clientX) / 2
+      const centerY = (touches[0].clientY + touches[1].clientY) / 2
+      const panX = centerX - t.lastCenterX
+      const panY = centerY - t.lastCenterY
+
+      if (Math.abs(panX) > 1 || Math.abs(panY) > 1) {
+        const pan = new window.THREE.Vector3()
+        pan.copy(cameraRef.current.position).sub(c.target).normalize()
+        pan.cross(cameraRef.current.up).setLength(panX * 0.008)
+        pan.addScaledVector(cameraRef.current.up, panY * 0.008)
+        c.panOffset.add(pan)
+        
+        t.lastCenterX = centerX
+        t.lastCenterY = centerY
+      }
+    }
+  }
+
+  const handleTouchEnd = () => {
+    ctrlRef.current.isRotating = false
+    ctrlRef.current.isPanning = false
+    touchStateRef.current.isTouching = false
+    touchStateRef.current.initialPinchDistance = null
+  }
 
   function loadModel(url) {
     const THREE = window.THREE
@@ -197,6 +268,62 @@ export default function GLTFViewerModal({ project, onClose }) {
     } else if (isGLTF) {
       loadGLTFModel(url, THREE)
     }
+  }
+
+  function loadSTLModel(url, THREE) {
+    if (!THREE.STLLoader) {
+      setError('STL Loader not available')
+      setShowPopup(true)
+      setIsLoading(false)
+      return
+    }
+
+    const loader = new THREE.STLLoader()
+    
+    loader.load(
+      url,
+      (geometry) => {
+        setLoadingProgress(80)
+        
+        geometry.computeBoundingBox()
+        const center = new THREE.Vector3()
+        geometry.boundingBox.getCenter(center)
+        geometry.translate(-center.x, -center.y, -center.z)
+        geometry.computeVertexNormals()
+        
+        const material = new THREE.MeshPhongMaterial({
+          color: new THREE.Color(project.modelColor || project.color),
+          transparent: isTransparent,
+          opacity: effectiveTransparency / 100,
+          side: THREE.DoubleSide,
+          shininess: 10
+        })
+        
+        const mesh = new THREE.Mesh(geometry, material)
+        mesh.rotation.set(modelRotation.x, modelRotation.y, modelRotation.z)
+        
+        const bbox = new THREE.Box3().setFromObject(mesh)
+        const size = bbox.getSize(new THREE.Vector3())
+        const maxDim = Math.max(size.x, size.y, size.z)
+        const scale = 2 / maxDim
+        mesh.scale.setScalar(scale)
+        
+        sceneRef.current.add(mesh)
+        meshRef.current = mesh
+        setIsLoading(false)
+        setLoadingProgress(100)
+      },
+      (xhr) => {
+        const progress = (xhr.loaded / xhr.total) * 100
+        setLoadingProgress(Math.min(progress, 95))
+      },
+      (error) => {
+        console.error('Error loading STL:', error)
+        setError('model_unavailable')
+        setShowPopup(true)
+        setIsLoading(false)
+      }
+    )
   }
 
   function loadGLTFModel(url, THREE) {
@@ -230,4 +357,188 @@ export default function GLTFViewerModal({ project, onClose }) {
             if (project.modelColor) {
               child.material.color = new THREE.Color(project.modelColor)
             }
-            child.material.transparent = is
+            child.material.transparent = isTransparent
+            child.material.opacity = effectiveTransparency / 100
+            child.material.needsUpdate = true
+          }
+        })
+        
+        sceneRef.current.add(model)
+        meshRef.current = model
+        setIsLoading(false)
+        setLoadingProgress(100)
+      },
+      (xhr) => {
+        const progress = (xhr.loaded / xhr.total) * 100
+        setLoadingProgress(Math.min(progress, 95))
+      },
+      (error) => {
+        console.error('Error loading GLTF:', error)
+        setError('model_unavailable')
+        setShowPopup(true)
+        setIsLoading(false)
+      }
+    )
+  }
+
+  const updateCamera = () => {
+    const { spherical, target, panOffset } = ctrlRef.current
+    const pos = new window.THREE.Vector3().setFromSpherical(spherical)
+    cameraRef.current.position.copy(target).add(pos).add(panOffset)
+    cameraRef.current.lookAt(target.clone().add(panOffset))
+  }
+
+  const handleMouseDown = (e) => {
+    e.preventDefault()
+    ctrlRef.current.isRotating = e.button === 0
+    ctrlRef.current.isPanning = e.button === 2
+    ctrlRef.current.lastX = e.clientX
+    ctrlRef.current.lastY = e.clientY
+  }
+
+  const handleMouseMove = (e) => {
+    const c = ctrlRef.current
+    if (!c.isRotating && !c.isPanning) return
+    const dx = e.clientX - c.lastX
+    const dy = e.clientY - c.lastY
+    if (c.isRotating) {
+      c.spherical.theta -= dx * 0.01
+      c.spherical.phi += dy * 0.01
+      c.spherical.phi = window.THREE.MathUtils.clamp(c.spherical.phi, 0.1, Math.PI - 0.1)
+    }
+    if (c.isPanning) {
+      const pan = new window.THREE.Vector3()
+      pan.copy(cameraRef.current.position).sub(c.target).normalize()
+      pan.cross(cameraRef.current.up).setLength(dx * 0.005)
+      pan.addScaledVector(cameraRef.current.up, dy * 0.005)
+      c.panOffset.add(pan)
+    }
+    c.lastX = e.clientX
+    c.lastY = e.clientY
+  }
+
+  const handleMouseUp = () => {
+    ctrlRef.current.isRotating = ctrlRef.current.isPanning = false
+  }
+
+  const handleWheel = (e) => {
+    e.preventDefault()
+    ctrlRef.current.spherical.radius = Math.max(
+      1,
+      Math.min(20, ctrlRef.current.spherical.radius + e.deltaY * 0.01)
+    )
+  }
+
+  const resetView = () => {
+    ctrlRef.current.spherical.set(5, Math.PI / 3, Math.PI / 4)
+    ctrlRef.current.target.set(0, 0, 0)
+    ctrlRef.current.panOffset.set(0, 0, 0)
+    ctrlRef.current.viewState = { x: 0, y: 0, z: 0, perp: 0 }
+    
+    const originalRotation = project.modelRotation || { x: 0, y: 0, z: 0 }
+    setModelRotation(originalRotation)
+    if (meshRef.current) {
+      meshRef.current.rotation.set(originalRotation.x, originalRotation.y, originalRotation.z)
+    }
+  }
+
+  const toggleTransparency = () => {
+    if (!meshRef.current) return
+    const newTransparent = !isTransparent
+    setIsTransparent(newTransparent)
+    const opacity = newTransparent ? effectiveTransparency / 100 : 1.0
+    
+    if (isSTL) {
+      meshRef.current.material.transparent = newTransparent
+      meshRef.current.material.opacity = opacity
+      meshRef.current.material.needsUpdate = true
+    } else {
+      meshRef.current.traverse((child) => {
+        if (child.isMesh) {
+          child.material.transparent = newTransparent
+          child.material.opacity = opacity
+          child.material.needsUpdate = true
+        }
+      })
+    }
+  }
+
+  const setViewX = () => {
+    const s = ctrlRef.current.viewState.x
+    ctrlRef.current.spherical.theta = s ? -Math.PI / 2 : Math.PI / 2
+    ctrlRef.current.spherical.phi = Math.PI / 2
+    ctrlRef.current.viewState = { x: 1 - s, y: 0, z: 0, perp: 0 }
+  }
+
+  const setViewY = () => {
+    const s = ctrlRef.current.viewState.y
+    ctrlRef.current.spherical.theta = 0
+    ctrlRef.current.spherical.phi = s ? 0.1 : Math.PI - 0.1
+    ctrlRef.current.viewState = { x: 0, y: 1 - s, z: 0, perp: 0 }
+  }
+
+  const setViewZ = () => {
+    const s = ctrlRef.current.viewState.z
+    ctrlRef.current.spherical.theta = s ? Math.PI : 0
+    ctrlRef.current.spherical.phi = Math.PI / 2
+    ctrlRef.current.viewState = { x: 0, y: 0, z: 1 - s, perp: 0 }
+  }
+
+  const setViewPerpendicular = () => {
+    ctrlRef.current.spherical.theta += Math.PI / 2
+    ctrlRef.current.viewState.perp = (ctrlRef.current.viewState.perp + 1) % 4
+  }
+
+  const rotateModelX = () => {
+    if (!meshRef.current) return
+    const newRotation = { ...modelRotation, x: modelRotation.x + Math.PI / 2 }
+    setModelRotation(newRotation)
+    meshRef.current.rotation.x += Math.PI / 2
+  }
+
+  const rotateModelY = () => {
+    if (!meshRef.current) return
+    const newRotation = { ...modelRotation, y: modelRotation.y + Math.PI / 2 }
+    setModelRotation(newRotation)
+    meshRef.current.rotation.y += Math.PI / 2
+  }
+
+  const rotateModelZ = () => {
+    if (!meshRef.current) return
+    const newRotation = { ...modelRotation, z: modelRotation.z + Math.PI / 2 }
+    setModelRotation(newRotation)
+    meshRef.current.rotation.z += Math.PI / 2
+  }
+
+  return (
+    <>
+      {showPopup && (
+        <div style={{ position: 'fixed', inset: 0, zIndex: 200, display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'rgba(0,0,0,.85)', backdropFilter: 'blur(8px)', animation: 'fadeIn .3s ease' }} onClick={() => { setShowPopup(false); onClose() }}>
+          <div onClick={e => e.stopPropagation()} style={{ maxWidth: '540px', width: '90%', background: 'linear-gradient(135deg,rgba(15,20,32,.98),rgba(10,14,26,.98))', borderRadius: '20px', border: '2px solid rgba(255,180,100,.4)', boxShadow: '0 20px 60px rgba(0,0,0,.8)', padding: '2.5rem', animation: 'slideUp .4s cubic-bezier(.4,0,.2,1)', textAlign: 'center' }}>
+            <div style={{ width: '80px', height: '80px', margin: '0 auto 1.5rem', borderRadius: '50%', background: 'linear-gradient(135deg,rgba(255,180,100,.2),rgba(255,180,100,.05))', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="rgba(255,180,100,.9)" strokeWidth="2"><circle cx="12" cy="12" r="10" /><line x1="12" y1="8" x2="12" y2="12" /><line x1="12" y1="16" x2="12.01" y2="16" /></svg>
+            </div>
+            <h2 style={{ fontSize: '1.5rem', fontWeight: '700', marginBottom: '1rem', color: '#fff' }}>Model Currently Unavailable</h2>
+            <p style={{ fontSize: '1rem', lineHeight: '1.7', color: 'rgba(255,255,255,.85)', marginBottom: '1.5rem' }}>As I've recently transitioned between colleges, I no longer have access to the same CAD software and tools. Unfortunately, this means I'm currently unable to showcase this 3D model. I'm working on regaining access to properly display my portfolio work.</p>
+            <button onClick={() => { setShowPopup(false); onClose() }} style={{ padding: '.875rem 2rem', background: 'linear-gradient(135deg,rgba(255,180,100,.85),rgba(255,180,100,.65))', color: '#0a0e1a', border: 'none', borderRadius: '12px', fontSize: '1rem', fontWeight: '600', cursor: 'pointer', transition: 'all .2s ease', width: '100%' }}>Understood</button>
+          </div>
+        </div>
+      )}
+
+      {!showPopup && (
+        <div style={{ position: 'fixed', inset: 0, zIndex: 100, display: 'flex', background: 'rgba(0,0,0,.95)', backdropFilter: 'blur(8px)' }} onClick={onClose} onMouseMove={handleMouseMove} onMouseUp={handleMouseUp} onMouseLeave={handleMouseUp}>
+          <div onClick={(e) => e.stopPropagation()} style={{ position: 'absolute', top: '2rem', left: '50%', transform: 'translateX(-50%)', display: 'flex', gap: '.5rem', background: 'rgba(0,0,0,.8)', backdropFilter: 'blur(12px)', padding: '.75rem 1rem', borderRadius: '16px', border: '1px solid rgba(255,255,255,.1)', zIndex: 10 }}>
+            <div style={{ padding: '0 1rem', display: 'flex', alignItems: 'center', fontSize: '.9rem', fontWeight: '600', color: '#fff', borderRight: '1px solid rgba(255,255,255,.2)' }}>{project.title}</div>
+            <button onClick={setViewX} title="View X axis" style={{ width: '40px', height: '40px', borderRadius: '10px', background: 'rgba(255,100,100,.2)', border: '1px solid rgba(255,100,100,.4)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '.85rem', fontWeight: '700', color: '#ff6464', cursor: 'pointer' }}>X</button>
+            <button onClick={setViewY} title="View Y axis" style={{ width: '40px', height: '40px', borderRadius: '10px', background: 'rgba(100,255,100,.2)', border: '1px solid rgba(100,255,100,.4)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '.85rem', fontWeight: '700', color: '#64ff64', cursor: 'pointer' }}>Y</button>
+            <button onClick={setViewZ} title="View Z axis" style={{ width: '40px', height: '40px', borderRadius: '10px', background: 'rgba(100,100,255,.2)', border: '1px solid rgba(100,100,255,.4)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '.85rem', fontWeight: '700', color: '#6464ff', cursor: 'pointer' }}>Z</button>
+            <button onClick={setViewPerpendicular} title="Perpendicular View" style={{ width: '40px', height: '40px', borderRadius: '10px', background: 'rgba(255,255,100,.2)', border: '1px solid rgba(255,255,100,.4)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '.85rem', fontWeight: '700', color: '#ffff64', cursor: 'pointer' }}>⊥</button>
+            <div style={{ width: '1px', height: '40px', background: 'rgba(255,255,255,.2)', margin: '0 .25rem' }} />
+            <button onClick={rotateModelX} title="Rotate Model X+90°" style={{ width: '40px', height: '40px', borderRadius: '10px', background: 'rgba(255,100,100,.15)', border: '1px solid rgba(255,100,100,.3)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '.75rem', fontWeight: '700', color: '#ff6464', cursor: 'pointer', flexDirection: 'column', lineHeight: '1' }}><span>X</span><span style={{ fontSize: '.6rem' }}>↻</span></button>
+            <button onClick={rotateModelY} title="Rotate Model Y+90°" style={{ width: '40px', height: '40px', borderRadius: '10px', background: 'rgba(100,255,100,.15)', border: '1px solid rgba(100,255,100,.3)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '.75rem', fontWeight: '700', color: '#64ff64', cursor: 'pointer', flexDirection: 'column', lineHeight: '1' }}><span>Y</span><span style={{ fontSize: '.6rem' }}>↻</span></button>
+            <button onClick={rotateModelZ} title="Rotate Model Z+90°" style={{ width: '40px', height: '40px', borderRadius: '10px', background: 'rgba(100,100,255,.15)', border: '1px solid rgba(100,100,255,.3)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '.75rem', fontWeight: '700', color: '#6464ff', cursor: 'pointer', flexDirection: 'column', lineHeight: '1' }}><span>Z</span><span style={{ fontSize: '.6rem' }}>↻</span></button>
+            <div style={{ width: '1px', height: '40px', background: 'rgba(255,255,255,.2)', margin: '0 .25rem' }} />
+            <button onClick={resetView} title="Reset View" style={{ width: '40px', height: '40px', borderRadius: '10px', background: 'rgba(255,255,255,.1)', border: '1px solid rgba(255,255,255,.15)', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', color: '#fff' }}><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M3 12a9 9 0 109 9 9 9 0 00-9-9z" stroke="currentColor" strokeWidth="2" /><path d="M12 7v5l3 3" stroke="currentColor" strokeWidth="2" strokeLinecap="round" /></svg></button>
+            <button onClick={toggleTransparency} title="Toggle Transparency" style={{ width: '40px', height: '40px', borderRadius: '10px', background: isTransparent ? 'rgba(255,255,255,.2)' : 'rgba(255,255,255,.1)', border: '1px solid rgba(255,255,255,.15)', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', color: '#fff' }}><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="2" opacity="0.5" /><circle cx="12" cy="12" r="6" stroke="currentColor" strokeWidth="2" /></svg></button>
+          </div>
+          <button onClick={onClose} style={{ position: 'absolute', top: '2rem', right: '2rem', width: '48px', height: '48px',
