@@ -7,6 +7,7 @@ import ProfessionalDiary from './professionaldiary/ProfessionalDiary'
 import OpenFoamBookshelf from './OpenFoamBookshelf/OpenFoamBookshelf'
 import { openfoamData } from './OpenFoamBookshelf/openfoamData'
 import CADSection from './CAD/CADSection'
+import VisualizationPage from './visualization/VisualizationPage'
 
 function App() {
   return (
@@ -25,6 +26,7 @@ function App() {
           path="/cad" 
           element={<CADSection />} 
         />
+        <Route path="/visualization" element={<VisualizationPage />} />
       </Routes>
     </BrowserRouter>
   )
