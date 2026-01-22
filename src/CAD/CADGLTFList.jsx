@@ -152,6 +152,20 @@ const CADGLTFList = [
     tags: ['Research', 'Precision', 'Experiment'],
     transparency: 30
   },
+  {
+    id: 12,
+    title: 'CRT TV Model',
+    category: 'Experimental Equipment',
+    year: '2024',
+    description: 'Precision 3D model of wind tunnel test section from field measurements with 0.01mm tolerance.',
+    coverPhoto: '/Projects/CAD Modeling of Wind Tunnel Test Section/CAD Modeling of Wind Tunnel Test Section.jpg',
+    gltfFile: '/SectionHelp/CAD/TV.gltf',
+    color: '#8338ec',
+    modelColor: '#C0C0C0',
+    modelRotation: { x: Math.PI / 2, y: 0, z: Math.PI / 2 },
+    tags: ['Research', 'Precision', 'Experiment'],
+    transparency: 30
+  },
 ]
 
 export default CADGLTFList
