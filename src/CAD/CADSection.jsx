@@ -1,12 +1,10 @@
 // src/CAD/CADSection.jsx
 'use client'
 
-import React, { useState, useCallback, lazy, Suspense } from 'react'
+import React, { useState, useCallback } from 'react'
 import { useNavigate } from 'react-router-dom'
 import CADGLTFList from './CADGLTFList'
-
-// Lazy load the 3D viewer
-const GLTFViewerModal = lazy(() => import('./GLTFViewerModal'))
+import TVViewer from './TVViewer'
 
 export default function CADSection() {
   const [selectedCartridge, setSelectedCartridge] = useState(null)
@@ -19,6 +17,8 @@ export default function CADSection() {
   const handleClose = useCallback(() => {
     setSelectedCartridge(null)
   }, [])
+
+  const viewerControls = selectedCartridge ? TVViewer({ project: selectedCartridge, onClose: handleClose }) : null
 
   return (
     <div style={{
@@ -106,7 +106,7 @@ export default function CADSection() {
         width: '100%',
         maxWidth: '1600px'
       }}>
-        {/* Left Side - CRT + Header */}
+        {/* Left Side - CRT + Header + Controls */}
         <div style={{
           display: 'flex',
           flexDirection: 'column',
@@ -235,79 +235,188 @@ export default function CADSection() {
                   </div>
                 </div>
               ) : (
-                <div style={{
-                  width: '100%',
-                  height: '100%',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  flexDirection: 'column',
-                  gap: '2rem',
-                  padding: '2rem',
-                  color: '#fff'
-                }}>
-                  <div style={{
-                    fontSize: '1.5rem',
-                    fontWeight: '700',
-                    color: '#00ff00',
-                    textShadow: '0 0 10px #00ff00',
-                    textAlign: 'center'
-                  }}>
-                    {selectedCartridge.title}
-                  </div>
-                  
-                  <div style={{
-                    fontSize: '0.9rem',
-                    color: '#aaa',
-                    textAlign: 'center',
-                    maxWidth: '80%',
-                    lineHeight: '1.6'
-                  }}>
-                    {selectedCartridge.description}
-                  </div>
-
-                  <button
-                    onClick={() => setSelectedCartridge({ ...selectedCartridge, view3D: true })}
-                    style={{
-                      padding: '1rem 2rem',
-                      background: 'linear-gradient(135deg, #00ff00 0%, #00cc00 100%)',
-                      border: 'none',
-                      borderRadius: '8px',
-                      color: '#000',
-                      fontWeight: '700',
-                      fontSize: '1rem',
-                      cursor: 'pointer',
-                      fontFamily: "'Special Elite', monospace",
-                      boxShadow: '0 4px 20px rgba(0,255,0,0.4)',
-                      transition: 'all 0.3s ease'
-                    }}
-                  >
-                    ▶ LOAD 3D MODEL
-                  </button>
-
-                  <div style={{
-                    display: 'flex',
-                    gap: '0.5rem',
-                    flexWrap: 'wrap',
-                    justifyContent: 'center'
-                  }}>
-                    {selectedCartridge.tags?.map((tag, i) => (
-                      <span key={i} style={{
-                        padding: '0.3rem 0.8rem',
-                        background: 'rgba(0,255,0,0.2)',
-                        border: '1px solid #00ff00',
-                        borderRadius: '4px',
-                        fontSize: '0.75rem',
-                        color: '#00ff00'
-                      }}>
-                        {tag}
-                      </span>
-                    ))}
-                  </div>
+                <div
+                  ref={viewerControls?.containerRef}
+                  onMouseDown={viewerControls?.handleMouseDown}
+                  onMouseMove={viewerControls?.handleMouseMove}
+                  onMouseUp={viewerControls?.handleMouseUp}
+                  onMouseLeave={viewerControls?.handleMouseUp}
+                  onWheel={viewerControls?.handleWheel}
+                  style={{
+                    width: '100%',
+                    height: '100%',
+                    cursor: 'grab',
+                    position: 'relative'
+                  }}
+                >
+                  {viewerControls?.isLoading && (
+                    <div style={{
+                      position: 'absolute',
+                      inset: 0,
+                      display: 'flex',
+                      flexDirection: 'column',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      background: 'rgba(0,0,0,0.9)',
+                      color: '#00ff00',
+                      fontSize: '0.9rem',
+                      gap: '1rem',
+                      zIndex: 20
+                    }}>
+                      <div style={{
+                        width: '40px',
+                        height: '40px',
+                        border: '3px solid rgba(0,255,0,0.2)',
+                        borderTop: '3px solid #00ff00',
+                        borderRadius: '50%',
+                        animation: 'spin 1s linear infinite'
+                      }} />
+                      <div>LOADING MODEL...</div>
+                      {viewerControls.loadingProgress > 0 && (
+                        <div style={{
+                          width: '200px',
+                          height: '4px',
+                          background: 'rgba(0,255,0,0.2)',
+                          borderRadius: '2px',
+                          overflow: 'hidden'
+                        }}>
+                          <div style={{
+                            width: `${viewerControls.loadingProgress}%`,
+                            height: '100%',
+                            background: '#00ff00',
+                            transition: 'width 0.3s ease'
+                          }} />
+                        </div>
+                      )}
+                    </div>
+                  )}
                 </div>
               )}
             </div>
           </div>
+
+          {/* Control Panel - Below TV */}
+          {selectedCartridge && viewerControls && (
+            <div style={{
+              display: 'flex',
+              gap: '1rem',
+              flexWrap: 'wrap',
+              justifyContent: 'center',
+              maxWidth: '900px',
+              padding: '1rem',
+              background: 'rgba(0,0,0,0.5)',
+              borderRadius: '12px',
+              border: '2px solid #333'
+            }}>
+              {/* View Controls */}
+              <div style={{
+                display: 'flex',
+                gap: '0.5rem',
+                padding: '0.5rem',
+                background: 'rgba(40,40,40,0.8)',
+                borderRadius: '8px',
+                border: '1px solid #555'
+              }}>
+                <button onClick={viewerControls.setViewX} style={buttonStyle('#ff6464')}>
+                  X
+                </button>
+                <button onClick={viewerControls.setViewY} style={buttonStyle('#64ff64')}>
+                  Y
+                </button>
+                <button onClick={viewerControls.setViewZ} style={buttonStyle('#6464ff')}>
+                  Z
+                </button>
+              </div>
+
+              {/* Rotation Controls */}
+              <div style={{
+                display: 'flex',
+                gap: '0.5rem',
+                padding: '0.5rem',
+                background: 'rgba(40,40,40,0.8)',
+                borderRadius: '8px',
+                border: '1px solid #555'
+              }}>
+                <button onClick={viewerControls.rotateModelX} style={buttonStyle('#ff6464', true)}>
+                  X↻
+                </button>
+                <button onClick={viewerControls.rotateModelY} style={buttonStyle('#64ff64', true)}>
+                  Y↻
+                </button>
+                <button onClick={viewerControls.rotateModelZ} style={buttonStyle('#6464ff', true)}>
+                  Z↻
+                </button>
+              </div>
+
+              {/* Utility Controls */}
+              <div style={{
+                display: 'flex',
+                gap: '0.5rem',
+                padding: '0.5rem',
+                background: 'rgba(40,40,40,0.8)',
+                borderRadius: '8px',
+                border: '1px solid #555'
+              }}>
+                <button onClick={viewerControls.resetView} style={buttonStyle('#fff')}>
+                  ⟲ Reset
+                </button>
+                <button onClick={viewerControls.toggleTransparency} style={buttonStyle('#fff')}>
+                  {viewerControls.isTransparent ? '◉' : '○'} Trans
+                </button>
+                <button onClick={handleClose} style={buttonStyle('#ff4444')}>
+                  ✕ Close
+                </button>
+              </div>
+            </div>
+          )}
+
+          {/* Info Display */}
+          {selectedCartridge && (
+            <div style={{
+              maxWidth: '900px',
+              padding: '1.5rem',
+              background: 'rgba(0,0,0,0.7)',
+              borderRadius: '12px',
+              border: '2px solid #333',
+              color: '#fff'
+            }}>
+              <div style={{
+                fontSize: '1.5rem',
+                fontWeight: '700',
+                color: '#00ff00',
+                marginBottom: '1rem',
+                textShadow: '0 0 10px #00ff00'
+              }}>
+                {selectedCartridge.title}
+              </div>
+              <div style={{
+                fontSize: '0.9rem',
+                color: '#aaa',
+                marginBottom: '1rem',
+                lineHeight: '1.6'
+              }}>
+                {selectedCartridge.description}
+              </div>
+              <div style={{
+                display: 'flex',
+                gap: '0.5rem',
+                flexWrap: 'wrap'
+              }}>
+                {selectedCartridge.tags?.map((tag, i) => (
+                  <span key={i} style={{
+                    padding: '0.3rem 0.8rem',
+                    background: 'rgba(0,255,0,0.2)',
+                    border: '1px solid #00ff00',
+                    borderRadius: '4px',
+                    fontSize: '0.75rem',
+                    color: '#00ff00'
+                  }}>
+                    {tag}
+                  </span>
+                ))}
+              </div>
+            </div>
+          )}
 
           {/* Instructions */}
           <div style={{
@@ -483,15 +592,29 @@ export default function CADSection() {
         </div>
       </div>
 
-      {/* 3D Viewer Modal */}
-      {selectedCartridge?.view3D && (
-        <Suspense fallback={<div>Loading 3D Viewer...</div>}>
-          <GLTFViewerModal 
-            project={selectedCartridge}
-            onClose={() => setSelectedCartridge({ ...selectedCartridge, view3D: false })}
-          />
-        </Suspense>
-      )}
+      <style jsx>{`
+        @keyframes spin {
+          from { transform: rotate(0deg); }
+          to { transform: rotate(360deg); }
+        }
+      `}</style>
     </div>
   )
+}
+
+// Helper function for consistent button styling
+function buttonStyle(color, small = false) {
+  return {
+    padding: small ? '0.4rem 0.7rem' : '0.5rem 1rem',
+    background: `rgba(${color === '#ff6464' ? '255,100,100' : color === '#64ff64' ? '100,255,100' : color === '#6464ff' ? '100,100,255' : color === '#ff4444' ? '255,68,68' : '255,255,255'}, 0.15)`,
+    border: `1px solid ${color}`,
+    borderRadius: '6px',
+    color: color,
+    fontSize: small ? '0.75rem' : '0.85rem',
+    fontWeight: '600',
+    cursor: 'pointer',
+    fontFamily: "'Special Elite', monospace",
+    transition: 'all 0.2s ease',
+    boxShadow: `0 0 10px ${color}33`
+  }
 }
