@@ -139,12 +139,12 @@ export default function CADSection() {
           {/* CRT TV */}
           <div className="crt-bezel" style={{
             position: 'relative',
-            width: '900px',
+            width: '1100px',  // Increased from 900px
             maxWidth: '90vw',
             aspectRatio: '4/3',
             background: 'linear-gradient(135deg, #2a2a2a 0%, #1a1a1a 50%, #0a0a0a 100%)',
             borderRadius: '24px',
-            padding: '3rem',
+            padding: '3.5rem',  // Increased padding
             boxShadow: '0 30px 80px rgba(0,0,0,0.8), inset 0 0 40px rgba(0,0,0,0.5)',
             border: '8px solid #333'
           }}>

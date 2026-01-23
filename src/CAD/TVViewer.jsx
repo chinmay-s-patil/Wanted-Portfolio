@@ -8,7 +8,6 @@ export default function TVViewer({ project, onClose }) {
   const sceneRef = useRef(null)
   const cameraRef = useRef(null)
   const rendererRef = useRef(null)
-  const tvGroupRef = useRef(null)
   const modelGroupRef = useRef(null)
   const animationRef = useRef(null)
   const [threeReady, setThreeReady] = useState(false)
@@ -57,7 +56,7 @@ export default function TVViewer({ project, onClose }) {
     loadThreeJS()
   }, [])
 
-  // Scene setup
+  // Scene setup - only when containerRef is available
   useEffect(() => {
     if (!threeReady || !containerRef.current) return
 
@@ -74,9 +73,9 @@ export default function TVViewer({ project, onClose }) {
     )
     cameraRef.current = camera
 
-    const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true })
+    const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: false })
     renderer.setSize(containerRef.current.clientWidth, containerRef.current.clientHeight)
-    renderer.setPixelRatio(window.devicePixelRatio)
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
     containerRef.current.appendChild(renderer.domElement)
     rendererRef.current = renderer
 
@@ -96,7 +95,7 @@ export default function TVViewer({ project, onClose }) {
     loadModel(project.gltfFile)
 
     const onResize = () => {
-      if (!containerRef.current) return
+      if (!containerRef.current || !rendererRef.current || !cameraRef.current) return
       camera.aspect = containerRef.current.clientWidth / containerRef.current.clientHeight
       camera.updateProjectionMatrix()
       renderer.setSize(containerRef.current.clientWidth, containerRef.current.clientHeight)
@@ -106,7 +105,9 @@ export default function TVViewer({ project, onClose }) {
     const animate = () => {
       animationRef.current = requestAnimationFrame(animate)
       updateCamera()
-      renderer.render(scene, camera)
+      if (rendererRef.current && sceneRef.current && cameraRef.current) {
+        rendererRef.current.render(sceneRef.current, cameraRef.current)
+      }
     }
     animate()
 
@@ -172,6 +173,7 @@ export default function TVViewer({ project, onClose }) {
   }
 
   const updateCamera = () => {
+    if (!cameraRef.current || !ctrlRef.current.spherical || !ctrlRef.current.target) return
     const { spherical, target } = ctrlRef.current
     const pos = new window.THREE.Vector3().setFromSpherical(spherical)
     cameraRef.current.position.copy(target).add(pos)
