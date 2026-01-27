@@ -1,13 +1,13 @@
 // src/CAD/CADSection.jsx
 'use client'
 
-import React, { useState, useCallback } from 'react'
+import React, { useState, useCallback, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import CADGLTFList from './CADGLTFList'
-import TVViewer from './TVViewer'
 
 export default function CADSection() {
   const [selectedCartridge, setSelectedCartridge] = useState(null)
+  const [screenArea, setScreenArea] = useState(null)
   const navigate = useNavigate()
 
   const handleCartridgeClick = useCallback((project) => {
@@ -18,7 +18,9 @@ export default function CADSection() {
     setSelectedCartridge(null)
   }, [])
 
-  const viewerControls = selectedCartridge ? TVViewer({ project: selectedCartridge, onClose: handleClose }) : null
+  const handleScreenReady = useCallback((area) => {
+    setScreenArea(area)
+  }, [])
 
   return (
     <div style={{
@@ -106,7 +108,7 @@ export default function CADSection() {
         width: '100%',
         maxWidth: '1600px'
       }}>
-        {/* Left Side - CRT + Header + Controls */}
+        {/* Left Side - CRT + Header */}
         <div style={{
           display: 'flex',
           flexDirection: 'column',
@@ -136,15 +138,15 @@ export default function CADSection() {
             </h1>
           </div>
 
-          {/* CRT TV */}
+          {/* CRT TV with embedded viewer */}
           <div className="crt-bezel" style={{
             position: 'relative',
-            width: '1100px',  // Increased from 900px
+            width: '1100px',
             maxWidth: '90vw',
             aspectRatio: '4/3',
             background: 'linear-gradient(135deg, #2a2a2a 0%, #1a1a1a 50%, #0a0a0a 100%)',
             borderRadius: '24px',
-            padding: '3.5rem',  // Increased padding
+            padding: '3.5rem',
             boxShadow: '0 30px 80px rgba(0,0,0,0.8), inset 0 0 40px rgba(0,0,0,0.5)',
             border: '8px solid #333'
           }}>
@@ -235,187 +237,17 @@ export default function CADSection() {
                   </div>
                 </div>
               ) : (
-                <div
-                  ref={viewerControls?.containerRef}
-                  onMouseDown={viewerControls?.handleMouseDown}
-                  onMouseMove={viewerControls?.handleMouseMove}
-                  onMouseUp={viewerControls?.handleMouseUp}
-                  onMouseLeave={viewerControls?.handleMouseUp}
-                  onWheel={viewerControls?.handleWheel}
-                  style={{
-                    width: '100%',
-                    height: '100%',
-                    cursor: 'grab',
-                    position: 'relative'
-                  }}
-                >
-                  {viewerControls?.isLoading && (
-                    <div style={{
-                      position: 'absolute',
-                      inset: 0,
-                      display: 'flex',
-                      flexDirection: 'column',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      background: 'rgba(0,0,0,0.9)',
-                      color: '#00ff00',
-                      fontSize: '0.9rem',
-                      gap: '1rem',
-                      zIndex: 20
-                    }}>
-                      <div style={{
-                        width: '40px',
-                        height: '40px',
-                        border: '3px solid rgba(0,255,0,0.2)',
-                        borderTop: '3px solid #00ff00',
-                        borderRadius: '50%',
-                        animation: 'spin 1s linear infinite'
-                      }} />
-                      <div>LOADING MODEL...</div>
-                      {viewerControls.loadingProgress > 0 && (
-                        <div style={{
-                          width: '200px',
-                          height: '4px',
-                          background: 'rgba(0,255,0,0.2)',
-                          borderRadius: '2px',
-                          overflow: 'hidden'
-                        }}>
-                          <div style={{
-                            width: `${viewerControls.loadingProgress}%`,
-                            height: '100%',
-                            background: '#00ff00',
-                            transition: 'width 0.3s ease'
-                          }} />
-                        </div>
-                      )}
-                    </div>
-                  )}
-                </div>
+                <TVModelViewer project={selectedCartridge} />
               )}
             </div>
           </div>
 
           {/* Control Panel - Below TV */}
-          {selectedCartridge && viewerControls && (
-            <div style={{
-              display: 'flex',
-              gap: '1rem',
-              flexWrap: 'wrap',
-              justifyContent: 'center',
-              maxWidth: '900px',
-              padding: '1rem',
-              background: 'rgba(0,0,0,0.5)',
-              borderRadius: '12px',
-              border: '2px solid #333'
-            }}>
-              {/* View Controls */}
-              <div style={{
-                display: 'flex',
-                gap: '0.5rem',
-                padding: '0.5rem',
-                background: 'rgba(40,40,40,0.8)',
-                borderRadius: '8px',
-                border: '1px solid #555'
-              }}>
-                <button onClick={viewerControls.setViewX} style={buttonStyle('#ff6464')}>
-                  X
-                </button>
-                <button onClick={viewerControls.setViewY} style={buttonStyle('#64ff64')}>
-                  Y
-                </button>
-                <button onClick={viewerControls.setViewZ} style={buttonStyle('#6464ff')}>
-                  Z
-                </button>
-              </div>
-
-              {/* Rotation Controls */}
-              <div style={{
-                display: 'flex',
-                gap: '0.5rem',
-                padding: '0.5rem',
-                background: 'rgba(40,40,40,0.8)',
-                borderRadius: '8px',
-                border: '1px solid #555'
-              }}>
-                <button onClick={viewerControls.rotateModelX} style={buttonStyle('#ff6464', true)}>
-                  X↻
-                </button>
-                <button onClick={viewerControls.rotateModelY} style={buttonStyle('#64ff64', true)}>
-                  Y↻
-                </button>
-                <button onClick={viewerControls.rotateModelZ} style={buttonStyle('#6464ff', true)}>
-                  Z↻
-                </button>
-              </div>
-
-              {/* Utility Controls */}
-              <div style={{
-                display: 'flex',
-                gap: '0.5rem',
-                padding: '0.5rem',
-                background: 'rgba(40,40,40,0.8)',
-                borderRadius: '8px',
-                border: '1px solid #555'
-              }}>
-                <button onClick={viewerControls.resetView} style={buttonStyle('#fff')}>
-                  ⟲ Reset
-                </button>
-                <button onClick={viewerControls.toggleTransparency} style={buttonStyle('#fff')}>
-                  {viewerControls.isTransparent ? '◉' : '○'} Trans
-                </button>
-                <button onClick={handleClose} style={buttonStyle('#ff4444')}>
-                  ✕ Close
-                </button>
-              </div>
-            </div>
-          )}
-
-          {/* Info Display */}
           {selectedCartridge && (
-            <div style={{
-              maxWidth: '900px',
-              padding: '1.5rem',
-              background: 'rgba(0,0,0,0.7)',
-              borderRadius: '12px',
-              border: '2px solid #333',
-              color: '#fff'
-            }}>
-              <div style={{
-                fontSize: '1.5rem',
-                fontWeight: '700',
-                color: '#00ff00',
-                marginBottom: '1rem',
-                textShadow: '0 0 10px #00ff00'
-              }}>
-                {selectedCartridge.title}
-              </div>
-              <div style={{
-                fontSize: '0.9rem',
-                color: '#aaa',
-                marginBottom: '1rem',
-                lineHeight: '1.6'
-              }}>
-                {selectedCartridge.description}
-              </div>
-              <div style={{
-                display: 'flex',
-                gap: '0.5rem',
-                flexWrap: 'wrap'
-              }}>
-                {selectedCartridge.tags?.map((tag, i) => (
-                  <span key={i} style={{
-                    padding: '0.3rem 0.8rem',
-                    background: 'rgba(0,255,0,0.2)',
-                    border: '1px solid #00ff00',
-                    borderRadius: '4px',
-                    fontSize: '0.75rem',
-                    color: '#00ff00'
-                  }}>
-                    {tag}
-                  </span>
-                ))}
-              </div>
-            </div>
+            <>
+              <ControlPanel project={selectedCartridge} />
+              <InfoDisplay project={selectedCartridge} />
+            </>
           )}
 
           {/* Instructions */}
@@ -431,167 +263,272 @@ export default function CADSection() {
         </div>
 
         {/* Right Side - Cassette Rack */}
+        <CassetteRack 
+          projects={CADGLTFList}
+          selectedProject={selectedCartridge}
+          onProjectClick={handleCartridgeClick}
+        />
+      </div>
+    </div>
+  )
+}
+
+// Separate component for the 3D model viewer
+function TVModelViewer({ project }) {
+  const containerRef = useRef(null)
+  const sceneRef = useRef(null)
+  const cameraRef = useRef(null)
+  const rendererRef = useRef(null)
+  const modelGroupRef = useRef(null)
+  const animationRef = useRef(null)
+  const [threeReady, setThreeReady] = useState(false)
+  const [isLoading, setIsLoading] = useState(true)
+  const [loadingProgress, setLoadingProgress] = useState(0)
+
+  const ctrlRef = useRef({
+    isRotating: false,
+    lastX: 0,
+    lastY: 0,
+    spherical: null,
+    target: null
+  })
+
+  // Load Three.js
+  useEffect(() => {
+    if (typeof window === 'undefined') return
+
+    const loadThreeJS = async () => {
+      if (!window.THREE) {
+        const script = document.createElement('script')
+        script.src = 'https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js'
+        script.onload = () => loadGLTFLoader()
+        document.head.appendChild(script)
+      } else {
+        loadGLTFLoader()
+      }
+    }
+
+    const loadGLTFLoader = () => {
+      if (!window.THREE.GLTFLoader) {
+        const loaderScript = document.createElement('script')
+        loaderScript.src = 'https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js'
+        loaderScript.onload = () => setThreeReady(true)
+        document.head.appendChild(loaderScript)
+      } else {
+        setThreeReady(true)
+      }
+    }
+
+    loadThreeJS()
+  }, [])
+
+  // Scene setup
+  useEffect(() => {
+    if (!threeReady || !containerRef.current) return
+
+    const THREE = window.THREE
+    const scene = new THREE.Scene()
+    scene.background = new THREE.Color(0x000000)
+    sceneRef.current = scene
+
+    const camera = new THREE.PerspectiveCamera(
+      45,
+      containerRef.current.clientWidth / containerRef.current.clientHeight,
+      0.1,
+      1000
+    )
+    cameraRef.current = camera
+
+    const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: false })
+    renderer.setSize(containerRef.current.clientWidth, containerRef.current.clientHeight)
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
+    containerRef.current.appendChild(renderer.domElement)
+    rendererRef.current = renderer
+
+    // Lighting
+    scene.add(new THREE.AmbientLight(0xffffff, 0.7))
+    const d1 = new THREE.DirectionalLight(0xffffff, 1.5)
+    d1.position.set(5, 5, 5)
+    scene.add(d1)
+    const d2 = new THREE.DirectionalLight(0xffffff, 0.8)
+    d2.position.set(-5, -5, -5)
+    scene.add(d2)
+
+    ctrlRef.current.target = new THREE.Vector3()
+    ctrlRef.current.spherical = new THREE.Spherical(5, Math.PI / 3, Math.PI / 4)
+
+    // Load model
+    loadModel(project.gltfFile)
+
+    const animate = () => {
+      animationRef.current = requestAnimationFrame(animate)
+      updateCamera()
+      if (rendererRef.current && sceneRef.current && cameraRef.current) {
+        rendererRef.current.render(sceneRef.current, cameraRef.current)
+      }
+    }
+    animate()
+
+    return () => {
+      if (animationRef.current) cancelAnimationFrame(animationRef.current)
+      if (rendererRef.current && containerRef.current?.contains(rendererRef.current.domElement)) {
+        containerRef.current.removeChild(rendererRef.current.domElement)
+      }
+      rendererRef.current?.dispose()
+    }
+  }, [project, threeReady])
+
+  function loadModel(url) {
+    const THREE = window.THREE
+    setLoadingProgress(40)
+    setIsLoading(true)
+
+    if (!THREE.GLTFLoader) return
+
+    const loader = new THREE.GLTFLoader()
+    loader.load(
+      url,
+      (gltf) => {
+        setLoadingProgress(80)
+        const model = gltf.scene
+        
+        if (project.modelRotation) {
+          model.rotation.set(project.modelRotation.x, project.modelRotation.y, project.modelRotation.z)
+        }
+
+        const box = new THREE.Box3().setFromObject(model)
+        const center = box.getCenter(new THREE.Vector3())
+        const size = box.getSize(new THREE.Vector3())
+
+        model.position.sub(center)
+        const maxDim = Math.max(size.x, size.y, size.z)
+        const scale = 2 / maxDim
+        model.scale.setScalar(scale)
+
+        model.traverse((child) => {
+          if (child.isMesh) {
+            if (project.modelColor) {
+              child.material.color = new THREE.Color(project.modelColor)
+            }
+            child.material.transparent = project.transparency > 0
+            child.material.opacity = (project.transparency || 0) / 100
+            child.material.needsUpdate = true
+          }
+        })
+
+        sceneRef.current.add(model)
+        modelGroupRef.current = model
+        setIsLoading(false)
+        setLoadingProgress(100)
+      },
+      (xhr) => {
+        const progress = (xhr.loaded / xhr.total) * 100
+        setLoadingProgress(Math.min(progress, 95))
+      },
+      (error) => {
+        console.error('Error loading model:', error)
+        setIsLoading(false)
+      }
+    )
+  }
+
+  const updateCamera = () => {
+    if (!cameraRef.current || !ctrlRef.current.spherical || !ctrlRef.current.target) return
+    const { spherical, target } = ctrlRef.current
+    const pos = new window.THREE.Vector3().setFromSpherical(spherical)
+    cameraRef.current.position.copy(target).add(pos)
+    cameraRef.current.lookAt(target)
+  }
+
+  const handleMouseDown = (e) => {
+    ctrlRef.current.isRotating = true
+    ctrlRef.current.lastX = e.clientX
+    ctrlRef.current.lastY = e.clientY
+  }
+
+  const handleMouseMove = (e) => {
+    if (!ctrlRef.current.isRotating) return
+    const dx = e.clientX - ctrlRef.current.lastX
+    const dy = e.clientY - ctrlRef.current.lastY
+    ctrlRef.current.spherical.theta -= dx * 0.01
+    ctrlRef.current.spherical.phi += dy * 0.01
+    ctrlRef.current.spherical.phi = window.THREE.MathUtils.clamp(
+      ctrlRef.current.spherical.phi,
+      0.1,
+      Math.PI - 0.1
+    )
+    ctrlRef.current.lastX = e.clientX
+    ctrlRef.current.lastY = e.clientY
+  }
+
+  const handleMouseUp = () => {
+    ctrlRef.current.isRotating = false
+  }
+
+  const handleWheel = (e) => {
+    e.preventDefault()
+    ctrlRef.current.spherical.radius = Math.max(
+      1,
+      Math.min(20, ctrlRef.current.spherical.radius + e.deltaY * 0.01)
+    )
+  }
+
+  return (
+    <div
+      ref={containerRef}
+      onMouseDown={handleMouseDown}
+      onMouseMove={handleMouseMove}
+      onMouseUp={handleMouseUp}
+      onMouseLeave={handleMouseUp}
+      onWheel={handleWheel}
+      style={{
+        width: '100%',
+        height: '100%',
+        cursor: 'grab',
+        position: 'relative'
+      }}
+    >
+      {isLoading && (
         <div style={{
+          position: 'absolute',
+          inset: 0,
           display: 'flex',
           flexDirection: 'column',
-          gap: '1.5rem',
-          alignItems: 'center'
+          alignItems: 'center',
+          justifyContent: 'center',
+          background: 'rgba(0,0,0,0.9)',
+          color: '#00ff00',
+          fontSize: '0.9rem',
+          gap: '1rem',
+          zIndex: 20
         }}>
           <div style={{
-            fontSize: '0.9rem',
-            color: '#00ff00',
-            fontWeight: '700',
-            letterSpacing: '0.15em',
-            textShadow: '0 0 10px #00ff00'
-          }}>
-            CASSETTE LIBRARY
-          </div>
-
-          {/* Cassette Rack Container */}
-          <div 
-            className="cassette-rack"
-            style={{
-              width: '280px',
-              maxHeight: '70vh',
-              overflowY: 'auto',
-              overflowX: 'hidden',
-              padding: '1.5rem',
-              background: 'linear-gradient(135deg, rgba(20,20,20,0.95) 0%, rgba(10,10,10,0.95) 100%)',
-              border: '3px solid #333',
-              borderRadius: '12px',
-              boxShadow: 'inset 0 0 30px rgba(0,0,0,0.8), 0 8px 24px rgba(0,0,0,0.6)',
-              display: 'flex',
-              flexDirection: 'column',
-              gap: '1rem'
-            }}
-          >
-            {CADGLTFList.map((project) => (
-              <div
-                key={project.id}
-                className="cassette"
-                onClick={() => handleCartridgeClick(project)}
-                style={{
-                  width: '100%',
-                  height: '80px',
-                  background: `linear-gradient(90deg, ${project.color}dd 0%, ${project.color}88 100%)`,
-                  borderRadius: '4px',
-                  cursor: 'pointer',
-                  position: 'relative',
-                  border: selectedCartridge?.id === project.id 
-                    ? '2px solid #00ff00' 
-                    : '2px solid rgba(0,0,0,0.3)',
-                  boxShadow: selectedCartridge?.id === project.id
-                    ? `0 0 20px ${project.color}80, 0 0 40px #00ff0060`
-                    : '0 4px 12px rgba(0,0,0,0.4)',
-                  display: 'flex',
-                  overflow: 'hidden'
-                }}
-              >
-                {/* Cassette Image Preview */}
-                <div style={{
-                  width: '80px',
-                  height: '100%',
-                  overflow: 'hidden',
-                  borderRight: '2px solid rgba(0,0,0,0.3)',
-                  background: '#000',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center'
-                }}>
-                  <img 
-                    src={project.coverPhoto} 
-                    alt={project.title}
-                    style={{
-                      width: '100%',
-                      height: '100%',
-                      objectFit: 'cover',
-                      opacity: 0.8
-                    }}
-                  />
-                </div>
-
-                {/* Cassette Info */}
-                <div style={{
-                  flex: 1,
-                  padding: '0.5rem 0.75rem',
-                  display: 'flex',
-                  flexDirection: 'column',
-                  justifyContent: 'center',
-                  gap: '0.25rem'
-                }}>
-                  <div style={{
-                    fontSize: '0.75rem',
-                    fontWeight: '700',
-                    color: '#fff',
-                    textShadow: '0 2px 4px rgba(0,0,0,0.8)',
-                    lineHeight: '1.1',
-                    overflow: 'hidden',
-                    textOverflow: 'ellipsis',
-                    display: '-webkit-box',
-                    WebkitLineClamp: 2,
-                    WebkitBoxOrient: 'vertical'
-                  }}>
-                    {project.title}
-                  </div>
-                  
-                  <div style={{
-                    fontSize: '0.65rem',
-                    color: 'rgba(255,255,255,0.7)',
-                    fontWeight: '600'
-                  }}>
-                    {project.year} • {project.category}
-                  </div>
-                </div>
-
-                {/* Cassette Reels */}
-                <div style={{
-                  position: 'absolute',
-                  bottom: '4px',
-                  right: '8px',
-                  display: 'flex',
-                  gap: '4px'
-                }}>
-                  {[1, 2].map((i) => (
-                    <div key={i} style={{
-                      width: '12px',
-                      height: '12px',
-                      borderRadius: '50%',
-                      background: 'rgba(0,0,0,0.6)',
-                      border: '1px solid rgba(255,255,255,0.3)'
-                    }} />
-                  ))}
-                </div>
-
-                {/* Selected Indicator */}
-                {selectedCartridge?.id === project.id && (
-                  <div style={{
-                    position: 'absolute',
-                    left: '0',
-                    top: '50%',
-                    transform: 'translateY(-50%)',
-                    width: '4px',
-                    height: '60%',
-                    background: '#00ff00',
-                    boxShadow: '0 0 10px #00ff00'
-                  }} />
-                )}
-              </div>
-            ))}
-          </div>
-
-          {/* Rack Footer */}
-          <div style={{
-            fontSize: '0.7rem',
-            color: '#666',
-            textAlign: 'center',
-            fontFamily: "'Courier New', monospace",
-            letterSpacing: '0.05em'
-          }}>
-            {CADGLTFList.length} CASSETTES AVAILABLE
-          </div>
+            width: '40px',
+            height: '40px',
+            border: '3px solid rgba(0,255,0,0.2)',
+            borderTop: '3px solid #00ff00',
+            borderRadius: '50%',
+            animation: 'spin 1s linear infinite'
+          }} />
+          <div>LOADING MODEL...</div>
+          {loadingProgress > 0 && (
+            <div style={{
+              width: '200px',
+              height: '4px',
+              background: 'rgba(0,255,0,0.2)',
+              borderRadius: '2px',
+              overflow: 'hidden'
+            }}>
+              <div style={{
+                width: `${loadingProgress}%`,
+                height: '100%',
+                background: '#00ff00',
+                transition: 'width 0.3s ease'
+              }} />
+            </div>
+          )}
         </div>
-      </div>
-
+      )}
       <style jsx>{`
         @keyframes spin {
           from { transform: rotate(0deg); }
@@ -602,19 +539,215 @@ export default function CADSection() {
   )
 }
 
-// Helper function for consistent button styling
-function buttonStyle(color, small = false) {
-  return {
-    padding: small ? '0.4rem 0.7rem' : '0.5rem 1rem',
-    background: `rgba(${color === '#ff6464' ? '255,100,100' : color === '#64ff64' ? '100,255,100' : color === '#6464ff' ? '100,100,255' : color === '#ff4444' ? '255,68,68' : '255,255,255'}, 0.15)`,
-    border: `1px solid ${color}`,
-    borderRadius: '6px',
-    color: color,
-    fontSize: small ? '0.75rem' : '0.85rem',
-    fontWeight: '600',
-    cursor: 'pointer',
-    fontFamily: "'Special Elite', monospace",
-    transition: 'all 0.2s ease',
-    boxShadow: `0 0 10px ${color}33`
-  }
+// Control Panel Component
+function ControlPanel({ project }) {
+  // Control panel implementation would go here
+  return (
+    <div style={{
+      display: 'flex',
+      gap: '1rem',
+      flexWrap: 'wrap',
+      justifyContent: 'center',
+      maxWidth: '900px',
+      padding: '1rem',
+      background: 'rgba(0,0,0,0.5)',
+      borderRadius: '12px',
+      border: '2px solid #333'
+    }}>
+      <div style={{ color: '#00ff00', fontSize: '0.9rem' }}>
+        Use mouse to rotate • Scroll to zoom
+      </div>
+    </div>
+  )
+}
+
+// Info Display Component
+function InfoDisplay({ project }) {
+  return (
+    <div style={{
+      maxWidth: '900px',
+      padding: '1.5rem',
+      background: 'rgba(0,0,0,0.7)',
+      borderRadius: '12px',
+      border: '2px solid #333',
+      color: '#fff'
+    }}>
+      <div style={{
+        fontSize: '1.5rem',
+        fontWeight: '700',
+        color: '#00ff00',
+        marginBottom: '1rem',
+        textShadow: '0 0 10px #00ff00'
+      }}>
+        {project.title}
+      </div>
+      <div style={{
+        fontSize: '0.9rem',
+        color: '#aaa',
+        marginBottom: '1rem',
+        lineHeight: '1.6'
+      }}>
+        {project.description}
+      </div>
+      <div style={{
+        display: 'flex',
+        gap: '0.5rem',
+        flexWrap: 'wrap'
+      }}>
+        {project.tags?.map((tag, i) => (
+          <span key={i} style={{
+            padding: '0.3rem 0.8rem',
+            background: 'rgba(0,255,0,0.2)',
+            border: '1px solid #00ff00',
+            borderRadius: '4px',
+            fontSize: '0.75rem',
+            color: '#00ff00'
+          }}>
+            {tag}
+          </span>
+        ))}
+      </div>
+    </div>
+  )
+}
+
+// Cassette Rack Component
+function CassetteRack({ projects, selectedProject, onProjectClick }) {
+  return (
+    <div style={{
+      display: 'flex',
+      flexDirection: 'column',
+      gap: '1.5rem',
+      alignItems: 'center'
+    }}>
+      <div style={{
+        fontSize: '0.9rem',
+        color: '#00ff00',
+        fontWeight: '700',
+        letterSpacing: '0.15em',
+        textShadow: '0 0 10px #00ff00'
+      }}>
+        CASSETTE LIBRARY
+      </div>
+
+      <div 
+        className="cassette-rack"
+        style={{
+          width: '280px',
+          maxHeight: '70vh',
+          overflowY: 'auto',
+          overflowX: 'hidden',
+          padding: '1.5rem',
+          background: 'linear-gradient(135deg, rgba(20,20,20,0.95) 0%, rgba(10,10,10,0.95) 100%)',
+          border: '3px solid #333',
+          borderRadius: '12px',
+          boxShadow: 'inset 0 0 30px rgba(0,0,0,0.8), 0 8px 24px rgba(0,0,0,0.6)',
+          display: 'flex',
+          flexDirection: 'column',
+          gap: '1rem'
+        }}
+      >
+        {projects.map((project) => (
+          <div
+            key={project.id}
+            className="cassette"
+            onClick={() => onProjectClick(project)}
+            style={{
+              width: '100%',
+              height: '80px',
+              background: `linear-gradient(90deg, ${project.color}dd 0%, ${project.color}88 100%)`,
+              borderRadius: '4px',
+              cursor: 'pointer',
+              position: 'relative',
+              border: selectedProject?.id === project.id 
+                ? '2px solid #00ff00' 
+                : '2px solid rgba(0,0,0,0.3)',
+              boxShadow: selectedProject?.id === project.id
+                ? `0 0 20px ${project.color}80, 0 0 40px #00ff0060`
+                : '0 4px 12px rgba(0,0,0,0.4)',
+              display: 'flex',
+              overflow: 'hidden'
+            }}
+          >
+            <div style={{
+              width: '80px',
+              height: '100%',
+              overflow: 'hidden',
+              borderRight: '2px solid rgba(0,0,0,0.3)',
+              background: '#000',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center'
+            }}>
+              <img 
+                src={project.coverPhoto} 
+                alt={project.title}
+                style={{
+                  width: '100%',
+                  height: '100%',
+                  objectFit: 'cover',
+                  opacity: 0.8
+                }}
+              />
+            </div>
+
+            <div style={{
+              flex: 1,
+              padding: '0.5rem 0.75rem',
+              display: 'flex',
+              flexDirection: 'column',
+              justifyContent: 'center',
+              gap: '0.25rem'
+            }}>
+              <div style={{
+                fontSize: '0.75rem',
+                fontWeight: '700',
+                color: '#fff',
+                textShadow: '0 2px 4px rgba(0,0,0,0.8)',
+                lineHeight: '1.1',
+                overflow: 'hidden',
+                textOverflow: 'ellipsis',
+                display: '-webkit-box',
+                WebkitLineClamp: 2,
+                WebkitBoxOrient: 'vertical'
+              }}>
+                {project.title}
+              </div>
+              
+              <div style={{
+                fontSize: '0.65rem',
+                color: 'rgba(255,255,255,0.7)',
+                fontWeight: '600'
+              }}>
+                {project.year} • {project.category}
+              </div>
+            </div>
+
+            {selectedProject?.id === project.id && (
+              <div style={{
+                position: 'absolute',
+                left: '0',
+                top: '50%',
+                transform: 'translateY(-50%)',
+                width: '4px',
+                height: '60%',
+                background: '#00ff00',
+                boxShadow: '0 0 10px #00ff00'
+              }} />
+            )}
+          </div>
+        ))}
+      </div>
+
+      <div style={{
+        fontSize: '0.7rem',
+        color: '#666',
+        textAlign: 'center',
+        fontFamily: "'Courier New', monospace",
+        letterSpacing: '0.05em'
+      }}>
+        {projects.length} CASSETTES AVAILABLE
+      </div>
+    </div>
+  )
 }
