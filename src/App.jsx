@@ -8,6 +8,7 @@ import OpenFoamBookshelf from './OpenFoamBookshelf/OpenFoamBookshelf'
 import { openfoamData } from './OpenFoamBookshelf/openfoamData'
 import CADSection from './CAD/CADSection'
 import VisualizationPage from './visualization/VisualizationPage'
+import EventsPage from './events/EventsPage'
 
 function App() {
   return (
@@ -27,6 +28,7 @@ function App() {
           element={<CADSection />} 
         />
         <Route path="/visualization" element={<VisualizationPage />} />
+        <Route path="/events" element={<EventsPage />} />
       </Routes>
     </BrowserRouter>
   )
