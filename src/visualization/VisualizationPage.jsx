@@ -34,9 +34,9 @@ export default function VisualizationPage() {
       <style jsx>{`
         @import url('https://fonts.googleapis.com/css2?family=Special+Elite&display=swap');
         
-        @keyframes float {
-          0%, 100% { transform: translateY(0px); }
-          50% { transform: translateY(-10px); }
+        @keyframes pulse {
+          0%, 100% { opacity: 1; }
+          50% { opacity: 0.7; }
         }
         
         .desktop-icon {
@@ -55,9 +55,22 @@ export default function VisualizationPage() {
           background: linear-gradient(135deg, #2a2a2a 0%, #1a1a1a 100%);
           box-shadow: inset 0 0 40px rgba(0,0,0,0.8);
         }
+        
+        .desktop-content::-webkit-scrollbar {
+          width: 12px;
+        }
+        
+        .desktop-content::-webkit-scrollbar-track {
+          background: rgba(0, 0, 0, 0.2);
+        }
+        
+        .desktop-content::-webkit-scrollbar-thumb {
+          background: rgba(255, 255, 255, 0.3);
+          border-radius: 6px;
+        }
       `}</style>
 
-      {/* Back Button - Top Left Corner */}
+      {/* Back Button */}
       <button
         onClick={() => navigate('/hub')}
         style={{
@@ -79,26 +92,23 @@ export default function VisualizationPage() {
         ← Back to Hub
       </button>
 
-      {/* Main Desktop Setup Container */}
+      {/* Main Computer Monitor */}
       <div style={{
-        width: '100%',
-        maxWidth: '1400px',
-        height: '90vh',
+        width: '90%',
+        maxWidth: '1200px',
+        height: '85vh',
+        maxHeight: '800px',
         display: 'flex',
-        flexDirection: 'column',
+        gap: '2rem',
         alignItems: 'center',
-        justifyContent: 'flex-end',
-        position: 'relative',
-        padding: '2rem'
+        justifyContent: 'center'
       }}>
         
-        {/* CRT Monitor */}
+        {/* Monitor */}
         <div style={{
-          position: 'relative',
-          width: '800px',
-          maxWidth: '90vw',
-          aspectRatio: '4/3',
-          marginBottom: '2rem'
+          flex: 1,
+          height: '100%',
+          position: 'relative'
         }}>
           
           {/* Monitor Bezel */}
@@ -107,9 +117,9 @@ export default function VisualizationPage() {
             width: '100%',
             height: '100%',
             background: 'linear-gradient(135deg, #3a3a3a 0%, #2a2a2a 50%, #1a1a1a 100%)',
-            borderRadius: '12px 12px 24px 24px',
-            padding: '2.5rem 2.5rem 3.5rem',
-            boxShadow: '0 20px 60px rgba(0,0,0,0.8)',
+            borderRadius: '12px',
+            padding: '2rem 2rem 2.5rem',
+            boxShadow: '0 25px 80px rgba(0,0,0,0.9)',
             border: '3px solid #1a1a1a'
           }}>
             
@@ -123,134 +133,136 @@ export default function VisualizationPage() {
               border: '2px solid #000'
             }}>
               
-              {/* CRT Scanlines */}
+              {/* CRT Scanlines Effect */}
               <div style={{
                 position: 'absolute',
                 inset: 0,
-                background: 'repeating-linear-gradient(0deg, rgba(0,0,0,0.1) 0px, transparent 1px, transparent 2px)',
+                background: 'repeating-linear-gradient(0deg, rgba(0,0,0,0.15) 0px, transparent 1px, transparent 2px)',
                 pointerEvents: 'none',
                 zIndex: 10
               }} />
 
-              {/* Desktop Area */}
+              {/* Desktop Interface */}
               <div style={{
                 width: '100%',
                 height: '100%',
                 background: 'linear-gradient(180deg, #5B9BD5 0%, #3A7CBD 100%)',
                 position: 'relative',
-                padding: '1rem',
-                overflowY: 'auto'
+                display: 'flex',
+                flexDirection: 'column'
               }}>
                 
-                {/* Desktop Icons Grid */}
-                <div style={{
-                  display: 'grid',
-                  gridTemplateColumns: 'repeat(auto-fill, 90px)',
-                  gap: '1rem',
-                  padding: '1rem'
+                {/* Desktop Icons Area */}
+                <div className="desktop-content" style={{
+                  flex: 1,
+                  padding: '1.5rem',
+                  overflowY: 'auto',
+                  overflowX: 'hidden'
                 }}>
-                  {visualizationsList.map((viz) => (
-                    <div
-                      key={viz.id}
-                      className="desktop-icon"
-                      onClick={() => handleVizClick(viz)}
-                      onDoubleClick={() => handleVizClick(viz)}
-                      style={{
-                        width: '90px',
-                        padding: '8px',
-                        cursor: 'pointer',
-                        display: 'flex',
-                        flexDirection: 'column',
-                        alignItems: 'center',
-                        gap: '4px',
-                        borderRadius: '2px',
-                        userSelect: 'none'
-                      }}
-                    >
-                      {/* Icon Image Container */}
-                      <div style={{
-                        width: '48px',
-                        height: '48px',
-                        background: 'linear-gradient(135deg, #fff 0%, #e0e0e0 100%)',
-                        border: '2px solid #003C74',
-                        borderRadius: '4px',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        fontSize: '32px',
-                        boxShadow: '2px 2px 4px rgba(0,0,0,0.3)',
-                        position: 'relative'
-                      }}>
-                        {viz.icon}
-                        
-                        {/* WIP Corner Badge */}
-                        {viz.isWIP && (
-                          <div style={{
-                            position: 'absolute',
-                            top: '-4px',
-                            right: '-4px',
-                            width: '16px',
-                            height: '16px',
-                            background: '#FFD700',
-                            border: '1px solid #000',
-                            borderRadius: '50%',
-                            fontSize: '8px',
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            fontWeight: 'bold',
-                            color: '#000'
-                          }}>
-                            !
-                          </div>
-                        )}
-                      </div>
+                  <div style={{
+                    display: 'grid',
+                    gridTemplateColumns: 'repeat(auto-fill, 90px)',
+                    gap: '1.5rem',
+                    justifyContent: 'start'
+                  }}>
+                    {visualizationsList.map((viz) => (
+                      <div
+                        key={viz.id}
+                        className="desktop-icon"
+                        onClick={() => handleVizClick(viz)}
+                        style={{
+                          width: '90px',
+                          padding: '8px',
+                          cursor: 'pointer',
+                          display: 'flex',
+                          flexDirection: 'column',
+                          alignItems: 'center',
+                          gap: '6px',
+                          borderRadius: '2px',
+                          userSelect: 'none'
+                        }}
+                      >
+                        {/* Icon */}
+                        <div style={{
+                          width: '48px',
+                          height: '48px',
+                          background: 'linear-gradient(135deg, #fff 0%, #e0e0e0 100%)',
+                          border: '2px solid #003C74',
+                          borderRadius: '4px',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          fontSize: '32px',
+                          boxShadow: '2px 2px 4px rgba(0,0,0,0.3)',
+                          position: 'relative'
+                        }}>
+                          {viz.icon}
+                          
+                          {viz.isWIP && (
+                            <div style={{
+                              position: 'absolute',
+                              top: '-4px',
+                              right: '-4px',
+                              width: '16px',
+                              height: '16px',
+                              background: '#FFD700',
+                              border: '1px solid #000',
+                              borderRadius: '50%',
+                              fontSize: '8px',
+                              display: 'flex',
+                              alignItems: 'center',
+                              justifyContent: 'center',
+                              fontWeight: 'bold',
+                              color: '#000'
+                            }}>
+                              !
+                            </div>
+                          )}
+                        </div>
 
-                      {/* Icon Label */}
-                      <div style={{
-                        fontSize: '11px',
-                        color: '#fff',
-                        textAlign: 'center',
-                        textShadow: '1px 1px 2px rgba(0,0,0,0.8)',
-                        lineHeight: '1.2',
-                        wordWrap: 'break-word',
-                        maxWidth: '100%',
-                        fontFamily: "'Tahoma', sans-serif"
-                      }}>
-                        {viz.title}
+                        {/* Label */}
+                        <div style={{
+                          fontSize: '11px',
+                          color: '#fff',
+                          textAlign: 'center',
+                          textShadow: '1px 1px 2px rgba(0,0,0,0.8)',
+                          lineHeight: '1.2',
+                          wordWrap: 'break-word',
+                          maxWidth: '100%',
+                          fontFamily: "'Tahoma', sans-serif"
+                        }}>
+                          {viz.title}
+                        </div>
                       </div>
-                    </div>
-                  ))}
+                    ))}
+                  </div>
                 </div>
 
-                {/* Taskbar */}
+                {/* Windows XP Taskbar */}
                 <div style={{
-                  position: 'absolute',
-                  bottom: 0,
-                  left: 0,
-                  right: 0,
-                  height: '30px',
+                  height: '32px',
                   background: 'linear-gradient(180deg, #245EDC 0%, #1941A5 100%)',
                   borderTop: '2px solid #0831D9',
                   display: 'flex',
                   alignItems: 'center',
-                  padding: '0 4px',
-                  gap: '4px',
-                  boxShadow: '0 -2px 4px rgba(0,0,0,0.3)'
+                  padding: '0 6px',
+                  gap: '6px',
+                  boxShadow: '0 -2px 4px rgba(0,0,0,0.3)',
+                  flexShrink: 0
                 }}>
                   
                   {/* Start Button */}
                   <div style={{
-                    height: '24px',
+                    height: '26px',
                     background: 'linear-gradient(180deg, #3FA142 0%, #2D8B2F 100%)',
                     border: '1px solid #fff',
                     borderRight: '1px solid #003C00',
                     borderBottom: '1px solid #003C00',
-                    borderRadius: '2px',
-                    padding: '0 12px',
+                    borderRadius: '3px',
+                    padding: '0 14px',
                     display: 'flex',
                     alignItems: 'center',
-                    gap: '4px',
+                    gap: '5px',
                     fontSize: '11px',
                     fontWeight: 'bold',
                     color: '#fff',
@@ -261,28 +273,29 @@ export default function VisualizationPage() {
                     <div style={{
                       width: '16px',
                       height: '16px',
-                      background: 'linear-gradient(45deg, #FFD700, #FFA500)',
+                      background: 'radial-gradient(circle, #FFD700, #FFA500)',
                       borderRadius: '50%',
                       display: 'flex',
                       alignItems: 'center',
                       justifyContent: 'center',
-                      fontSize: '10px',
+                      fontSize: '11px',
                       fontWeight: 'bold',
-                      color: '#000'
+                      color: '#000',
+                      boxShadow: '0 1px 3px rgba(0,0,0,0.3)'
                     }}>
                       ◉
                     </div>
                     start
                   </div>
 
-                  {/* Clock */}
+                  {/* System Tray - Clock */}
                   <div style={{
                     marginLeft: 'auto',
-                    height: '20px',
+                    height: '22px',
                     background: 'rgba(0,0,0,0.2)',
                     border: '1px solid rgba(0,0,0,0.3)',
                     borderRadius: '2px',
-                    padding: '0 8px',
+                    padding: '0 10px',
                     display: 'flex',
                     alignItems: 'center',
                     fontSize: '11px',
@@ -299,325 +312,189 @@ export default function VisualizationPage() {
               </div>
             </div>
 
-            {/* Monitor Brand Label */}
+            {/* Monitor Stand Base Label */}
             <div style={{
               position: 'absolute',
-              bottom: '12px',
+              bottom: '8px',
               left: '50%',
               transform: 'translateX(-50%)',
-              fontSize: '10px',
-              color: '#666',
+              fontSize: '9px',
+              color: '#555',
               letterSpacing: '2px',
-              fontWeight: 'bold'
+              fontWeight: 'bold',
+              fontFamily: "'Arial', sans-serif"
             }}>
-              VIZ-TRON XP
+              VIZ-COMP 2000
             </div>
 
             {/* Power LED */}
             <div style={{
               position: 'absolute',
-              bottom: '16px',
-              right: '24px',
+              bottom: '12px',
+              right: '2rem',
               width: '8px',
               height: '8px',
               borderRadius: '50%',
               background: '#00ff00',
-              boxShadow: '0 0 8px #00ff00'
+              boxShadow: '0 0 10px rgba(0,255,0,0.8)',
+              animation: 'pulse 2s ease-in-out infinite'
             }} />
           </div>
         </div>
 
-        {/* Desktop Base - Keyboard and Mouse area */}
+        {/* CPU Tower */}
         <div style={{
-          width: '900px',
-          maxWidth: '95vw',
+          width: '180px',
+          height: '500px',
+          background: 'linear-gradient(135deg, #3a3a3a 0%, #2a2a2a 100%)',
+          borderRadius: '6px',
+          border: '3px solid #1a1a1a',
+          boxShadow: '0 15px 40px rgba(0,0,0,0.7)',
           display: 'flex',
           flexDirection: 'column',
-          gap: '1rem',
-          alignItems: 'center'
-        }}>
-          
-          {/* Keyboard */}
-          <div style={{
-            width: '700px',
-            maxWidth: '100%',
-            height: '180px',
-            background: 'linear-gradient(135deg, #e8e8e8 0%, #c8c8c8 100%)',
-            borderRadius: '8px 8px 4px 4px',
-            border: '2px solid #a0a0a0',
-            boxShadow: '0 8px 24px rgba(0,0,0,0.5), inset 0 -2px 4px rgba(0,0,0,0.2)',
-            padding: '1rem',
-            position: 'relative'
-          }}>
-            {/* Keyboard Keys - Simplified grid representation */}
-            <div style={{
-              display: 'grid',
-              gridTemplateRows: 'repeat(5, 1fr)',
-              gap: '4px',
-              height: '100%'
-            }}>
-              {/* Row 1 - Function keys */}
-              <div style={{
-                display: 'grid',
-                gridTemplateColumns: 'repeat(15, 1fr)',
-                gap: '3px'
-              }}>
-                {[...Array(15)].map((_, i) => (
-                  <div key={i} style={{
-                    background: 'linear-gradient(180deg, #f0f0f0, #d0d0d0)',
-                    border: '1px solid #a0a0a0',
-                    borderRadius: '2px',
-                    boxShadow: '0 1px 2px rgba(0,0,0,0.2), inset 0 1px 1px rgba(255,255,255,0.5)'
-                  }} />
-                ))}
-              </div>
-              
-              {/* Rows 2-5 - Main keys */}
-              {[...Array(4)].map((_, rowIdx) => (
-                <div key={rowIdx} style={{
-                  display: 'grid',
-                  gridTemplateColumns: 'repeat(15, 1fr)',
-                  gap: '3px'
-                }}>
-                  {[...Array(15)].map((_, i) => (
-                    <div key={i} style={{
-                      background: 'linear-gradient(180deg, #f0f0f0, #d0d0d0)',
-                      border: '1px solid #a0a0a0',
-                      borderRadius: '2px',
-                      boxShadow: '0 1px 2px rgba(0,0,0,0.2), inset 0 1px 1px rgba(255,255,255,0.5)'
-                    }} />
-                  ))}
-                </div>
-              ))}
-            </div>
-
-            {/* Keyboard Brand */}
-            <div style={{
-              position: 'absolute',
-              top: '4px',
-              right: '12px',
-              fontSize: '8px',
-              color: '#666',
-              fontWeight: 'bold',
-              letterSpacing: '1px'
-            }}>
-              RETRO KB-2000
-            </div>
-          </div>
-
-          {/* Mouse */}
-          <div style={{
-            width: '80px',
-            height: '110px',
-            background: 'linear-gradient(135deg, #e8e8e8 0%, #c8c8c8 100%)',
-            borderRadius: '40px 40px 35px 35px',
-            border: '2px solid #a0a0a0',
-            boxShadow: '0 6px 16px rgba(0,0,0,0.4)',
-            position: 'relative',
-            alignSelf: 'flex-end',
-            marginRight: '10%'
-          }}>
-            {/* Mouse Buttons */}
-            <div style={{
-              position: 'absolute',
-              top: '8px',
-              left: '50%',
-              transform: 'translateX(-50%)',
-              width: '60px',
-              height: '60px',
-              display: 'flex',
-              gap: '2px'
-            }}>
-              {/* Left Button */}
-              <div style={{
-                flex: 1,
-                background: 'linear-gradient(180deg, #f0f0f0, #d8d8d8)',
-                borderRadius: '20px 8px 0 0',
-                border: '1px solid #b0b0b0',
-                boxShadow: 'inset 0 1px 2px rgba(255,255,255,0.5)'
-              }} />
-              
-              {/* Right Button */}
-              <div style={{
-                flex: 1,
-                background: 'linear-gradient(180deg, #f0f0f0, #d8d8d8)',
-                borderRadius: '8px 20px 0 0',
-                border: '1px solid #b0b0b0',
-                boxShadow: 'inset 0 1px 2px rgba(255,255,255,0.5)'
-              }} />
-            </div>
-
-            {/* Scroll Wheel */}
-            <div style={{
-              position: 'absolute',
-              top: '20px',
-              left: '50%',
-              transform: 'translateX(-50%)',
-              width: '10px',
-              height: '20px',
-              background: 'linear-gradient(90deg, #606060, #808080)',
-              borderRadius: '5px',
-              border: '1px solid #404040',
-              boxShadow: 'inset 0 0 3px rgba(0,0,0,0.5)'
-            }} />
-
-            {/* Cable */}
-            <div style={{
-              position: 'absolute',
-              top: '-8px',
-              left: '50%',
-              transform: 'translateX(-50%)',
-              width: '6px',
-              height: '12px',
-              background: '#2a2a2a',
-              borderRadius: '3px 3px 0 0'
-            }} />
-          </div>
-        </div>
-
-        {/* CPU Tower - Positioned to the right side */}
-        <div style={{
-          position: 'absolute',
-          right: '5%',
-          bottom: '8%',
-          width: '160px',
-          height: '400px',
-          background: 'linear-gradient(135deg, #3a3a3a 0%, #2a2a2a 100%)',
-          borderRadius: '4px',
-          border: '2px solid #1a1a1a',
-          boxShadow: '0 12px 32px rgba(0,0,0,0.6)',
-          display: 'flex',
-          flexDirection: 'column'
+          position: 'relative'
         }}>
           {/* Front Panel */}
           <div style={{
-            width: '100%',
             flex: 1,
             background: 'linear-gradient(135deg, #4a4a4a 0%, #2a2a2a 100%)',
-            borderRadius: '2px',
-            padding: '1rem',
+            borderRadius: '3px',
+            padding: '1.5rem',
             position: 'relative'
           }}>
             {/* Power Button */}
             <div style={{
-              width: '40px',
-              height: '40px',
+              width: '48px',
+              height: '48px',
               borderRadius: '50%',
-              background: 'linear-gradient(135deg, #00ff00, #00cc00)',
-              margin: '0 auto 1.5rem',
-              boxShadow: '0 0 20px rgba(0,255,0,0.5), inset 0 2px 4px rgba(255,255,255,0.3)',
-              border: '2px solid #006600',
+              background: 'radial-gradient(circle at 30% 30%, #00ff00, #00cc00)',
+              margin: '0 auto 2rem',
+              boxShadow: '0 0 25px rgba(0,255,0,0.6), inset 0 2px 6px rgba(255,255,255,0.4)',
+              border: '3px solid #006600',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              fontSize: '20px',
+              fontSize: '24px',
               color: '#003300',
               fontWeight: 'bold'
             }}>
               ◉
             </div>
 
-            {/* LED Indicators */}
+            {/* Status LEDs */}
             <div style={{
               display: 'flex',
               flexDirection: 'column',
-              gap: '8px',
-              marginTop: '1rem'
+              gap: '12px',
+              marginBottom: '2rem'
             }}>
               <div style={{
                 display: 'flex',
                 alignItems: 'center',
-                gap: '8px'
+                gap: '10px'
               }}>
                 <div style={{
-                  width: '8px',
-                  height: '8px',
+                  width: '10px',
+                  height: '10px',
                   borderRadius: '50%',
                   background: '#00ff00',
-                  boxShadow: '0 0 8px rgba(0,255,0,0.6)'
+                  boxShadow: '0 0 10px rgba(0,255,0,0.7)'
                 }} />
                 <span style={{
-                  fontSize: '9px',
+                  fontSize: '10px',
                   color: '#999',
                   textTransform: 'uppercase',
-                  letterSpacing: '1px'
-                }}>PWR</span>
+                  letterSpacing: '1px',
+                  fontWeight: 'bold'
+                }}>POWER</span>
               </div>
               
               <div style={{
                 display: 'flex',
                 alignItems: 'center',
-                gap: '8px'
+                gap: '10px'
               }}>
                 <div style={{
-                  width: '8px',
-                  height: '8px',
+                  width: '10px',
+                  height: '10px',
                   borderRadius: '50%',
                   background: '#ff8800',
-                  boxShadow: '0 0 8px rgba(255,136,0,0.6)'
+                  boxShadow: '0 0 10px rgba(255,136,0,0.7)'
                 }} />
                 <span style={{
-                  fontSize: '9px',
+                  fontSize: '10px',
                   color: '#999',
                   textTransform: 'uppercase',
-                  letterSpacing: '1px'
-                }}>HDD</span>
+                  letterSpacing: '1px',
+                  fontWeight: 'bold'
+                }}>ACTIVITY</span>
               </div>
             </div>
 
             {/* Drive Bays */}
             <div style={{
-              marginTop: '2rem',
               display: 'flex',
               flexDirection: 'column',
-              gap: '4px'
+              gap: '6px',
+              marginBottom: '2rem'
             }}>
               {[...Array(3)].map((_, i) => (
                 <div key={i} style={{
                   width: '100%',
-                  height: '30px',
+                  height: '35px',
                   background: 'linear-gradient(90deg, #1a1a1a, #2a2a2a)',
                   border: '1px solid #0a0a0a',
-                  borderRadius: '2px',
-                  boxShadow: 'inset 0 1px 2px rgba(0,0,0,0.5)'
+                  borderRadius: '3px',
+                  boxShadow: 'inset 0 1px 3px rgba(0,0,0,0.6)'
                 }} />
               ))}
             </div>
 
-            {/* Brand Label */}
+            {/* Brand Badge */}
             <div style={{
               position: 'absolute',
-              bottom: '1rem',
+              bottom: '1.5rem',
               left: '50%',
               transform: 'translateX(-50%)',
-              fontSize: '10px',
-              color: '#666',
-              fontWeight: 'bold',
-              letterSpacing: '2px',
               textAlign: 'center'
             }}>
-              RETRO<br/>TOWER
+              <div style={{
+                fontSize: '12px',
+                color: '#666',
+                fontWeight: 'bold',
+                letterSpacing: '2px',
+                marginBottom: '4px'
+              }}>
+                VIZCOMP
+              </div>
+              <div style={{
+                fontSize: '8px',
+                color: '#555',
+                letterSpacing: '1px'
+              }}>
+                WORKSTATION
+              </div>
             </div>
           </div>
 
-          {/* Bottom Ventilation */}
+          {/* Bottom Ventilation Grille */}
           <div style={{
             width: '100%',
-            height: '40px',
+            height: '50px',
             background: '#1a1a1a',
-            borderRadius: '0 0 2px 2px',
+            borderRadius: '0 0 3px 3px',
             display: 'grid',
-            gridTemplateColumns: 'repeat(8, 1fr)',
-            gap: '3px',
-            padding: '8px',
+            gridTemplateColumns: 'repeat(10, 1fr)',
+            gap: '4px',
+            padding: '10px',
             borderTop: '1px solid #0a0a0a'
           }}>
-            {[...Array(8)].map((_, i) => (
+            {[...Array(10)].map((_, i) => (
               <div key={i} style={{
                 width: '100%',
                 height: '100%',
                 background: 'linear-gradient(180deg, #0a0a0a, #1a1a1a)',
-                borderRadius: '1px'
+                borderRadius: '2px'
               }} />
             ))}
           </div>
