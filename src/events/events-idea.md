@@ -1,260 +1,407 @@
-# Concept — what the user feels
+# EVENTS SECTION — *The Memory Projector*
 
-A stack of old photographic film reels laid out on a table. Click a reel to “unroll” it: a horizontal strip of photos appears (or a carousel) with a small caption/info card attached — like inspecting an old memory reel. Clean, tactile, and fast.
+## Core Idea (the “why”)
 
----
+Events are *memories*.
+Instead of scrolling through them like a gallery, the user **loads a reel**, turns on a **projector**, and *watches* the event unfold frame by frame.
 
-# UX summary (one sentence)
+No scrolling.
+No clutter.
+Pure intentional interaction.
 
-Reels are index objects (compact on the shelf). Opening a reel reveals a horizontally-scrolling photo strip with captions, a short event summary, and quick actions (download, share, open gallery). Heavy assets load only on demand.
+This aligns perfectly with:
 
----
-
-# Visual design & micro-UX
-
-* **Appearance**: Circular reel graphic (flat, slightly worn paper texture) with a typed label (event name + year) on the hub. Subtle drop shadow and small tape/pin ornament.
-* **Closed reel state**: compact, shows label and a tiny thumbnail peek in the reel window.
-* **Open reel state**:
-
-  * Reel “unrolls” into a horizontal strip sitting above the table (simple fade/slide, no elaborate physics).
-  * Photo strip shows 3–6 frames at once on desktop, 1–2 on mobile.
-  * A caption strip below the photos shows event metadata (name, date, location, 2–3 highlights).
-  * Controls: left/right arrows, thumbnails click-to-open lightbox, play/pause autoplay (muted slideshow) toggle.
-  * Close: a prominent “Roll up / Close” button returns to the hub.
-* **Optional aesthetic touches**: tiny sprocket holes on the strip edges, faint grain overlay on photos, paper tape on reel center (decorative).
-
-Micro-interactions:
-
-* Reel hover: subtle lift + white-border cue.
-* Open: 160ms fade + 120ms slide-up.
-* Photo click: quick zoom-in lightbox with caption.
-* Autoplay: photos crossfade (200–400ms) — disabled if prefers-reduced-motion.
+* detective aesthetic (reviewing evidence),
+* retro hardware fetish (projectors, reels),
+* cinematic pacing (frame-by-frame),
+* performance safety (controlled loading).
 
 ---
 
-# Content model (JSON example)
+## Mental Model for the User
+
+> “Each event is a film reel.
+> I load one reel into the projector, and it plays the memory.”
+
+Once users understand this once, the interaction becomes intuitive.
+
+---
+
+# 1. VISUAL DESIGN
+
+## 1.1 Overall Scene Layout
+
+Think of a desk or archive room.
+
+**Left / Center**
+
+* Old **movie projector** (metal, mechanical, tactile).
+* Visible lens, vents, power switch, faint glow.
+
+**Near the projector**
+
+* **Film reels** lying flat or stacked.
+* Each reel represents **one event**.
+
+**Background / Wall**
+
+* Projection surface (wall, board, canvas).
+* Slight texture (paper, plaster, cork).
+
+---
+
+## 1.2 The Film Reel (Event Selector)
+
+### Design
+
+* Circular disk (SVG or CSS).
+* Center label:
+
+  * Event name
+  * Year
+* Small imperfections:
+
+  * Scratches
+  * Dust
+  * Slight color fade
+
+### States
+
+* **Idle**: muted metal, readable label
+* **Hover / Focus**:
+
+  * White outline (your global interaction cue)
+  * Slight lift + shadow
+* **Selected**:
+
+  * Reel spins briefly
+  * Reel visually “locks” into the projector (can be symbolic, not literal)
+
+### Why circular?
+
+* Instantly reads as “film reel”
+* Strong affordance
+* Breaks rectangular monotony of rest of site
+
+---
+
+## 1.3 Projector
+
+### Design
+
+* Base unit: rounded rectangle or trapezoid
+* Lens circle with glass reflection
+* Small status LED (off / warming / projecting)
+
+### States
+
+1. **Off**
+
+   * Dim
+   * No beam
+2. **Warming**
+
+   * LED pulses
+   * Subtle hum animation (visual only)
+3. **Projecting**
+
+   * Warm cone of light
+   * Slight dust particles in beam
+   * Lens glow
+
+> The projector is *not* clickable noise — it reacts to the reel.
+
+---
+
+## 1.4 Projection Area (The Screen)
+
+### Shape
+
+* Rectangle with soft edges
+* Thin frame (cinema screen feel)
+* Slight vignette
+
+### Visual Effects (subtle)
+
+* Film grain overlay
+* Occasional flicker (very rare, low opacity)
+* Warm color temperature
+
+---
+
+# 2. INTERACTION FLOW (NO SCROLLING)
+
+## Step 1 — Idle State
+
+* Reels visible
+* Projector off
+* Screen empty or faintly lit
+
+## Step 2 — Reel Selection
+
+* User clicks a reel
+* Reel:
+
+  * Lifts
+  * Rotates 180–360°
+* Projector:
+
+  * LED turns on
+  * Beam begins to appear
+
+## Step 3 — Projection Starts
+
+* Screen fades in
+* **Frame 0** appears:
+
+  * Title card
+  * Event name
+  * Date
+  * Location
+  * Short description
+
+This frame acts as **context**, not content.
+
+## Step 4 — Navigation (Frame-by-Frame)
+
+* Only ONE frame visible at a time
+* Controls:
+
+  * ◀ Previous
+  * ▶ Next
+  * ⏯ Play / Pause (optional)
+  * ⓘ Details
+  * ✕ Return
+
+No scroll. Ever.
+
+---
+
+# 3. CONTENT STRUCTURE (WHAT AN EVENT CONTAINS)
+
+Each event is a **linear reel**, not a grid.
+
+### Frame Types
+
+1. **Title Frame**
+2. **Photo Frames**
+3. **Optional Video Frame**
+4. **Closing Frame (summary / takeaway)**
+
+### Example Sequence
+
+```
+[Title]
+[Photo: Poster session]
+[Photo: Presentation]
+[Photo: Group photo]
+[Video: Short clip]
+[Closing summary]
+```
+
+This structure enforces **storytelling**.
+
+---
+
+# 4. DETAILS VIEW (OPTIONAL, CONTROLLED)
+
+When clicking **Details / Case Notes**:
+
+* Overlay appears **over** the projection (not a new page)
+* Shows:
+
+  * Full event description
+  * Highlights / bullets
+  * Attachments (slides, paper, repo)
+* Close returns to same frame
+
+This keeps the cinematic context intact.
+
+---
+
+# 5. TECHNICAL IMPLEMENTATION (REALISTIC)
+
+## 5.1 Component Breakdown
+
+### High-level
+
+* `EventsProjector`
+* `FilmReel`
+* `ProjectorUnit`
+* `ProjectionScreen`
+* `FrameController`
+* `EventDetailsModal`
+
+---
+
+## 5.2 Data Model (Event JSON)
 
 ```json
 {
   "id": "aiaa-2024",
-  "title": "AIAA Student Conference 2024",
-  "dates": { "start": "2024-06-12", "end": "2024-06-15" },
+  "title": "AIAA Student Conference",
+  "year": 2024,
   "location": "Munich, Germany",
-  "summary": "Presented drone aeroacoustics work and networked with researchers.",
-  "highlights": [
-    "Poster finalist",
-    "Presented hybrid LES-RANS results",
-    "Met industry leads"
-  ],
-  "photos": [
-    { "id":"p1", "thumb":"/events/aiaa2024/01-thumb.webp", "full":"/events/aiaa2024/01.jpg", "caption":"Poster session, evening" },
-    { "id":"p2", "thumb":"/events/aiaa2024/02-thumb.webp", "full":"/events/aiaa2024/02.jpg", "caption":"Flight rig demo" }
-  ],
-  "video": "/events/aiaa2024/highlight.webm",
-  "cover": "/events/aiaa2024/cover.webp"
+  "summary": "Presented aeroacoustics research.",
+  "frames": [
+    {
+      "type": "title",
+      "text": "AIAA Student Conference 2024"
+    },
+    {
+      "type": "image",
+      "src": "/events/aiaa2024/01.webp",
+      "caption": "Poster session"
+    },
+    {
+      "type": "image",
+      "src": "/events/aiaa2024/02.webp",
+      "caption": "Presentation day"
+    },
+    {
+      "type": "video",
+      "poster": "/events/aiaa2024/video.webp",
+      "src": "/events/aiaa2024/highlight.webm"
+    },
+    {
+      "type": "summary",
+      "text": "Poster finalist, valuable discussions with industry."
+    }
+  ]
 }
 ```
 
 ---
 
-# Component breakdown (React / Next friendly)
+## 5.3 Lazy Loading & Performance (IMPORTANT)
 
-* `ReelsShelf` — renders a list/grid of `ReelCard`.
-* `ReelCard` — compact reel (closed state) with label + cover thumbnail; clickable.
-* `ReelViewer` — overlay/panel that shows the unrolled strip (lazy-loaded when opened).
+### Initial Load
 
-  * Internals:
+* Load:
 
-    * `PhotoStrip` — horizontally scrollable container (virtualized if long).
-    * `PhotoFrame` — individual frame (thumbnail → lazy full on open).
-    * `Lightbox` — fullscreen modal for full-res images & captions.
-    * `SlideshowController` — play/pause, interval config.
-    * `InfoCard` — metadata (date, location, highlights) and actions.
-* `useLazyImages` hook — prefetch / load-on-demand logic.
-* `useVirtualList` hook — for very long reels.
+  * Reel thumbnails
+  * Projector SVG/CSS
+* DO NOT load:
 
----
+  * Full images
+  * Videos
 
-# Loading strategy & performance (critical)
+### On Reel Click
 
-* **Never load full images for all reels on page load.**
+* Preload:
 
-  * Load only `cover` and `thumb` for closed reels (small WebP/AVIF, ~30–120KB).
-  * When user opens a reel, lazy-load the full-res images for that reel (progressive loading: low-res → high-res).
-* **Thumbnails vs full images**
+  * Title frame
+  * First image frame
+* Everything else loads **on demand**
 
-  * Use small thumbnails (`thumb`) in strip and `loading="lazy"`.
-  * Only fetch `full` image when user opens lightbox or clicks a frame.
-* **Slideshow / video**
+### Frame Navigation
 
-  * For autoplay slideshow: use the `thumb` images for the slideshow; switch to full only in lightbox.
-  * If reel has a video, show a poster thumbnail; load video only on play.
-* **Virtualization**
+* When frame `n` is shown:
 
-  * If a reel has >20 images, virtualize the strip (render only visible frames).
-* **Prefetch**
+  * Preload `n+1`
+  * Optionally preload `n-1`
 
-  * On mouse hover (desktop) prefetch the first 1–3 full images or start fetching `thumb`s if not yet loaded.
-  * Respect `navigator.connection.saveData` and `prefers-reduced-data`.
-* **Memory cleanup**
+### Cleanup
 
-  * When closing a reel, release large image object URLs and unmount heavy players (video).
-* **CDN**
+* On exit:
 
-  * Serve images and videos from CDN with proper cache headers and small sizes.
+  * Unmount image/video nodes
+  * Cancel timers
+  * Release memory
+
+This prevents:
+
+* OOM crashes
+* Mobile overheating
+* Vercel memory issues
 
 ---
 
-# Accessibility
+## 5.4 Animations (Safe & Cheap)
 
-* `ReelCard` is a `<button>` with `aria-expanded` and `aria-controls` pointing to `ReelViewer`.
-* `ReelViewer` is `role="dialog"` with `aria-modal="true"`, labelled by the reel title.
-* Keyboard:
-
-  * Tab to focus reel cards.
-  * Enter/Space open reel.
-  * Left/Right arrows navigate frames.
-  * Esc closes viewer.
-  * Space toggles play/pause when slideshow focused.
-* Images: include `alt` text and full captions in lightbox.
-* Slideshow: provide pause control + respect `prefers-reduced-motion`.
-* Contrast: ensure text in info card passes AA.
-* Screen reader hints: “X frames, press left/right to navigate”.
+* Use **transform + opacity only**
+* No layout thrashing
+* Use CSS transitions
+* Optional requestAnimationFrame only for slideshow mode
 
 ---
 
-# Mobile behavior
+# 6. ACCESSIBILITY (NON-NEGOTIABLE)
 
-* Reels display as vertically stacked cards or a horizontally scrollable shelf.
-* Opening a reel: full-screen modal with swipe left/right to navigate frames.
-* Controls placed at bottom for thumb reach (play/pause, download, close).
-* Use `touch-action: pan-y` to allow vertical page scroll, and only-lock horizontal pan when viewer is open.
-* Use lower-resolution preview by default on mobile; offer “Load high-res” button.
+### Keyboard
 
----
+* `Tab` → reels
+* `Enter` → load reel
+* `← / →` → frames
+* `Space` → play/pause
+* `Esc` → exit projector
 
-# Lightbox & showing event details
+### ARIA
 
-Three good patterns (pick one or combine):
+* Projector view: `role="dialog"`
+* Frames announced politely
+* All images have alt text
 
-1. **Caption strip under reel (recommended)**
+### Reduced Motion
 
-   * Keeps metadata visible while browsing photos.
+* Disable:
 
-2. **Info card that slides out from the side**
-
-   * Shows full summary, date, location, 2–3 highlights, download links for archive (zip), and links to related projects.
-
-3. **First frame is metadata**
-
-   * The very first frame in the strip is a stylized “title card” that contains event name, date, location, short description. Minimal extra UI needed.
+  * Reel spin
+  * Beam animation
+* Replace with instant fade
 
 ---
 
-# File types & sizes (recommendations)
+# 7. MOBILE STRATEGY
 
-* Thumbnails: WebP/AVIF at ~400px width, 40–150 KB.
-* Strip thumbs: WebP ~800px for desktop strip.
-* Full images: JPEG/WEBP ~1600–2400px depending on importance, 200–800 KB.
-* Videos: WebM (VP9) preferred; provide MP4 fallback.
-* Archive downloads: zip with optimized images and a text `README.txt`.
-
----
-
-# SEO & metadata
-
-* Each event should have a stable route: `/events/aiaa-2024` with server-rendered page including schema.org `ImageGallery` or `Event` markup (title, dates, location, description).
-* Provide Open Graph image (cover) for social sharing.
+* Projector becomes **full-screen modal**
+* Reels become horizontal chips
+* Swipe left/right = frame navigation
+* No autoplay
+* Lower resolution images by default
 
 ---
 
-# Analytics (what to track)
+# 8. WHY THIS WORKS (CRITICALLY)
 
-* `reel_open` (eventId)
-* `photo_view` (eventId, photoId, viewTime)
-* `video_play` (eventId)
-* `reel_download` (eventId)
-* `slideshow_play` (eventId)
+### Design-wise
 
----
+* Strong metaphor
+* Memorable
+* Story-driven
+* Fits detective + retro tech vibe
 
-# Privacy & content notes
+### Technically
 
-* Obtain consent before posting photos with other people. Make a note in the event metadata if images include people.
-* Offer “Report / Request removal” link on event page.
+* Finite state machine (easy to reason about)
+* No scroll = simpler layout
+* Lazy loading = stable
+* Component isolation = safe
 
----
+### Recruiter Experience
 
-# Build order (practical incremental)
-
-**Phase 1 (MVP, 1 day)**
-
-1. `ReelsShelf` grid with `ReelCard` showing cover + label.
-2. Clicking `ReelCard` opens `ReelViewer` overlay with `PhotoStrip` showing thumbnails (local assets).
-3. Lightbox: clicking a frame opens full-size image modal.
-
-**Phase 2 (1–2 days)**
-4. Add slideshow (play/pause), left/right keyboard navigation, and caption strip.
-5. Implement mobile swipe gestures and accessibility improvements.
-
-**Phase 3 (polish)**
-6. Add hover prefetch, virtualization for very long reels, and video support with poster/play.
-7. Add zip download for event archive and server-side event pages with schema markup.
-8. Add analytics and privacy controls.
+> “This person understands storytelling, performance, and interaction — not just visuals.”
 
 ---
 
-# Example UI copy (for a reel)
+# 9. IMPLEMENTATION PHASES
 
-* Reel label (hub): `AIAA 2024 — Munich`
-* Title card (first frame):
-  **AIAA Student Conference 2024**
-  *Munich, Germany — Jun 12–15*
-  Presented: Propeller Aeroacoustics — Poster finalist
-* Lightbox caption example: `Poster session — evening reception (June 13, 2024)`
+### Phase 1 (MVP)
 
----
+* Reels
+* Projector modal
+* Image frames
+* Keyboard navigation
 
-# Implementation snippets (pseudo)
+### Phase 2
 
-Lazy image load hook:
+* Reel spin animation
+* Beam effect
+* Details modal
+* Frame prefetching
 
-```js
-function useLazyImages(urls) {
-  const [loaded, setLoaded] = useState({});
-  useEffect(() => {
-    // lazy load only when asked; return cleanup to revoke object URLs if used
-  }, [urls]);
-  return [loaded, loadImage];
-}
-```
+### Phase 3 (Optional)
 
-Simple lazy iframe / video pattern:
-
-```jsx
-{videoPoster && !videoPlaying && (
-  <button onClick={() => setVideoPlaying(true)} aria-label="Play highlight video">
-    <img src={videoPoster} alt="Video poster" />
-  </button>
-)}
-{videoPlaying && <video src={videoUrl} controls autoPlay muted playsInline />}
-```
-
-Keyboard navigation example:
-
-* Add `onKeyDown` handler on `ReelViewer`:
-
-  * ArrowLeft → prevFrame()
-  * ArrowRight → nextFrame()
-  * Esc → close()
-
----
-
-# Final UX rules (short checklist)
-
-* Keep reels visually simple and consistent.
-* Lazy-load heavy assets and release them on close.
-* One viewer open at a time.
-* Respect accessibility & reduced motion.
-* Make metadata discoverable and downloadable.
-* Provide server-side event pages for SEO & no-JS users.
+* Subtle audio toggle
+* Film grain shader
+* Analytics (frame views)
