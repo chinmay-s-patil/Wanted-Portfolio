@@ -72,6 +72,7 @@ export default function UpcomingPage() {
     
     const containerWidth = container.clientWidth
     container.scrollTo({ left: containerWidth * pageIndex, behavior: 'smooth' })
+    setCurrentPage(pageIndex)
   }
 
   return (
@@ -82,7 +83,9 @@ export default function UpcomingPage() {
         background: 'linear-gradient(180deg, #1a0f2e 0%, #0f0520 40%, #2d1b4e 70%, #FF8C3C 100%)',
         overflow: 'hidden',
         position: 'relative',
-        fontFamily: "'Orbitron', 'Inter', sans-serif"
+        fontFamily: "'Orbitron', 'Inter', sans-serif",
+        transform: 'scale(0.8)',
+        transformOrigin: 'center center'
       }}
       onMouseMove={handleMouseMove}
     >
@@ -130,6 +133,7 @@ export default function UpcomingPage() {
         .holo-card:hover {
           transform: translateY(-0.75rem) scale(1.05) !important;
           filter: drop-shadow(0 0.75rem 1.5rem rgba(0, 224, 255, 0.4));
+          z-index: 10;
         }
         
         .power-led {
@@ -439,7 +443,7 @@ export default function UpcomingPage() {
             transition: 'transform 0.3s ease-out',
             animation: 'materialize 0.6s cubic-bezier(0.4, 0, 0.2, 1) forwards',
             transformStyle: 'preserve-3d',
-            overflow: 'hidden'
+            overflow: 'visible'
           }}>
             
             {/* Scanline effect */}
@@ -467,7 +471,7 @@ export default function UpcomingPage() {
               style={{
                 display: 'flex',
                 overflowX: 'auto',
-                overflowY: 'hidden',
+                overflowY: 'visible',
                 gap: 'clamp(1.5rem, 3vw, 2rem)',
                 position: 'relative',
                 zIndex: 1,
