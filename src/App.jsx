@@ -9,6 +9,7 @@ import { openfoamData } from './OpenFoamBookshelf/openfoamData'
 import CADSection from './CAD/CADSection'
 import VisualizationPage from './visualization/VisualizationPage'
 import EventsPage from './events/EventsPage'
+import UpcomingPage from './upcoming/UpcomingPage'
 
 function App() {
   return (
@@ -29,6 +30,9 @@ function App() {
         />
         <Route path="/visualization" element={<VisualizationPage />} />
         <Route path="/events" element={<EventsPage />} />
+
+        <Route path="/upcoming" element={<UpcomingPage />} />
+
       </Routes>
     </BrowserRouter>
   )
