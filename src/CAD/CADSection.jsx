@@ -1,7 +1,7 @@
 // src/CAD/CADSection.jsx
 'use client'
 
-import React, { useState, useCallback, useEffect } from 'react'
+import React, { useState, useCallback, useEffect, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 import CADGLTFList from './CADGLTFList'
 
@@ -402,7 +402,8 @@ function TVModelViewer({ project }) {
 
         model.position.sub(center)
         const maxDim = Math.max(size.x, size.y, size.z)
-        const scale = 2 / maxDim
+        // ZOOMED OUT BY 65% - changed from scale = 2 to scale = 0.7
+        const scale = 0.7 / maxDim
         model.scale.setScalar(scale)
 
         model.traverse((child) => {
