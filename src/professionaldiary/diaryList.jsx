@@ -66,14 +66,6 @@ const diaryEntries = [
       '/Experience/CSIR SERC/CSIR SERC (11).jpg',
       '/Experience/CSIR SERC/CSIR SERC (12).jpg',
       '/Experience/CSIR SERC/CSIR SERC (13).jpg',
-      '/Experience/CSIR SERC/CSIR SERC (14).jpg',
-      '/Experience/CSIR SERC/CSIR SERC (15).jpg',
-      '/Experience/CSIR SERC/CSIR SERC (16).jpg',
-      '/Experience/CSIR SERC/CSIR SERC (17).jpg',
-      '/Experience/CSIR SERC/CSIR SERC (18).jpg',
-      '/Experience/CSIR SERC/CSIR SERC (19).jpg',
-      '/Experience/CSIR SERC/CSIR SERC (20).jpg',
-      '/Experience/CSIR SERC/CSIR SERC (21).jpg',
     ],
     notes: [
       'Independently learned OpenFOAM through self-study and applied it to drone propeller simulations',
@@ -130,20 +122,6 @@ const diaryEntries = [
       'Learned practical challenges of deploying ML models in production environments'
     ],
     insight: 'Real-world ML is 90% data cleaning and edge case handling, 10% modeling—production deployment teaches what textbooks can\'t.'
-  },
-  {
-    id: 'phd-future',
-    locked: true,
-    organization: 'Future Research',
-    role: 'PhD Candidate',
-    location: 'TBD',
-    type: 'Research',
-    dates: { start: 'TBD', end: 'TBD' },
-    summary: '',
-    tools: [],
-    photos: [],
-    notes: [],
-    insight: ''
   }
 ];
 

@@ -11,18 +11,12 @@ export default function ProfessionalDiary() {
   const [currentPhotoIndex, setCurrentPhotoIndex] = useState(0);
 
   const currentEntry = diaryEntries[currentEntryIndex];
-  const isLocked = currentEntry?.locked;
 
-  const yearTabs = diaryEntries.map((entry, index) => {
-    const year = entry.dates.start.split('-')[0];
-    const shortYear = `'${year.slice(-2)}`;
-    return {
-      index,
-      shortYear,
-      fullRange: `${entry.dates.start.replace('-', ' ')} — ${entry.dates.end.replace('-', ' ')}`,
-      year
-    };
-  });
+  const yearTabs = diaryEntries.map((entry, index) => ({
+    index,
+    dateRange: `${entry.dates.start} — ${entry.dates.end}`,
+    organization: entry.organization
+  }));
 
   useEffect(() => {
     if (!currentEntry?.photos || currentEntry.photos.length === 0) return;
@@ -48,7 +42,7 @@ export default function ProfessionalDiary() {
     return () => window.removeEventListener('keydown', handleKeyPress);
   }, [currentEntryIndex]);
 
-  // LOCK BODY SCROLLING - FORCE NO SCROLL
+  // LOCK BODY SCROLLING
   useEffect(() => {
     const originalOverflow = document.body.style.overflow;
     document.body.style.overflow = 'hidden';
@@ -66,7 +60,7 @@ export default function ProfessionalDiary() {
       alignItems: 'center',
       justifyContent: 'center',
       position: 'relative',
-      overflow: 'hidden' // Prevent any scrolling on container
+      overflow: 'hidden'
     }}>
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Special+Elite&display=swap');
@@ -81,7 +75,6 @@ export default function ProfessionalDiary() {
           display: none;
         }
         
-        /* Force no scroll on html and body */
         html, body {
           overflow: hidden !important;
           height: 100vh !important;
@@ -89,7 +82,7 @@ export default function ProfessionalDiary() {
         }
       `}</style>
 
-      {/* Back Button - NOW USING NAVIGATE FOR VITE */}
+      {/* Back Button */}
       <button 
         onClick={() => navigate('/hub')}
         style={{
@@ -163,7 +156,7 @@ export default function ProfessionalDiary() {
           display: 'grid',
           gridTemplateColumns: '1fr 1px 1fr',
           position: 'relative',
-          overflow: 'hidden', // Prevent any overflow scrolling
+          overflow: 'hidden',
           boxShadow: 'inset 0 0 20px rgba(139, 69, 19, 0.1)'
         }}>
           
@@ -206,12 +199,12 @@ export default function ProfessionalDiary() {
 
           {/* Left Page - Metadata + Field Notes */}
           <div style={{
-            padding: '2rem',
+            padding: '2.5rem',
             fontFamily: "'Special Elite', monospace",
             position: 'relative',
             background: 'linear-gradient(to bottom, #f9f3e9 0%, #f4e8d0 100%)',
             borderRight: '1px solid rgba(139, 69, 19, 0.1)',
-            overflow: 'hidden'
+            overflow: 'auto'
           }}>
             <div style={{
               position: 'absolute',
@@ -223,196 +216,152 @@ export default function ProfessionalDiary() {
               pointerEvents: 'none'
             }} />
             
-            {isLocked ? (
-              <div style={{
-                height: '100%',
-                display: 'flex',
-                flexDirection: 'column',
-                alignItems: 'center',
-                justifyContent: 'center',
-                textAlign: 'center',
-                opacity: 0.7
-              }}>
-                <div style={{
-                  fontSize: '4rem',
-                  marginBottom: '2rem',
-                  opacity: 0.2,
-                  filter: 'sepia(1)'
-                }}>
-                  🔒
-                </div>
-                <div style={{
-                  fontSize: '1.8rem',
-                  fontWeight: '700',
-                  color: '#5d4a2a',
-                  marginBottom: '1rem',
-                  fontFamily: "'Crimson Text', serif",
-                  letterSpacing: '0.05em'
-                }}>
-                  THIS CHAPTER IS<br />YET TO BE WRITTEN.
-                </div>
-                <div style={{
-                  fontSize: '1rem',
-                  color: '#8b7355',
-                  fontStyle: 'italic',
-                  fontFamily: "'Courier Prime', monospace"
-                }}>
-                  (Ideas brewing...)
-                </div>
-              </div>
-            ) : (
-              <>
-                {/* Metadata Section */}
-                <div style={{
-                  fontSize: '1.8rem',
-                  fontWeight: '700',
-                  color: '#3d2817',
-                  marginBottom: '1rem',
-                  fontFamily: "'Crimson Text', serif",
-                  letterSpacing: '0.02em',
-                  borderBottom: '2px solid #d4c4a8',
-                  paddingBottom: '0.5rem'
-                }}>
-                  {currentEntry.organization}
-                </div>
+            {/* Metadata Section */}
+            <div style={{
+              fontSize: '2rem',
+              fontWeight: '700',
+              color: '#3d2817',
+              marginBottom: '1rem',
+              fontFamily: "'Crimson Text', serif",
+              letterSpacing: '0.02em',
+              borderBottom: '2px solid #d4c4a8',
+              paddingBottom: '0.5rem'
+            }}>
+              {currentEntry.organization}
+            </div>
 
+            <div style={{
+              fontSize: '1.5rem',
+              color: '#5d4a2a',
+              marginBottom: '0.75rem',
+              fontWeight: '600',
+              fontFamily: "'Crimson Text', serif"
+            }}>
+              {currentEntry.role}
+            </div>
+
+            <div style={{
+              fontSize: '1.05rem',
+              color: '#7a6a55',
+              marginBottom: '0.5rem',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '0.5rem'
+            }}>
+              <span style={{ opacity: 0.7 }}>📍</span>
+              {currentEntry.location}
+            </div>
+
+            <div style={{
+              fontSize: '1.05rem',
+              color: '#7a6a55',
+              marginBottom: '1.5rem',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '0.5rem'
+            }}>
+              <span style={{ opacity: 0.7 }}>📅</span>
+              {currentEntry.dates.start} — {currentEntry.dates.end}
+            </div>
+
+            {currentEntry.tools.length > 0 && (
+              <div style={{ marginBottom: '2rem' }}>
                 <div style={{
-                  fontSize: '1.4rem',
-                  color: '#5d4a2a',
+                  fontSize: '0.75rem',
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.12em',
+                  color: '#8b7355',
                   marginBottom: '0.75rem',
                   fontWeight: '600',
-                  fontFamily: "'Crimson Text', serif"
+                  fontFamily: "'Courier Prime', monospace"
                 }}>
-                  {currentEntry.role}
+                  Tools & Technologies
                 </div>
-
                 <div style={{
-                  fontSize: '1rem',
-                  color: '#7a6a55',
-                  marginBottom: '0.5rem',
                   display: 'flex',
-                  alignItems: 'center',
+                  flexWrap: 'wrap',
                   gap: '0.5rem'
                 }}>
-                  <span style={{ opacity: 0.7 }}>📍</span>
-                  {currentEntry.location}
-                </div>
-
-                <div style={{
-                  fontSize: '1rem',
-                  color: '#7a6a55',
-                  marginBottom: '1.5rem',
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '0.5rem'
-                }}>
-                  <span style={{ opacity: 0.7 }}>📅</span>
-                  {currentEntry.dates.start} — {currentEntry.dates.end}
-                </div>
-
-                {currentEntry.tools.length > 0 && (
-                  <div>
-                    <div style={{
-                      fontSize: '0.7rem',
-                      textTransform: 'uppercase',
-                      letterSpacing: '0.12em',
-                      color: '#8b7355',
-                      marginBottom: '0.75rem',
-                      fontWeight: '600',
-                      fontFamily: "'Courier Prime', monospace"
-                    }}>
-                      Tools Used
-                    </div>
-                    <div style={{
-                      display: 'flex',
-                      flexWrap: 'wrap',
-                      gap: '0.5rem',
-                      marginBottom: '2.5rem'
-                    }}>
-                      {currentEntry.tools.map((tool, i) => (
-                        <span
-                          key={i}
-                          style={{
-                            padding: '0.4rem 0.8rem',
-                            background: '#3d2817',
-                            color: '#f4e8d0',
-                            borderRadius: '4px',
-                            fontSize: '0.8rem',
-                            fontFamily: "'Courier Prime', monospace",
-                            border: '1px solid #2a1a10',
-                            boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
-                          }}
-                        >
-                          {tool}
-                        </span>
-                      ))}
-                    </div>
-                  </div>
-                )}
-
-                {/* Field Notes Section - NOW BELOW metadata */}
-                <div style={{
-                  fontSize: '1.4rem',
-                  fontWeight: '700',
-                  color: '#3d2817',
-                  marginBottom: '1.5rem',
-                  textAlign: 'center',
-                  fontFamily: "'Special Elite', monospace",
-                  letterSpacing: '0.1em',
-                  borderBottom: '1px dashed #c9b8a0',
-                  paddingBottom: '1rem',
-                  position: 'relative'
-                }}>
-                  Field Notes
-                  <div style={{
-                    position: 'absolute',
-                    bottom: '-6px',
-                    left: '50%',
-                    transform: 'translateX(-50%)',
-                    width: '60px',
-                    height: '1px',
-                    background: '#c9b8a0'
-                  }} />
-                </div>
-
-                <div style={{
-                  marginBottom: '1rem'
-                }}>
-                  {currentEntry.notes.map((note, i) => (
-                    <div
+                  {currentEntry.tools.map((tool, i) => (
+                    <span
                       key={i}
                       style={{
-                        marginBottom: '1.25rem',
-                        fontSize: '1rem',
-                        lineHeight: '1.8',
-                        color: '#2a2a2a',
-                        paddingLeft: '1.5rem',
-                        position: 'relative',
-                        borderLeft: '2px solid transparent',
-                        transition: 'all 0.3s ease',
-                        fontFamily: "'Crimson Text', serif"
-                      }}
-                      onMouseEnter={(e) => {
-                        e.currentTarget.style.borderLeftColor = '#c9b8a0';
-                        e.currentTarget.style.paddingLeft = '1.75rem';
-                      }}
-                      onMouseLeave={(e) => {
-                        e.currentTarget.style.borderLeftColor = 'transparent';
-                        e.currentTarget.style.paddingLeft = '1.5rem';
+                        padding: '0.4rem 0.8rem',
+                        background: '#3d2817',
+                        color: '#f4e8d0',
+                        borderRadius: '4px',
+                        fontSize: '0.85rem',
+                        fontFamily: "'Courier Prime', monospace",
+                        border: '1px solid #2a1a10',
+                        boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
                       }}
                     >
-                      <span style={{
-                        position: 'absolute',
-                        left: '0.5rem',
-                        color: '#8b7355',
-                        fontWeight: 'bold'
-                      }}>—</span>
-                      {note}
-                    </div>
+                      {tool}
+                    </span>
                   ))}
                 </div>
-              </>
-            )}  
+              </div>
+            )}
+
+            {/* Field Notes Section */}
+            <div style={{
+              fontSize: '1.5rem',
+              fontWeight: '700',
+              color: '#3d2817',
+              marginBottom: '1.5rem',
+              textAlign: 'center',
+              fontFamily: "'Special Elite', monospace",
+              letterSpacing: '0.1em',
+              borderBottom: '1px dashed #c9b8a0',
+              paddingBottom: '1rem',
+              position: 'relative'
+            }}>
+              Field Notes
+              <div style={{
+                position: 'absolute',
+                bottom: '-6px',
+                left: '50%',
+                transform: 'translateX(-50%)',
+                width: '60px',
+                height: '1px',
+                background: '#c9b8a0'
+              }} />
+            </div>
+
+            <div>
+              {currentEntry.notes.map((note, i) => (
+                <div
+                  key={i}
+                  style={{
+                    marginBottom: '1.25rem',
+                    fontSize: '1.05rem',
+                    lineHeight: '1.8',
+                    color: '#2a2a2a',
+                    paddingLeft: '1.5rem',
+                    position: 'relative',
+                    borderLeft: '2px solid transparent',
+                    transition: 'all 0.3s ease',
+                    fontFamily: "'Crimson Text', serif"
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.borderLeftColor = '#c9b8a0';
+                    e.currentTarget.style.paddingLeft = '1.75rem';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.borderLeftColor = 'transparent';
+                    e.currentTarget.style.paddingLeft = '1.5rem';
+                  }}
+                >
+                  <span style={{
+                    position: 'absolute',
+                    left: '0.5rem',
+                    color: '#8b7355',
+                    fontWeight: 'bold'
+                  }}>—</span>
+                  {note}
+                </div>
+              ))}
+            </div>
           </div>
 
           {/* Center line */}
@@ -422,14 +371,14 @@ export default function ProfessionalDiary() {
             zIndex: 3
           }} />
 
-          {/* Right Page - ONLY Project Gallery */}
+          {/* Right Page - Project Gallery */}
           <div style={{
-            padding: '2rem',
+            padding: '2.5rem',
             fontFamily: "'Special Elite', monospace",
             position: 'relative',
             background: 'linear-gradient(to bottom, #f9f3e9 0%, #f4e8d0 100%)',
             borderLeft: '1px solid rgba(139, 69, 19, 0.1)',
-            overflow: 'hidden'
+            overflow: 'auto'
           }}>
             <div style={{
               position: 'absolute',
@@ -441,14 +390,14 @@ export default function ProfessionalDiary() {
               pointerEvents: 'none'
             }} />
             
-            {!isLocked && currentEntry.photos && currentEntry.photos.length > 0 && (
+            {currentEntry.photos && currentEntry.photos.length > 0 && (
               <>
                 <div style={{
-                  fontSize: '0.7rem',
+                  fontSize: '0.75rem',
                   textTransform: 'uppercase',
                   letterSpacing: '0.12em',
                   color: '#8b7355',
-                  marginBottom: '0.75rem',
+                  marginBottom: '1rem',
                   fontWeight: '600',
                   fontFamily: "'Courier Prime', monospace"
                 }}>
@@ -460,8 +409,9 @@ export default function ProfessionalDiary() {
                   aspectRatio: '4/3',
                   borderRadius: '8px',
                   overflow: 'hidden',
-                  border: '2px solid #c9b8a0',
-                  boxShadow: '0 4px 12px rgba(0,0,0,0.15)'
+                  border: '3px solid #c9b8a0',
+                  boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
+                  marginBottom: '1.5rem'
                 }}>
                   {currentEntry.photos.map((photo, i) => (
                     <img
@@ -479,14 +429,62 @@ export default function ProfessionalDiary() {
                       }}
                     />
                   ))}
+                  
+                  {/* Photo counter */}
+                  <div style={{
+                    position: 'absolute',
+                    bottom: '0.75rem',
+                    right: '0.75rem',
+                    background: 'rgba(0,0,0,0.7)',
+                    color: '#f4e8d0',
+                    padding: '0.4rem 0.8rem',
+                    borderRadius: '4px',
+                    fontSize: '0.75rem',
+                    fontFamily: "'Courier Prime', monospace"
+                  }}>
+                    {currentPhotoIndex + 1} / {currentEntry.photos.length}
+                  </div>
                 </div>
+
+                {/* Insight */}
+                {currentEntry.insight && (
+                  <div style={{
+                    padding: '1.5rem',
+                    background: 'rgba(196, 165, 116, 0.1)',
+                    border: '2px solid #c9b8a0',
+                    borderRadius: '8px',
+                    marginTop: '1.5rem'
+                  }}>
+                    <div style={{
+                      fontSize: '0.75rem',
+                      textTransform: 'uppercase',
+                      letterSpacing: '0.12em',
+                      color: '#8b7355',
+                      marginBottom: '0.75rem',
+                      fontWeight: '600',
+                      fontFamily: "'Courier Prime', monospace"
+                    }}>
+                      💡 Key Insight
+                    </div>
+                    <p style={{
+                      fontSize: '1rem',
+                      lineHeight: '1.7',
+                      color: '#3d2817',
+                      fontFamily: "'Crimson Text', serif",
+                      fontStyle: 'italic',
+                      margin: 0
+                    }}>
+                      {currentEntry.insight}
+                    </p>
+                  </div>
+                )}
               </>
             )}
           </div>
         </div>
       </div>
 
-      {/* Right-side Year Tabs - FLUSH AGAINST RIGHT EDGE */}
+      {/* Improved Year Tabs - Larger and Always Expanded */}
       <div style={{
         position: 'absolute',
         right: 'calc((100vw - min(95vw, 1400px)) / 2)',
@@ -495,12 +493,11 @@ export default function ProfessionalDiary() {
         zIndex: 10,
         display: 'flex',
         flexDirection: 'column',
-        gap: '0.75rem'
+        gap: '1rem'
       }}>
         {yearTabs.map((tab) => {
           const isActive = currentEntryIndex === tab.index;
           const isHovered = hoveredTab === tab.index;
-          const shouldExpand = isHovered || isActive;
           
           return (
             <button
@@ -510,73 +507,55 @@ export default function ProfessionalDiary() {
               onMouseLeave={() => setHoveredTab(null)}
               style={{
                 position: 'relative',
-                width: shouldExpand ? '240px' : '50px',
-                height: shouldExpand ? '70px' : '50px',
+                width: '280px',
+                minHeight: '90px',
                 background: isActive 
                   ? 'linear-gradient(135deg, #3d2817 0%, #2a1a10 100%)' 
                   : 'linear-gradient(135deg, #2a1a10 0%, #1e120a 100%)',
                 borderRadius: '8px',
                 cursor: 'pointer',
-                transition: 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)',
+                transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
                 boxShadow: isActive
                   ? '0 6px 20px rgba(0,0,0,0.5), inset 0 2px 4px rgba(255,255,255,0.1)'
                   : '0 4px 12px rgba(0,0,0,0.4)',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                padding: shouldExpand ? '1rem' : '0',
+                padding: '1.25rem',
                 color: '#f4e8d0',
                 fontFamily: "'Special Elite', monospace",
-                fontWeight: isActive ? 'bold' : 'normal',
                 overflow: 'hidden',
-                border: `2px solid ${isActive ? "#8b7355" : "#4a3020"}`
+                border: `2px solid ${isActive ? "#8b7355" : "#4a3020"}`,
+                transform: isHovered && !isActive ? 'translateX(-8px) scale(1.02)' : 'translateX(0)',
+                textAlign: 'left'
               }}
             >
-              {shouldExpand ? (
+              <div style={{
+                display: 'flex',
+                flexDirection: 'column',
+                gap: '0.5rem'
+              }}>
                 <div style={{
-                  display: 'flex',
-                  flexDirection: 'column',
-                  alignItems: 'center',
-                  gap: '0.5rem',
-                  textAlign: 'center',
-                  width: '100%'
-                }}>
-                  <div style={{
-                    fontSize: '1.1rem',
-                    letterSpacing: '0.05em',
-                    fontWeight: 'bold'
-                  }}>
-                    {tab.fullRange}
-                  </div>
-                  <div style={{
-                    fontSize: '0.75rem',
-                    color: '#c9b8a0',
-                    fontFamily: "'Courier Prime', monospace",
-                    whiteSpace: 'nowrap',
-                    overflow: 'hidden',
-                    textOverflow: 'ellipsis',
-                    maxWidth: '100%',
-                    padding: '0 0.5rem'
-                  }}>
-                    {diaryEntries[tab.index].organization}
-                  </div>
-                </div>
-              ) : (
-                <div style={{
-                  fontSize: '1.4rem',
+                  fontSize: '1.15rem',
+                  letterSpacing: '0.05em',
                   fontWeight: 'bold',
-                  color: isActive ? '#c4a574' : '#f4e8d0'
+                  lineHeight: '1.3'
                 }}>
-                  {tab.shortYear}
+                  {tab.dateRange}
                 </div>
-              )}
+                <div style={{
+                  fontSize: '0.85rem',
+                  color: '#c9b8a0',
+                  fontFamily: "'Courier Prime', monospace",
+                  lineHeight: '1.4'
+                }}>
+                  {tab.organization}
+                </div>
+              </div>
               {isActive && (
                 <div style={{
                   position: 'absolute',
                   left: '-3px',
                   top: '50%',
                   transform: 'translateY(-50%)',
-                  width: '5px',
+                  width: '6px',
                   height: '70%',
                   background: '#c4a574',
                   borderRadius: '0 3px 3px 0',
@@ -586,6 +565,24 @@ export default function ProfessionalDiary() {
             </button>
           );
         })}
+      </div>
+
+      {/* Keyboard navigation hint */}
+      <div style={{
+        position: 'absolute',
+        bottom: '1.5rem',
+        left: '50%',
+        transform: 'translateX(-50%)',
+        fontSize: '0.75rem',
+        color: 'rgba(244, 232, 208, 0.5)',
+        fontFamily: "'Courier Prime', monospace",
+        display: 'flex',
+        gap: '1.5rem',
+        alignItems: 'center'
+      }}>
+        <span>← → Navigate Entries</span>
+        <span>•</span>
+        <span>{currentEntryIndex + 1} / {diaryEntries.length}</span>
       </div>
     </div>
   );
