@@ -1,9 +1,8 @@
-// src/CAD/TVViewer.jsx
-'use client'
+import React, { useState, useCallback, useEffect, useRef } from 'react'
+import { useNavigate } from 'react-router-dom'
 
-import { useRef, useEffect, useState } from 'react'
-
-export default function TVViewer({ project, onClose }) {
+// Separate component for the 3D model viewer
+function TVModelViewer({ project }) {
   const containerRef = useRef(null)
   const sceneRef = useRef(null)
   const cameraRef = useRef(null)
@@ -13,8 +12,6 @@ export default function TVViewer({ project, onClose }) {
   const [threeReady, setThreeReady] = useState(false)
   const [isLoading, setIsLoading] = useState(true)
   const [loadingProgress, setLoadingProgress] = useState(0)
-  const [isTransparent, setIsTransparent] = useState(project.transparency > 0)
-  const [modelRotation, setModelRotation] = useState(project.modelRotation || { x: 0, y: 0, z: 0 })
 
   const ctrlRef = useRef({
     isRotating: false,
@@ -23,9 +20,6 @@ export default function TVViewer({ project, onClose }) {
     spherical: null,
     target: null
   })
-
-  const fileExtension = project.gltfFile.toLowerCase().split('.').pop()
-  const isGLTF = fileExtension === 'gltf' || fileExtension === 'glb'
 
   // Load Three.js
   useEffect(() => {
@@ -56,7 +50,7 @@ export default function TVViewer({ project, onClose }) {
     loadThreeJS()
   }, [])
 
-  // Scene setup - only when containerRef is available
+  // Scene setup
   useEffect(() => {
     if (!threeReady || !containerRef.current) return
 
@@ -94,14 +88,6 @@ export default function TVViewer({ project, onClose }) {
     // Load model
     loadModel(project.gltfFile)
 
-    const onResize = () => {
-      if (!containerRef.current || !rendererRef.current || !cameraRef.current) return
-      camera.aspect = containerRef.current.clientWidth / containerRef.current.clientHeight
-      camera.updateProjectionMatrix()
-      renderer.setSize(containerRef.current.clientWidth, containerRef.current.clientHeight)
-    }
-    window.addEventListener('resize', onResize)
-
     const animate = () => {
       animationRef.current = requestAnimationFrame(animate)
       updateCamera()
@@ -112,7 +98,6 @@ export default function TVViewer({ project, onClose }) {
     animate()
 
     return () => {
-      window.removeEventListener('resize', onResize)
       if (animationRef.current) cancelAnimationFrame(animationRef.current)
       if (rendererRef.current && containerRef.current?.contains(rendererRef.current.domElement)) {
         containerRef.current.removeChild(rendererRef.current.domElement)
@@ -134,7 +119,10 @@ export default function TVViewer({ project, onClose }) {
       (gltf) => {
         setLoadingProgress(80)
         const model = gltf.scene
-        model.rotation.set(modelRotation.x, modelRotation.y, modelRotation.z)
+        
+        if (project.modelRotation) {
+          model.rotation.set(project.modelRotation.x, project.modelRotation.y, project.modelRotation.z)
+        }
 
         const box = new THREE.Box3().setFromObject(model)
         const center = box.getCenter(new THREE.Vector3())
@@ -142,7 +130,7 @@ export default function TVViewer({ project, onClose }) {
 
         model.position.sub(center)
         const maxDim = Math.max(size.x, size.y, size.z)
-        const scale = 2 / maxDim
+        const scale = 0.7 / maxDim
         model.scale.setScalar(scale)
 
         model.traverse((child) => {
@@ -150,8 +138,8 @@ export default function TVViewer({ project, onClose }) {
             if (project.modelColor) {
               child.material.color = new THREE.Color(project.modelColor)
             }
-            child.material.transparent = isTransparent
-            child.material.opacity = (project.transparency || 50) / 100
+            child.material.transparent = project.transparency > 0
+            child.material.opacity = (project.transparency || 0) / 100
             child.material.needsUpdate = true
           }
         })
@@ -213,83 +201,68 @@ export default function TVViewer({ project, onClose }) {
     )
   }
 
-  const resetView = () => {
-    ctrlRef.current.spherical.set(5, Math.PI / 3, Math.PI / 4)
-    ctrlRef.current.target.set(0, 0, 0)
-    const originalRotation = project.modelRotation || { x: 0, y: 0, z: 0 }
-    setModelRotation(originalRotation)
-    if (modelGroupRef.current) {
-      modelGroupRef.current.rotation.set(originalRotation.x, originalRotation.y, originalRotation.z)
-    }
-  }
-
-  const toggleTransparency = () => {
-    if (!modelGroupRef.current) return
-    const newTransparent = !isTransparent
-    setIsTransparent(newTransparent)
-    const opacity = newTransparent ? (project.transparency || 50) / 100 : 1.0
-
-    modelGroupRef.current.traverse((child) => {
-      if (child.isMesh) {
-        child.material.transparent = newTransparent
-        child.material.opacity = opacity
-        child.material.needsUpdate = true
-      }
-    })
-  }
-
-  const setViewX = () => {
-    ctrlRef.current.spherical.theta = Math.PI / 2
-    ctrlRef.current.spherical.phi = Math.PI / 2
-  }
-
-  const setViewY = () => {
-    ctrlRef.current.spherical.theta = 0
-    ctrlRef.current.spherical.phi = 0.1
-  }
-
-  const setViewZ = () => {
-    ctrlRef.current.spherical.theta = 0
-    ctrlRef.current.spherical.phi = Math.PI / 2
-  }
-
-  const rotateModelX = () => {
-    if (!modelGroupRef.current) return
-    const newRotation = { ...modelRotation, x: modelRotation.x + Math.PI / 2 }
-    setModelRotation(newRotation)
-    modelGroupRef.current.rotation.x += Math.PI / 2
-  }
-
-  const rotateModelY = () => {
-    if (!modelGroupRef.current) return
-    const newRotation = { ...modelRotation, y: modelRotation.y + Math.PI / 2 }
-    setModelRotation(newRotation)
-    modelGroupRef.current.rotation.y += Math.PI / 2
-  }
-
-  const rotateModelZ = () => {
-    if (!modelGroupRef.current) return
-    const newRotation = { ...modelRotation, z: modelRotation.z + Math.PI / 2 }
-    setModelRotation(newRotation)
-    modelGroupRef.current.rotation.z += Math.PI / 2
-  }
-
-  return {
-    containerRef,
-    isLoading,
-    loadingProgress,
-    handleMouseDown,
-    handleMouseMove,
-    handleMouseUp,
-    handleWheel,
-    resetView,
-    toggleTransparency,
-    setViewX,
-    setViewY,
-    setViewZ,
-    rotateModelX,
-    rotateModelY,
-    rotateModelZ,
-    isTransparent
-  }
+  return (
+    <div
+      ref={containerRef}
+      onMouseDown={handleMouseDown}
+      onMouseMove={handleMouseMove}
+      onMouseUp={handleMouseUp}
+      onMouseLeave={handleMouseUp}
+      onWheel={handleWheel}
+      style={{
+        width: '100%',
+        height: '100%',
+        cursor: 'grab',
+        position: 'relative'
+      }}
+    >
+      {isLoading && (
+        <div style={{
+          position: 'absolute',
+          inset: 0,
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          justifyContent: 'center',
+          background: 'rgba(0,0,0,0.9)',
+          color: '#00ff00',
+          fontSize: '0.9rem',
+          gap: '1rem',
+          zIndex: 20
+        }}>
+          <div style={{
+            width: '40px',
+            height: '40px',
+            border: '3px solid rgba(0,255,0,0.2)',
+            borderTop: '3px solid #00ff00',
+            borderRadius: '50%',
+            animation: 'spin 1s linear infinite'
+          }} />
+          <div>LOADING MODEL...</div>
+          {loadingProgress > 0 && (
+            <div style={{
+              width: '200px',
+              height: '4px',
+              background: 'rgba(0,255,0,0.2)',
+              borderRadius: '2px',
+              overflow: 'hidden'
+            }}>
+              <div style={{
+                width: `${loadingProgress}%`,
+                height: '100%',
+                background: '#00ff00',
+                transition: 'width 0.3s ease'
+              }} />
+            </div>
+          )}
+        </div>
+      )}
+      <style jsx>{`
+        @keyframes spin {
+          from { transform: rotate(0deg); }
+          to { transform: rotate(360deg); }
+        }
+      `}</style>
+    </div>
+  )
 }
