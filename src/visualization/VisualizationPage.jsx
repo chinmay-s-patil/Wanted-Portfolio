@@ -142,174 +142,196 @@ export default function VisualizationPage() {
                 zIndex: 10
               }} />
 
-              {/* Desktop Interface */}
-              <div style={{
-                width: '100%',
-                height: '100%',
-                background: 'linear-gradient(180deg, #5B9BD5 0%, #3A7CBD 100%)',
-                position: 'relative',
-                display: 'flex',
-                flexDirection: 'column'
-              }}>
-                
-                {/* Desktop Icons Area */}
-                <div className="desktop-content" style={{
-                  flex: 1,
-                  padding: '1.5rem',
-                  overflowY: 'auto',
-                  overflowX: 'hidden'
-                }}>
-                  <div style={{
-                    display: 'grid',
-                    gridTemplateColumns: 'repeat(auto-fill, 90px)',
-                    gap: '1.5rem',
-                    justifyContent: 'start'
-                  }}>
-                    {visualizationsList.map((viz) => (
-                      <div
-                        key={viz.id}
-                        className="desktop-icon"
-                        onClick={() => handleVizClick(viz)}
-                        style={{
-                          width: '90px',
-                          padding: '8px',
-                          cursor: 'pointer',
-                          display: 'flex',
-                          flexDirection: 'column',
-                          alignItems: 'center',
-                          gap: '6px',
-                          borderRadius: '2px',
-                          userSelect: 'none'
-                        }}
-                      >
-                        {/* Icon */}
-                        <div style={{
-                          width: '48px',
-                          height: '48px',
-                          background: 'linear-gradient(135deg, #fff 0%, #e0e0e0 100%)',
-                          border: '2px solid #003C74',
-                          borderRadius: '4px',
-                          display: 'flex',
-                          alignItems: 'center',
-                          justifyContent: 'center',
-                          fontSize: '32px',
-                          boxShadow: '2px 2px 4px rgba(0,0,0,0.3)',
-                          position: 'relative'
-                        }}>
-                          {viz.icon}
-                          
-                          {viz.isWIP && (
-                            <div style={{
-                              position: 'absolute',
-                              top: '-4px',
-                              right: '-4px',
-                              width: '16px',
-                              height: '16px',
-                              background: '#FFD700',
-                              border: '1px solid #000',
-                              borderRadius: '50%',
-                              fontSize: '8px',
-                              display: 'flex',
-                              alignItems: 'center',
-                              justifyContent: 'center',
-                              fontWeight: 'bold',
-                              color: '#000'
-                            }}>
-                              !
-                            </div>
-                          )}
-                        </div>
-
-                        {/* Label */}
-                        <div style={{
-                          fontSize: '11px',
-                          color: '#fff',
-                          textAlign: 'center',
-                          textShadow: '1px 1px 2px rgba(0,0,0,0.8)',
-                          lineHeight: '1.2',
-                          wordWrap: 'break-word',
-                          maxWidth: '100%',
-                          fontFamily: "'Tahoma', sans-serif"
-                        }}>
-                          {viz.title}
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-
-                {/* Windows XP Taskbar */}
+              {/* Content - either Desktop or IE Window */}
+              {!selectedViz ? (
+                /* Desktop Interface */
                 <div style={{
-                  height: '32px',
-                  background: 'linear-gradient(180deg, #245EDC 0%, #1941A5 100%)',
-                  borderTop: '2px solid #0831D9',
+                  width: '100%',
+                  height: '100%',
+                  background: 'linear-gradient(180deg, #5B9BD5 0%, #3A7CBD 100%)',
+                  position: 'relative',
                   display: 'flex',
-                  alignItems: 'center',
-                  padding: '0 6px',
-                  gap: '6px',
-                  boxShadow: '0 -2px 4px rgba(0,0,0,0.3)',
-                  flexShrink: 0
+                  flexDirection: 'column'
                 }}>
                   
-                  {/* Start Button */}
-                  <div style={{
-                    height: '26px',
-                    background: 'linear-gradient(180deg, #3FA142 0%, #2D8B2F 100%)',
-                    border: '1px solid #fff',
-                    borderRight: '1px solid #003C00',
-                    borderBottom: '1px solid #003C00',
-                    borderRadius: '3px',
-                    padding: '0 14px',
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '5px',
-                    fontSize: '11px',
-                    fontWeight: 'bold',
-                    color: '#fff',
-                    cursor: 'pointer',
-                    fontFamily: "'Tahoma', sans-serif",
-                    textShadow: '1px 1px 1px rgba(0,0,0,0.5)'
+                  {/* Desktop Icons Area */}
+                  <div className="desktop-content" style={{
+                    flex: 1,
+                    padding: '1.5rem',
+                    overflowY: 'auto',
+                    overflowX: 'hidden'
                   }}>
                     <div style={{
-                      width: '16px',
-                      height: '16px',
-                      background: 'radial-gradient(circle, #FFD700, #FFA500)',
-                      borderRadius: '50%',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      fontSize: '11px',
-                      fontWeight: 'bold',
-                      color: '#000',
-                      boxShadow: '0 1px 3px rgba(0,0,0,0.3)'
+                      display: 'grid',
+                      gridTemplateColumns: 'repeat(auto-fill, 90px)',
+                      gap: '1.5rem',
+                      justifyContent: 'start'
                     }}>
-                      ◉
+                      {visualizationsList.map((viz) => (
+                        <div
+                          key={viz.id}
+                          className="desktop-icon"
+                          onClick={() => handleVizClick(viz)}
+                          style={{
+                            width: '90px',
+                            padding: '8px',
+                            cursor: 'pointer',
+                            display: 'flex',
+                            flexDirection: 'column',
+                            alignItems: 'center',
+                            gap: '6px',
+                            borderRadius: '2px',
+                            userSelect: 'none'
+                          }}
+                        >
+                          {/* Icon */}
+                          <div style={{
+                            width: '48px',
+                            height: '48px',
+                            background: 'linear-gradient(135deg, #fff 0%, #e0e0e0 100%)',
+                            border: '2px solid #003C74',
+                            borderRadius: '4px',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            fontSize: '32px',
+                            boxShadow: '2px 2px 4px rgba(0,0,0,0.3)',
+                            position: 'relative'
+                          }}>
+                            {viz.icon}
+                            
+                            {viz.isWIP && (
+                              <div style={{
+                                position: 'absolute',
+                                top: '-4px',
+                                right: '-4px',
+                                width: '16px',
+                                height: '16px',
+                                background: '#FFD700',
+                                border: '1px solid #000',
+                                borderRadius: '50%',
+                                fontSize: '8px',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                fontWeight: 'bold',
+                                color: '#000'
+                              }}>
+                                !
+                              </div>
+                            )}
+                          </div>
+
+                          {/* Label */}
+                          <div style={{
+                            fontSize: '11px',
+                            color: '#fff',
+                            textAlign: 'center',
+                            textShadow: '1px 1px 2px rgba(0,0,0,0.8)',
+                            lineHeight: '1.2',
+                            wordWrap: 'break-word',
+                            maxWidth: '100%',
+                            fontFamily: "'Tahoma', sans-serif"
+                          }}>
+                            {viz.title}
+                          </div>
+                        </div>
+                      ))}
                     </div>
-                    start
                   </div>
 
-                  {/* System Tray - Clock */}
+                  {/* Windows XP Taskbar */}
                   <div style={{
-                    marginLeft: 'auto',
-                    height: '22px',
-                    background: 'rgba(0,0,0,0.2)',
-                    border: '1px solid rgba(0,0,0,0.3)',
-                    borderRadius: '2px',
-                    padding: '0 10px',
+                    height: '32px',
+                    background: 'linear-gradient(180deg, #245EDC 0%, #1941A5 100%)',
+                    borderTop: '2px solid #0831D9',
                     display: 'flex',
                     alignItems: 'center',
-                    fontSize: '11px',
-                    color: '#fff',
-                    fontFamily: "'Tahoma', sans-serif"
+                    padding: '0 6px',
+                    gap: '6px',
+                    boxShadow: '0 -2px 4px rgba(0,0,0,0.3)',
+                    flexShrink: 0
                   }}>
-                    {new Date().toLocaleTimeString('en-US', { 
-                      hour: '2-digit', 
-                      minute: '2-digit',
-                      hour12: true 
-                    })}
+                    
+                    {/* Start Button */}
+                    <div style={{
+                      height: '26px',
+                      background: 'linear-gradient(180deg, #3FA142 0%, #2D8B2F 100%)',
+                      border: '1px solid #fff',
+                      borderRight: '1px solid #003C00',
+                      borderBottom: '1px solid #003C00',
+                      borderRadius: '3px',
+                      padding: '0 14px',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '5px',
+                      fontSize: '11px',
+                      fontWeight: 'bold',
+                      color: '#fff',
+                      cursor: 'pointer',
+                      fontFamily: "'Tahoma', sans-serif",
+                      textShadow: '1px 1px 1px rgba(0,0,0,0.5)'
+                    }}>
+                      <div style={{
+                        width: '16px',
+                        height: '16px',
+                        background: 'radial-gradient(circle, #FFD700, #FFA500)',
+                        borderRadius: '50%',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        fontSize: '11px',
+                        fontWeight: 'bold',
+                        color: '#000',
+                        boxShadow: '0 1px 3px rgba(0,0,0,0.3)'
+                      }}>
+                        ◉
+                      </div>
+                      start
+                    </div>
+
+                    {/* System Tray - Clock */}
+                    <div style={{
+                      marginLeft: 'auto',
+                      height: '22px',
+                      background: 'rgba(0,0,0,0.2)',
+                      border: '1px solid rgba(0,0,0,0.3)',
+                      borderRadius: '2px',
+                      padding: '0 10px',
+                      display: 'flex',
+                      alignItems: 'center',
+                      fontSize: '11px',
+                      color: '#fff',
+                      fontFamily: "'Tahoma', sans-serif"
+                    }}>
+                      {new Date().toLocaleTimeString('en-US', { 
+                        hour: '2-digit', 
+                        minute: '2-digit',
+                        hour12: true 
+                      })}
+                    </div>
                   </div>
                 </div>
-              </div>
+              ) : (
+                /* IE Window Inside Screen */
+                <Suspense fallback={
+                  <div style={{
+                    width: '100%',
+                    height: '100%',
+                    background: 'linear-gradient(180deg, #5B9BD5 0%, #3A7CBD 100%)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    color: '#fff',
+                    fontSize: '14px',
+                    fontFamily: "'Tahoma', sans-serif"
+                  }}>
+                    Loading...
+                  </div>
+                }>
+                  <VizWindow viz={selectedViz} onClose={handleClose} />
+                </Suspense>
+              )}
             </div>
 
             {/* Monitor Stand Base Label */}
@@ -500,28 +522,6 @@ export default function VisualizationPage() {
           </div>
         </div>
       </div>
-
-      {/* IE Window - Lazy Loaded */}
-      {selectedViz && (
-        <Suspense fallback={
-          <div style={{
-            position: 'fixed',
-            inset: 0,
-            background: 'rgba(0,0,0,0.5)',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            color: '#fff',
-            fontSize: '14px',
-            zIndex: 100,
-            fontFamily: "'Tahoma', sans-serif"
-          }}>
-            Loading...
-          </div>
-        }>
-          <VizWindow viz={selectedViz} onClose={handleClose} />
-        </Suspense>
-      )}
     </div>
   )
 }
