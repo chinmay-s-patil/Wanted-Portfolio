@@ -37,11 +37,6 @@ export default function VisualizationPage() {
     setSelectedViz(null)
   }, [])
 
-  // Handle system icon clicks (show "not implemented" or placeholder)
-  const handleSystemClick = (title) => {
-    alert(`${title} is not accessible in this session.`)
-  }
-
   return (
     <div style={{
       width: '100vw',
@@ -57,24 +52,23 @@ export default function VisualizationPage() {
       padding: '2rem'
     }}>
       <style jsx>{`
-        @import url('https://fonts.googleapis.com/css2?family=Special+Elite&display=swap');
-        
         @keyframes pulse {
           0%, 100% { opacity: 1; }
           50% { opacity: 0.7; }
         }
         
-        .desktop-icon {
+        .desktop-icon-interactive {
           transition: all 0.15s ease;
+          cursor: pointer;
         }
         
-        .desktop-icon:hover {
+        .desktop-icon-interactive:hover {
           background: rgba(49, 106, 197, 0.3);
           outline: 1px dotted rgba(255,255,255,0.5);
           outline-offset: -1px;
         }
         
-        .desktop-icon:active {
+        .desktop-icon-interactive:active {
           background: rgba(49, 106, 197, 0.5);
         }
 
@@ -106,6 +100,13 @@ export default function VisualizationPage() {
           background: rgba(255, 255, 255, 0.3);
           border-radius: 5px;
         }
+
+        /* System icons are now inert - no hover, no pointer */
+        .system-icon-inert {
+          cursor: default;
+          user-select: none;
+          pointer-events: none; /* Completely无视所有鼠标事件 */
+        }
       `}</style>
 
       {/* Back Button */}
@@ -123,7 +124,7 @@ export default function VisualizationPage() {
           fontSize: '1rem',
           cursor: 'pointer',
           zIndex: 1000,
-          fontFamily: "'Special Elite', monospace",
+          fontFamily: "'Courier New', monospace",
           boxShadow: '0 4px 12px rgba(0,0,0,0.5)'
         }}
       >
@@ -189,26 +190,23 @@ export default function VisualizationPage() {
                 
                 {/* Desktop Icons Area - Windows Style Columns */}
                 <div className="icon-grid" style={{
-                  opacity: selectedViz ? 0.3 : 1, // Dim desktop when window is open
+                  opacity: selectedViz ? 0.3 : 1,
                   pointerEvents: selectedViz ? 'none' : 'auto',
                   transition: 'opacity 0.3s'
                 }}>
-                  {/* System Icons First */}
+                  {/* System Icons First - Now completely inert */}
                   {systemIcons.map((item) => (
                     <div
                       key={item.id}
-                      className="desktop-icon"
-                      onClick={() => handleSystemClick(item.title)}
+                      className="system-icon-inert"
                       style={{
                         width: '75px',
                         padding: '4px',
-                        cursor: 'pointer',
                         display: 'flex',
                         flexDirection: 'column',
                         alignItems: 'center',
                         gap: '4px',
                         borderRadius: '4px',
-                        userSelect: 'none',
                         marginBottom: '0.5rem'
                       }}
                     >
@@ -234,7 +232,6 @@ export default function VisualizationPage() {
                         wordWrap: 'break-word',
                         maxWidth: '100%',
                         fontFamily: "'Tahoma', sans-serif",
-                        background: 'rgba(0,0,139,0.4)', // Windows XP selection blue-ish
                         padding: '0 2px'
                       }}>
                         {item.title}
@@ -245,16 +242,15 @@ export default function VisualizationPage() {
                   {/* Separator */}
                   <div style={{ width: '20px', height: '20px' }} />
 
-                  {/* Visualization Icons */}
+                  {/* Visualization Icons - Interactive */}
                   {visualizationsList.map((viz) => (
                     <div
                       key={viz.id}
-                      className="desktop-icon"
+                      className="desktop-icon-interactive"
                       onClick={() => handleVizClick(viz)}
                       style={{
                         width: '75px',
                         padding: '4px',
-                        cursor: 'pointer',
                         display: 'flex',
                         flexDirection: 'column',
                         alignItems: 'center',
@@ -323,13 +319,13 @@ export default function VisualizationPage() {
                   ))}
                 </div>
 
-                {/* IE Browser Window Overlay - Renders on top but respects taskbar */}
+                {/* IE Browser Window Overlay */}
                 {selectedViz && (
                   <Suspense fallback={
                     <div style={{
                       position: 'absolute',
                       inset: 0,
-                      bottom: '32px', // Leave room for taskbar
+                      bottom: '32px',
                       background: 'linear-gradient(180deg, #5B9BD5 0%, #3A7CBD 100%)',
                       display: 'flex',
                       alignItems: 'center',
@@ -347,7 +343,7 @@ export default function VisualizationPage() {
                       top: 0,
                       left: 0,
                       right: 0,
-                      bottom: '32px', // 32px is taskbar height
+                      bottom: '32px',
                       zIndex: 50
                     }}>
                       <WikiBrowser viz={selectedViz} onClose={handleClose} />
@@ -356,7 +352,7 @@ export default function VisualizationPage() {
                 )}
               </div>
 
-              {/* Windows XP Taskbar - ALWAYS VISIBLE */}
+              {/* Windows XP Taskbar */}
               <div style={{
                 height: '32px',
                 background: 'linear-gradient(180deg, #245EDC 0%, #1941A5 100%)',
@@ -386,7 +382,6 @@ export default function VisualizationPage() {
                   fontSize: '11px',
                   fontWeight: 'bold',
                   color: '#fff',
-                  cursor: 'pointer',
                   fontFamily: "'Tahoma', sans-serif",
                   textShadow: '1px 1px 1px rgba(0,0,0,0.5)',
                   boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.4)'
@@ -409,7 +404,7 @@ export default function VisualizationPage() {
                   start
                 </div>
 
-                {/* Quick Launch Bar (shows IE icon when window is open) */}
+                {/* Quick Launch Bar */}
                 {selectedViz && (
                   <div style={{
                     display: 'flex',
@@ -424,17 +419,16 @@ export default function VisualizationPage() {
                     <div style={{
                       height: '22px',
                       padding: '0 8px',
-                      background: selectedViz ? '#3C8CFF' : 'transparent',
-                      border: selectedViz ? '1px solid #0831D9' : 'none',
+                      background: '#3C8CFF',
+                      border: '1px solid #0831D9',
                       borderRadius: '2px',
                       display: 'flex',
                       alignItems: 'center',
                       gap: '4px',
                       color: '#fff',
                       fontSize: '11px',
-                      cursor: 'pointer',
                       fontFamily: "'Tahoma', sans-serif",
-                      boxShadow: selectedViz ? 'inset 0 1px 3px rgba(0,0,0,0.3)' : 'none'
+                      boxShadow: 'inset 0 1px 3px rgba(0,0,0,0.3)'
                     }}>
                       <span style={{ fontSize: '14px' }}>e</span>
                       <span>{selectedViz.title}.wiki</span>
@@ -442,7 +436,7 @@ export default function VisualizationPage() {
                   </div>
                 )}
 
-                {/* System Tray - Clock (no seconds) */}
+                {/* System Tray */}
                 <div style={{
                   marginLeft: 'auto',
                   height: '22px',
@@ -458,10 +452,7 @@ export default function VisualizationPage() {
                   color: '#fff',
                   fontFamily: "'Tahoma', sans-serif"
                 }}>
-                  {/* Volume Icon */}
                   <span style={{ fontSize: '12px' }}>🔊</span>
-                  
-                  {/* Time - No seconds to reduce load */}
                   {currentTime.toLocaleTimeString('en-US', { 
                     hour: '2-digit', 
                     minute: '2-digit',
@@ -502,7 +493,7 @@ export default function VisualizationPage() {
         </div>
       </div>
 
-      {/* CPU Tower - SEPARATE DIV */}
+      {/* CPU Tower */}
       <div style={{
         transform: 'scale(0.8)',
         transformOrigin: 'center left',
