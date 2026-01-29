@@ -10,6 +10,9 @@ export default function CADSection() {
   const navigate = useNavigate()
   const [modelRotation, setModelRotation] = useState({ x: 0, y: 0, z: 0 })
   const [isTransparent, setIsTransparent] = useState(false)
+  const [currentPage, setCurrentPage] = useState(0)
+  const ITEMS_PER_PAGE = 6
+  
   const ctrlRef = useRef({
     viewState: { x: 0, y: 0, z: 0, perp: 0 }
   })
@@ -30,7 +33,27 @@ export default function CADSection() {
 
   const handleClose = useCallback(() => {
     setSelectedCartridge(null)
+    setCurrentPage(0)
   }, [])
+
+  // Calculate pagination
+  const totalPages = Math.ceil(CADGLTFList.length / ITEMS_PER_PAGE)
+  const currentProjects = CADGLTFList.slice(
+    currentPage * ITEMS_PER_PAGE,
+    (currentPage + 1) * ITEMS_PER_PAGE
+  )
+
+  const nextPage = () => {
+    if (currentPage < totalPages - 1) {
+      setCurrentPage(prev => prev + 1)
+    }
+  }
+
+  const prevPage = () => {
+    if (currentPage > 0) {
+      setCurrentPage(prev => prev - 1)
+    }
+  }
 
   // Control button handlers
   const resetView = useCallback(() => {
@@ -38,7 +61,6 @@ export default function CADSection() {
     const originalRotation = selectedCartridge.modelRotation || { x: 0, y: 0, z: 0 }
     setModelRotation(originalRotation)
     ctrlRef.current.viewState = { x: 0, y: 0, z: 0, perp: 0 }
-    // Trigger reset in the viewer component
     window.dispatchEvent(new CustomEvent('resetView'))
   }, [selectedCartridge])
 
@@ -173,7 +195,7 @@ export default function CADSection() {
         ← BACK
       </button>
 
-      {/* Main Container */}
+      {/* Main Container - FIXED POSITION */}
       <div style={{
         display: 'flex',
         gap: '3rem',
@@ -182,15 +204,21 @@ export default function CADSection() {
         width: '100%',
         maxWidth: '2400px',
         transform: 'scale(0.75)',
-        transformOrigin: 'center'
+        transformOrigin: 'center',
+        position: 'relative'
       }}>
+        
         {/* Left Side - Details Panel (only shown when cartridge selected) */}
         {selectedCartridge && (
           <div style={{
             width: '400px',
             display: 'flex',
             flexDirection: 'column',
-            gap: '1.5rem'
+            gap: '1.5rem',
+            position: 'absolute',
+            left: 0,
+            top: '50%',
+            transform: 'translateY(-50%)'
           }}>
             {/* Project Info Card */}
             <div style={{
@@ -291,13 +319,14 @@ export default function CADSection() {
           </div>
         )}
 
-        {/* Center - CRT TV + Header */}
+        {/* Center - CRT TV + Header - ALWAYS IN SAME POSITION */}
         <div style={{
           display: 'flex',
           flexDirection: 'column',
           alignItems: 'center',
           gap: '2rem',
-          flex: selectedCartridge ? '0 0 auto' : 1
+          width: '1100px',
+          maxWidth: '72vw'
         }}>
           {/* Header - only show when no cartridge selected */}
           {!selectedCartridge && (
@@ -334,8 +363,7 @@ export default function CADSection() {
           {/* CRT TV with embedded viewer */}
           <div className="crt-bezel" style={{
             position: 'relative',
-            width: '1100px',
-            maxWidth: '90vw',
+            width: '100%',
             aspectRatio: '4/3',
             background: 'linear-gradient(135deg, #2a2a2a 0%, #1a1a1a 50%, #0a0a0a 100%)',
             borderRadius: '24px',
@@ -362,7 +390,7 @@ export default function CADSection() {
             <div style={{
               position: 'absolute',
               bottom: '1.2rem',
-              left: '2rem',
+              left: '0.5rem',
               fontSize: '1.2rem',
               fontWeight: '700',
               color: '#666',
@@ -449,13 +477,17 @@ export default function CADSection() {
           )}
         </div>
 
-        {/* Right Side - Control Buttons (only shown when cartridge selected) OR Cassette Rack */}
+        {/* Right Side - Control Buttons OR Cassette Rack */}
         {selectedCartridge ? (
           <div style={{
             width: '300px',
             display: 'flex',
             flexDirection: 'column',
-            gap: '1rem'
+            gap: '1rem',
+            position: 'absolute',
+            right: 0,
+            top: '50%',
+            transform: 'translateY(-50%)'
           }}>
             {/* Control Panel Title */}
             <div style={{
@@ -695,9 +727,13 @@ export default function CADSection() {
           </div>
         ) : (
           <CassetteRack 
-            projects={CADGLTFList}
+            projects={currentProjects}
             selectedProject={selectedCartridge}
             onProjectClick={handleCartridgeClick}
+            currentPage={currentPage}
+            totalPages={totalPages}
+            onNextPage={nextPage}
+            onPrevPage={prevPage}
           />
         )}
       </div>
@@ -971,14 +1007,18 @@ function TVModelViewer({ project }) {
   )
 }
 
-// Cassette Rack Component
-function CassetteRack({ projects, selectedProject, onProjectClick }) {
+// Cassette Rack Component with Pagination
+function CassetteRack({ projects, selectedProject, onProjectClick, currentPage, totalPages, onNextPage, onPrevPage }) {
   return (
     <div style={{
       display: 'flex',
       flexDirection: 'column',
       gap: '1.5rem',
-      alignItems: 'center'
+      alignItems: 'center',
+      position: 'absolute',
+      right: '-150px',
+      top: '50%',
+      transform: 'translateY(-50%)'
     }}>
       <div style={{
         fontSize: '0.9rem',
@@ -994,9 +1034,9 @@ function CassetteRack({ projects, selectedProject, onProjectClick }) {
         className="cassette-rack"
         style={{
           width: '340px',
-          height: 'calc(6 * 110px + 5 * 1.2rem + 3rem)',
-          maxHeight: '75vh',
-          overflowY: 'auto',
+          height: 'calc(6 * 120px + 5 * 1.2rem + 3rem)',
+          maxHeight: '80vh',
+          overflowY: 'hidden',
           overflowX: 'hidden',
           padding: '1.5rem',
           background: 'linear-gradient(135deg, rgba(20,20,20,0.95) 0%, rgba(10,10,10,0.95) 100%)',
@@ -1015,7 +1055,7 @@ function CassetteRack({ projects, selectedProject, onProjectClick }) {
             onClick={() => onProjectClick(project)}
             style={{
               width: '100%',
-              height: '110px',
+              height: '120px',
               background: `linear-gradient(90deg, ${project.color}dd 0%, ${project.color}88 100%)`,
               borderRadius: '6px',
               cursor: 'pointer',
@@ -1031,7 +1071,7 @@ function CassetteRack({ projects, selectedProject, onProjectClick }) {
             }}
           >
             <div style={{
-              width: '110px',
+              width: '120px',
               height: '100%',
               overflow: 'hidden',
               borderRight: '3px solid rgba(0,0,0,0.3)',
@@ -1101,6 +1141,69 @@ function CassetteRack({ projects, selectedProject, onProjectClick }) {
         ))}
       </div>
 
+      {/* Pagination Controls */}
+      <div style={{
+        display: 'flex',
+        alignItems: 'center',
+        gap: '1rem',
+        justifyContent: 'center'
+      }}>
+        <button
+          onClick={onPrevPage}
+          disabled={currentPage === 0}
+          style={{
+            width: '40px',
+            height: '40px',
+            borderRadius: '50%',
+            background: currentPage === 0 ? 'rgba(0,0,0,0.4)' : 'rgba(0,255,0,0.2)',
+            border: '2px solid rgba(0,255,0,0.4)',
+            color: currentPage === 0 ? '#555' : '#00ff00',
+            cursor: currentPage === 0 ? 'not-allowed' : 'pointer',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            fontSize: '1.2rem',
+            transition: 'all 0.3s ease',
+            opacity: currentPage === 0 ? 0.3 : 1
+          }}
+        >
+          ‹
+        </button>
+
+        <div style={{
+          fontSize: '0.8rem',
+          color: '#00ff00',
+          fontFamily: "'Courier New', monospace",
+          fontWeight: '600',
+          minWidth: '60px',
+          textAlign: 'center'
+        }}>
+          {currentPage + 1} / {totalPages}
+        </div>
+
+        <button
+          onClick={onNextPage}
+          disabled={currentPage === totalPages - 1}
+          style={{
+            width: '40px',
+            height: '40px',
+            borderRadius: '50%',
+            background: currentPage === totalPages - 1 ? 'rgba(0,0,0,0.4)' : 'rgba(0,255,0,0.2)',
+            border: '2px solid rgba(0,255,0,0.4)',
+            color: currentPage === totalPages - 1 ? '#555' : '#00ff00',
+            cursor: currentPage === totalPages - 1 ? 'not-allowed' : 'pointer',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            fontSize: '1.2rem',
+            transition: 'all 0.3s ease',
+            opacity: currentPage === totalPages - 1 ? 0.3 : 1
+          }}
+        >
+          ›
+        </button>
+      </div>
+
       <div style={{
         fontSize: '0.7rem',
         color: '#666',
@@ -1108,7 +1211,7 @@ function CassetteRack({ projects, selectedProject, onProjectClick }) {
         fontFamily: "'Courier New', monospace",
         letterSpacing: '0.05em'
       }}>
-        {projects.length} CASSETTES AVAILABLE
+        {projects.length} CASSETTES ON PAGE
       </div>
     </div>
   )
