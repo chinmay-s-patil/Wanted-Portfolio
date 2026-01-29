@@ -231,7 +231,8 @@ export default function FrameViewer({ reel, onClose }) {
                   fontSize: 'clamp(2rem, 5vw, 4rem)',
                   fontWeight: '700',
                   marginBottom: '1rem',
-                  textShadow: '0 4px 12px rgba(0,0,0,0.8)'
+                  textShadow: '0 4px 12px rgba(0,0,0,0.8)',
+                  fontFamily: "'Crimson Text', serif"
                 }}>
                   {reel.title}
                 </h1>

@@ -15,8 +15,7 @@ const eventsData = [
     ],
     frames: [
       {
-        type: 'title',
-        text: 'AIAA Student Conference 2024'
+        type: 'title'
       },
       {
         type: 'image',
@@ -40,117 +39,76 @@ const eventsData = [
     ]
   },
   {
-    id: 'workshop-cfd-2024',
-    title: 'OpenFOAM Workshop 2024',
-    year: '2024',
-    location: 'Online',
-    dates: { start: 'Mar 10, 2024', end: 'Mar 12, 2024' },
-    summary: 'Three-day intensive workshop on advanced OpenFOAM techniques and best practices.',
-    color: '#48cae4',
-    highlights: [
-      'Completed advanced meshing module',
-      'Learned about new solver developments',
-      'Contributed to community discussions'
-    ],
-    frames: [
-      {
-        type: 'title',
-        text: 'OpenFOAM Workshop 2024'
-      },
-      {
-        type: 'image',
-        src: '/events/of-workshop/certificate.jpg',
-        caption: 'Workshop completion certificate'
-      },
-      {
-        type: 'image',
-        src: '/events/of-workshop/screenshot.jpg',
-        caption: 'Advanced mesh generation techniques'
-      },
-      {
-        type: 'summary',
-        text: 'Expanded technical knowledge in CFD preprocessing and solver optimization, with hands-on exercises in parallel computing and turbulence modeling.'
-      }
-    ]
-  },
-  {
-    id: 'research-symposium-2023',
-    title: 'University Research Symposium',
+    id: 'robocup-2023',
+    title: 'RoboCup Junior 2023',
     year: '2023',
-    location: 'Chennai, India',
-    dates: { start: 'Nov 5, 2023', end: 'Nov 5, 2023' },
-    summary: 'Presented undergraduate thesis work on pyrolysis-based fuel optimization.',
-    color: '#5d4a2a',
+    location: 'Bordeaux, France',
+    dates: { start: 'Jul 4, 2023', end: 'Jul 10, 2023' },
+    summary: 'World championship finals for autonomous rescue robots, representing German team.',
+    color: '#c41e3a',
     highlights: [
-      'Best presentation award',
-      'Published in proceedings',
-      'Featured in university newsletter'
+      'Top 8 worldwide',
+      'Advanced autonomous navigation',
+      'International collaboration'
     ],
     frames: [
       {
-        type: 'title',
-        text: 'University Research Symposium 2023'
+        type: 'title'
       },
       {
         type: 'image',
-        src: '/events/symposium/presentation.jpg',
-        caption: 'Presenting thesis research'
+        src: '/events/robocup2023/robot-action.jpg',
+        caption: 'Our robot navigating the rescue arena'
       },
       {
         type: 'image',
-        src: '/events/symposium/award.jpg',
-        caption: 'Receiving best presentation award'
+        src: '/events/robocup2023/team.jpg',
+        caption: 'Team Germany at the world finals'
       },
       {
         type: 'image',
-        src: '/events/symposium/poster.jpg',
-        caption: 'Research poster display'
+        src: '/events/robocup2023/competition.jpg',
+        caption: 'Competition arena overview'
       },
       {
         type: 'summary',
-        text: 'Honored to receive recognition for research on sustainable fuel alternatives through pyrolysis optimization.'
+        text: 'A thrilling journey competing at the highest level of robotics, pushing the boundaries of autonomous systems and teamwork.'
       }
     ]
   },
   {
-    id: 'lab-tour-csir-2024',
-    title: 'CSIR-SERC Laboratory Tour',
-    year: '2024',
-    location: 'Chennai, India',
-    dates: { start: 'Jul 15, 2024', end: 'Jul 15, 2024' },
-    summary: 'Comprehensive tour of wind engineering and structural testing facilities at CSIR-SERC.',
-    color: '#4a2a5d',
+    id: 'tech-workshop-2022',
+    title: 'Advanced CAD Workshop',
+    year: '2022',
+    location: 'Stuttgart, Germany',
+    dates: { start: 'Mar 15, 2022', end: 'Mar 17, 2022' },
+    summary: 'Intensive workshop on advanced CAD techniques and parametric design.',
+    color: '#ff6b35',
     highlights: [
-      'Wind tunnel demonstration',
-      'Structural testing labs',
-      'Materials characterization facilities'
+      'Parametric modeling',
+      'Assembly optimization',
+      'Design for manufacturing'
     ],
     frames: [
       {
-        type: 'title',
-        text: 'CSIR-SERC Laboratory Tour'
+        type: 'title'
       },
       {
         type: 'image',
-        src: '/events/csir-tour/wind-tunnel.jpg',
-        caption: 'Industrial wind tunnel facility'
+        src: '/events/workshop2022/design-session.jpg',
+        caption: 'Working on complex assemblies'
       },
       {
         type: 'image',
-        src: '/events/csir-tour/equipment.jpg',
-        caption: 'Advanced measurement equipment'
-      },
-      {
-        type: 'image',
-        src: '/events/csir-tour/team.jpg',
-        caption: 'With research team'
+        src: '/events/workshop2022/presentation.jpg',
+        caption: 'Final design presentations'
       },
       {
         type: 'summary',
-        text: 'Gained valuable insights into experimental techniques and large-scale testing infrastructure used in civil and aerospace engineering research.'
+        text: 'Gained invaluable hands-on experience with industry-standard CAD tools and advanced design methodologies.'
       }
     ]
   }
-]
+];
 
-export default eventsData
+export default eventsData;
