@@ -14,6 +14,14 @@ export default function CADSection() {
     viewState: { x: 0, y: 0, z: 0, perp: 0 }
   })
 
+  // Prevent body scrolling
+  useEffect(() => {
+    document.body.style.overflow = 'hidden'
+    return () => {
+      document.body.style.overflow = ''
+    }
+  }, [])
+
   const handleCartridgeClick = useCallback((project) => {
     setSelectedCartridge(project)
     setModelRotation(project.modelRotation || { x: 0, y: 0, z: 0 })
@@ -79,7 +87,9 @@ export default function CADSection() {
       height: '100vh',
       background: 'linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 100%)',
       overflow: 'hidden',
-      position: 'relative',
+      position: 'fixed',
+      top: 0,
+      left: 0,
       fontFamily: "'Special Elite', monospace",
       display: 'flex',
       alignItems: 'center',
@@ -171,7 +181,7 @@ export default function CADSection() {
         justifyContent: 'center',
         width: '100%',
         maxWidth: '2400px',
-        transform: 'scale(0.6)',
+        transform: 'scale(0.75)',
         transformOrigin: 'center'
       }}>
         {/* Left Side - Details Panel (only shown when cartridge selected) */}
@@ -983,8 +993,9 @@ function CassetteRack({ projects, selectedProject, onProjectClick }) {
       <div 
         className="cassette-rack"
         style={{
-          width: '280px',
-          maxHeight: '70vh',
+          width: '340px',
+          height: 'calc(6 * 110px + 5 * 1.2rem + 3rem)',
+          maxHeight: '75vh',
           overflowY: 'auto',
           overflowX: 'hidden',
           padding: '1.5rem',
@@ -994,7 +1005,7 @@ function CassetteRack({ projects, selectedProject, onProjectClick }) {
           boxShadow: 'inset 0 0 30px rgba(0,0,0,0.8), 0 8px 24px rgba(0,0,0,0.6)',
           display: 'flex',
           flexDirection: 'column',
-          gap: '1rem'
+          gap: '1.2rem'
         }}
       >
         {projects.map((project) => (
@@ -1004,14 +1015,14 @@ function CassetteRack({ projects, selectedProject, onProjectClick }) {
             onClick={() => onProjectClick(project)}
             style={{
               width: '100%',
-              height: '80px',
+              height: '110px',
               background: `linear-gradient(90deg, ${project.color}dd 0%, ${project.color}88 100%)`,
-              borderRadius: '4px',
+              borderRadius: '6px',
               cursor: 'pointer',
               position: 'relative',
               border: selectedProject?.id === project.id 
-                ? '2px solid #00ff00' 
-                : '2px solid rgba(0,0,0,0.3)',
+                ? '3px solid #00ff00' 
+                : '3px solid rgba(0,0,0,0.3)',
               boxShadow: selectedProject?.id === project.id
                 ? `0 0 20px ${project.color}80, 0 0 40px #00ff0060`
                 : '0 4px 12px rgba(0,0,0,0.4)',
@@ -1020,14 +1031,15 @@ function CassetteRack({ projects, selectedProject, onProjectClick }) {
             }}
           >
             <div style={{
-              width: '80px',
+              width: '110px',
               height: '100%',
               overflow: 'hidden',
-              borderRight: '2px solid rgba(0,0,0,0.3)',
+              borderRight: '3px solid rgba(0,0,0,0.3)',
               background: '#000',
               display: 'flex',
               alignItems: 'center',
-              justifyContent: 'center'
+              justifyContent: 'center',
+              flexShrink: 0
             }}>
               <img 
                 src={project.coverPhoto} 
@@ -1036,25 +1048,25 @@ function CassetteRack({ projects, selectedProject, onProjectClick }) {
                   width: '100%',
                   height: '100%',
                   objectFit: 'cover',
-                  opacity: 0.8
+                  opacity: 0.9
                 }}
               />
             </div>
 
             <div style={{
               flex: 1,
-              padding: '0.5rem 0.75rem',
+              padding: '0.75rem 1rem',
               display: 'flex',
               flexDirection: 'column',
               justifyContent: 'center',
-              gap: '0.25rem'
+              gap: '0.4rem'
             }}>
               <div style={{
-                fontSize: '0.75rem',
+                fontSize: '0.9rem',
                 fontWeight: '700',
                 color: '#fff',
                 textShadow: '0 2px 4px rgba(0,0,0,0.8)',
-                lineHeight: '1.1',
+                lineHeight: '1.2',
                 overflow: 'hidden',
                 textOverflow: 'ellipsis',
                 display: '-webkit-box',
@@ -1065,8 +1077,8 @@ function CassetteRack({ projects, selectedProject, onProjectClick }) {
               </div>
               
               <div style={{
-                fontSize: '0.65rem',
-                color: 'rgba(255,255,255,0.7)',
+                fontSize: '0.75rem',
+                color: 'rgba(255,255,255,0.8)',
                 fontWeight: '600'
               }}>
                 {project.year} • {project.category}
@@ -1079,10 +1091,10 @@ function CassetteRack({ projects, selectedProject, onProjectClick }) {
                 left: '0',
                 top: '50%',
                 transform: 'translateY(-50%)',
-                width: '4px',
-                height: '60%',
+                width: '5px',
+                height: '70%',
                 background: '#00ff00',
-                boxShadow: '0 0 10px #00ff00'
+                boxShadow: '0 0 12px #00ff00'
               }} />
             )}
           </div>
