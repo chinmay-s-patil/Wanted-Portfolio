@@ -1,3 +1,4 @@
+
 // Cassette Rack Component
 function CassetteRack({ projects, selectedProject, onProjectClick }) {
   return (
@@ -140,3 +141,5 @@ function CassetteRack({ projects, selectedProject, onProjectClick }) {
     </div>
   )
 }
+
+export default CassetteRack;

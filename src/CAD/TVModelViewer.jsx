@@ -1,5 +1,4 @@
-import React, { useState, useCallback, useEffect, useRef } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useState, useEffect, useRef } from 'react'
 
 // Separate component for the 3D model viewer
 function TVModelViewer({ project }) {
@@ -266,3 +265,5 @@ function TVModelViewer({ project }) {
     </div>
   )
 }
+
+export default TVModelViewer;
