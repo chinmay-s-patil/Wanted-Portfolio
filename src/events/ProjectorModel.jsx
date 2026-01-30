@@ -183,7 +183,7 @@ export default function ProjectorModel({ isOn = false, state = 'idle' }) {
         //   - Z: 0 (no roll)
         
         model.position.set(0, 0, 0)
-        model.scale.set(0.05, 0.05, 0.05) // Adjust based on your model
+        model.scale.set(1.05, 1.05, 1.05) // Adjust based on your model
         model.rotation.set(0, Math.PI, 0) // Face forward
         
         // Enable shadows
