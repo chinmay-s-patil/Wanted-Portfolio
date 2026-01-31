@@ -68,10 +68,11 @@ export default function EventsPage() {
       background: 'linear-gradient(135deg, #1a0f08 0%, #0d0906 100%)',
       overflow: 'hidden',
       position: 'relative',
-      fontFamily: "'Special Elite', monospace"
+      fontFamily: "'Inter', system-ui, sans-serif",
+      display: 'flex'
     }}>
       <style jsx>{`
-        @import url('https://fonts.googleapis.com/css2?family=Special+Elite&family=Crimson+Text:wght@600;700&family=Courier+Prime&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Orbitron:wght@700;800&display=swap');
         
         @keyframes reelSpin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
         @keyframes projectorBeam { 0%, 100% { opacity: 0.1; } 50% { opacity: 0.25; } }
@@ -91,394 +92,480 @@ export default function EventsPage() {
         .cassette-reel:hover { animation: reelHover 0.6s ease-in-out; }
         .film-strip { animation: filmTravel 0.6s ease-in-out forwards; }
         .screen-glow { animation: screenGlow 4s ease-in-out infinite; }
+        
+        /* Nav-ideas.md design tokens */
+        :root {
+          --rail-width: 320px;
+          --rail-padding: 24px;
+          --color-bg-rail: rgba(7, 16, 26, 0.95);
+          --color-title: #EAF2FF;
+          --color-kicker: #94a3b8;
+          --color-desc: #bfcfe0;
+          --accent: #00E0FF;
+          --transition: cubic-bezier(.2,.9,.13,1);
+        }
       `}</style>
 
-      {/* Back Button */}
-      <button
-        onClick={() => navigate('/hub')}
-        style={{
-          position: 'fixed',
-          top: '2rem',
-          left: '2rem',
-          background: 'rgba(196, 165, 116, 0.2)',
-          border: '2px solid #8b7355',
-          color: '#f6efe2',
-          padding: '0.75rem 1.5rem',
-          borderRadius: '8px',
-          fontSize: '1rem',
-          cursor: 'pointer',
-          zIndex: 1000,
-          transition: 'all 0.3s ease',
-          boxShadow: '0 4px 12px rgba(0,0,0,0.5)',
-          fontFamily: "'Special Elite', monospace",
-          opacity: projectorState === 'open' ? 0.3 : 1,
-          pointerEvents: projectorState === 'open' ? 'none' : 'auto'
-        }}
-        onMouseEnter={(e) => { e.currentTarget.style.background = 'rgba(196, 165, 116, 0.3)' }}
-        onMouseLeave={(e) => { e.currentTarget.style.background = 'rgba(196, 165, 116, 0.2)' }}
-      >
-        ← Back to Hub
-      </button>
-
-      {/* Archive Room View */}
-      <div style={{
-        width: '100%',
-        height: '100%',
+      {/* SIDE RAIL - Left Panel (per nav-ideas.md) */}
+      <aside style={{
+        width: '320px',
+        height: '100vh',
+        background: 'rgba(7, 16, 26, 0.95)',
+        backdropFilter: 'blur(12px)',
+        borderRight: '1px solid rgba(148, 163, 184, 0.1)',
+        padding: '24px',
         display: 'flex',
         flexDirection: 'column',
-        alignItems: 'center',
-        justifyContent: 'center',
-        padding: '2rem',
-        opacity: projectorState === 'open' ? 0 : 1,
-        transition: 'opacity 0.4s ease',
-        pointerEvents: projectorState === 'open' ? 'none' : 'auto'
-      }}>
-        {/* Title */}
-        <div style={{
-          textAlign: 'center',
-          marginBottom: '3rem',
-          opacity: projectorState === 'idle' ? 1 : 0.4,
-          transition: 'opacity 0.3s',
-          transform: isProjecting ? 'scale(0.95)' : 'scale(1)',
-          transition: 'all 0.4s cubic-bezier(0.22, 0.9, 0.13, 1)'
-        }}>
-          <h1 style={{
-            fontSize: 'clamp(2.5rem, 5vw, 4rem)',
-            color: '#f6efe2',
-            marginBottom: '0.5rem',
-            textShadow: '0 4px 12px rgba(0,0,0,0.8)',
-            letterSpacing: '0.05em',
-            fontFamily: "'Crimson Text', serif",
-            fontWeight: 700
-          }}>
-            MEMORY ARCHIVES
-          </h1>
-          <div style={{
-            width: '200px',
-            height: '3px',
-            background: 'linear-gradient(90deg, transparent, #c4a574, transparent)',
-            margin: '0 auto 1rem'
-          }} />
-          <p style={{
-            fontSize: 'clamp(0.9rem, 1.5vw, 1.1rem)',
-            color: '#8b7355',
-            fontStyle: 'italic',
-            letterSpacing: '0.08em'
-          }}>
-            Select a reel to load into the projector
-          </p>
-        </div>
-
-        {/* Screen - Background Layer (z-index 1) */}
-        <div 
-          ref={screenRef}
+        gap: '12px',
+        position: 'relative',
+        zIndex: 50,
+        boxShadow: '4px 0 24px rgba(0,0,0,0.4)',
+        flexShrink: 0
+      }} role="complementary" aria-labelledby="section-title">
+        
+        {/* Back Button - Top of rail (per nav-ideas.md: 24px spacing to kicker) */}
+        <button
+          onClick={() => navigate('/hub')}
           style={{
-            position: 'absolute',
-            top: '50%',
-            left: '50%',
-            transform: `translate(-50%, -45%) scale(${isProjecting ? 1.18 : 0.9})`,
-            width: '60%',
-            maxWidth: '900px',
-            height: '50%',
-            background: isProjecting 
-              ? 'rgba(246, 239, 226, 0.08)' 
-              : 'rgba(246, 239, 226, 0.03)',
-            border: `8px solid ${isProjecting ? 'rgba(61, 40, 23, 0.6)' : 'rgba(61, 40, 23, 0.2)'}`,
-            borderRadius: '12px',
-            transition: 'all 0.5s cubic-bezier(0.22, 0.9, 0.13, 1)',
-            zIndex: 1,
-            opacity: projectorState !== 'idle' ? 0.9 : 0.4,
-            boxShadow: isProjecting 
-              ? '0 30px 80px rgba(0,0,0,0.8), inset 0 0 60px rgba(0,0,0,0.4)'
-              : '0 8px 24px rgba(0,0,0,0.4)',
-            pointerEvents: 'none'
-          }} 
-          className={isProjecting ? 'screen-glow' : ''}
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: '8px',
+            padding: '8px 12px',
+            borderRadius: '999px',
+            border: '1px solid rgba(255,255,255,0.08)',
+            background: 'rgba(255,255,255,0.04)',
+            color: '#cbd5e1',
+            fontSize: '0.875rem',
+            fontWeight: 500,
+            cursor: 'pointer',
+            transition: 'all 140ms cubic-bezier(.2,.9,.13,1)',
+            marginBottom: '12px', // Additional spacing to reach 24px total from rail top
+            alignSelf: 'flex-start',
+            fontFamily: "'Inter', sans-serif"
+          }}
+          onMouseEnter={(e) => { 
+            e.currentTarget.style.transform = 'translateY(-2px)';
+            e.currentTarget.style.background = 'rgba(255,255,255,0.08)';
+          }}
+          onMouseLeave={(e) => { 
+            e.currentTarget.style.transform = 'translateY(0)';
+            e.currentTarget.style.background = 'rgba(255,255,255,0.04)';
+          }}
+          aria-label="Back to office"
         >
-          {/* Scanlines effect */}
-          <div style={{
-            position: 'absolute',
-            inset: 0,
-            background: 'repeating-linear-gradient(0deg, transparent 0px, rgba(0,0,0,0.03) 1px, transparent 2px)',
-            pointerEvents: 'none',
-            opacity: 0.5
-          }} />
-        </div>
+          ← Back to office
+        </button>
 
-        {/* 3D Projector Canvas - Middle Layer (z-index 2) */}
+        {/* Kicker - Small uppercase category (per nav-ideas.md) */}
         <div style={{
-          width: '450px',
-          height: '350px',
-          marginBottom: '2rem',
-          position: 'relative',
-          zIndex: 2,
-          transform: `translateZ(${isProjecting ? '-100px' : '0'}) scale(${isProjecting ? 0.92 : 1})`,
-          opacity: isProjecting ? 0.6 : 1,
-          transition: 'all 0.5s cubic-bezier(0.22, 0.9, 0.13, 1)',
-          filter: isProjecting ? 'blur(1px)' : 'none'
+          fontSize: '0.875rem',
+          fontWeight: 600,
+          color: '#94a3b8',
+          letterSpacing: '0.12em',
+          textTransform: 'uppercase',
+          fontFamily: "'Inter', sans-serif",
+          marginTop: '12px',
+          lineHeight: 1
         }}>
-          <Suspense fallback={
-            <div style={{
-              width: '100%',
-              height: '100%',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              color: '#8b7355',
-              fontSize: '0.9rem',
-              background: 'transparent'
-            }}>
-              <div style={{
-                background: 'rgba(26, 15, 8, 0.9)',
-                padding: '1rem 2rem',
-                borderRadius: '8px',
-                border: '2px solid #8b7355'
-              }}>
-                Loading projector...
-              </div>
-            </div>
-          }>
-            <ProjectorModel 
-              isOn={projectorState !== 'idle'} 
-              state={projectorState}
-            />
-          </Suspense>
-
-          {/* Projector Beam Effect - Only when on */}
-          {projectorState !== 'idle' && (
-            <div style={{
-              position: 'absolute',
-              top: '20%',
-              left: '50%',
-              transform: 'translateX(-50%)',
-              width: '150px',
-              height: '100px',
-              background: 'linear-gradient(180deg, rgba(255,215,0,0.15), transparent)',
-              clipPath: 'polygon(40% 0%, 60% 0%, 100% 100%, 0% 100%)',
-              pointerEvents: 'none',
-              animation: 'projectorBeam 3s ease-in-out infinite',
-              zIndex: -1
-            }} />
-          )}
+          Archive
         </div>
 
-        {/* Film Reels Shelf - Top Layer (z-index 3) */}
+        {/* Title - Display font (per nav-ideas.md) */}
+        <h1 id="section-title" style={{
+          fontSize: '1.75rem',
+          fontWeight: 800,
+          lineHeight: 1.05,
+          color: '#EAF2FF',
+          margin: '8px 0 0 0',
+          fontFamily: "'Orbitron', sans-serif", // Geometric display font per nav-ideas.md
+          maxWidth: '100%',
+          whiteSpace: 'nowrap',
+          textOverflow: 'ellipsis',
+          overflow: 'hidden',
+          letterSpacing: '0.02em'
+        }}>
+          Memory Archives
+        </h1>
+
+        {/* Description - Humanist sans (per nav-ideas.md) */}
+        <p style={{
+          fontSize: '1rem',
+          color: '#bfcfe0',
+          lineHeight: 1.5,
+          marginTop: '12px',
+          fontFamily: "'Inter', sans-serif",
+          maxWidth: '100%'
+        }}>
+          Select a film reel to load into the projector. Each cassette contains captured moments, experiments, and research documentation.
+        </p>
+
+        {/* Metadata tags (optional per nav-ideas.md) */}
         <div style={{
           display: 'flex',
-          gap: '2.5rem',
           flexWrap: 'wrap',
-          justifyContent: 'center',
-          maxWidth: '1200px',
-          padding: '2rem',
-          background: 'rgba(61, 40, 23, 0.25)',
-          borderRadius: '16px',
-          border: '2px solid rgba(139, 115, 85, 0.3)',
-          position: 'relative',
-          zIndex: 3,
-          backdropFilter: 'blur(8px)',
-          opacity: isProjecting ? 0.4 : 1,
-          transform: isProjecting ? 'translateY(20px)' : 'translateY(0)',
-          transition: 'all 0.4s ease',
-          pointerEvents: isProjecting ? 'none' : 'auto'
+          gap: '0.5rem',
+          marginTop: '16px',
+          paddingTop: '16px',
+          borderTop: '1px solid rgba(148, 163, 184, 0.2)'
         }}>
-          {eventsData.map((reel, index) => (
-            <div
-              key={reel.id}
-              className="cassette-reel"
-              onClick={() => handleReelClick(reel)}
-              onMouseEnter={() => setHoveredReel(reel.id)}
-              onMouseLeave={() => setHoveredReel(null)}
-              style={{
-                cursor: 'pointer',
-                transition: 'all 0.3s ease',
-                position: 'relative',
-                transform: hoveredReel === reel.id ? 'translateY(-8px) scale(1.05)' : 'translateY(0) scale(1)',
-                animationDelay: `${index * 0.1}s`
-              }}
-            >
-              {/* Film Strip Animation */}
-              {filmStripActive && selectedReel?.id === reel.id && (
-                <div 
-                  className="film-strip"
-                  style={{
-                    position: 'absolute',
-                    top: '50%',
-                    left: '50%',
-                    width: '40px',
-                    height: '30px',
-                    background: `repeating-linear-gradient(90deg, ${reel.color} 0px, ${reel.color} 8px, transparent 8px, transparent 12px)`,
-                    border: '2px solid rgba(0,0,0,0.5)',
-                    zIndex: 100,
-                    '--travel-x': '0px',
-                    '--travel-y': '-200px'
-                  }}
-                />
-              )}
+          <span style={{
+            fontSize: '0.75rem',
+            color: '#64748b',
+            fontFamily: "'Roboto Mono', monospace",
+            padding: '4px 8px',
+            background: 'rgba(255,255,255,0.03)',
+            borderRadius: '4px',
+            border: '1px solid rgba(255,255,255,0.05)'
+          }}>
+            {eventsData.length} Reels
+          </span>
+          <span style={{
+            fontSize: '0.75rem',
+            color: '#64748b',
+            fontFamily: "'Roboto Mono', monospace",
+            padding: '4px 8px',
+            background: 'rgba(255,255,255,0.03)',
+            borderRadius: '4px',
+            border: '1px solid rgba(255,255,255,0.05)'
+          }}>
+            35mm Format
+          </span>
+        </div>
+      </aside>
 
-              {/* Reel Container */}
+      {/* MAIN CONTENT AREA - Archive Room View */}
+      <div style={{
+        flex: 1,
+        height: '100vh',
+        position: 'relative',
+        overflow: 'hidden'
+      }}>
+        {/* Archive Room View */}
+        <div style={{
+          width: '100%',
+          height: '100%',
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          justifyContent: 'center',
+          padding: '2rem',
+          opacity: projectorState === 'open' ? 0 : 1,
+          transition: 'opacity 0.4s ease',
+          pointerEvents: projectorState === 'open' ? 'none' : 'auto'
+        }}>
+          {/* Screen - Background Layer (z-index 1) */}
+          <div 
+            ref={screenRef}
+            style={{
+              position: 'absolute',
+              top: '50%',
+              left: '50%',
+              transform: `translate(-50%, -45%) scale(${isProjecting ? 1.18 : 0.9})`,
+              width: '60%',
+              maxWidth: '900px',
+              height: '50%',
+              background: isProjecting 
+                ? 'rgba(246, 239, 226, 0.08)' 
+                : 'rgba(246, 239, 226, 0.03)',
+              border: `8px solid ${isProjecting ? 'rgba(61, 40, 23, 0.6)' : 'rgba(61, 40, 23, 0.2)'}`,
+              borderRadius: '12px',
+              transition: 'all 0.5s cubic-bezier(0.22, 0.9, 0.13, 1)',
+              zIndex: 1,
+              opacity: projectorState !== 'idle' ? 0.9 : 0.4,
+              boxShadow: isProjecting 
+                ? '0 30px 80px rgba(0,0,0,0.8), inset 0 0 60px rgba(0,0,0,0.4)'
+                : '0 8px 24px rgba(0,0,0,0.4)',
+              pointerEvents: 'none'
+            }} 
+            className={isProjecting ? 'screen-glow' : ''}
+          >
+            {/* Scanlines effect */}
+            <div style={{
+              position: 'absolute',
+              inset: 0,
+              background: 'repeating-linear-gradient(0deg, transparent 0px, rgba(0,0,0,0.03) 1px, transparent 2px)',
+              pointerEvents: 'none',
+              opacity: 0.5
+            }} />
+          </div>
+
+          {/* 3D Projector Canvas - Middle Layer (z-index 2) */}
+          <div style={{
+            width: '450px',
+            height: '350px',
+            marginBottom: '2rem',
+            position: 'relative',
+            zIndex: 2,
+            transform: `translateZ(${isProjecting ? '-100px' : '0'}) scale(${isProjecting ? 0.92 : 1})`,
+            opacity: isProjecting ? 0.6 : 1,
+            transition: 'all 0.5s cubic-bezier(0.22, 0.9, 0.13, 1)',
+            filter: isProjecting ? 'blur(1px)' : 'none'
+          }}>
+            <Suspense fallback={
               <div style={{
-                width: '160px',
-                height: '160px',
-                position: 'relative',
-                filter: hoveredReel === reel.id ? 'brightness(1.2)' : 'brightness(1)'
+                width: '100%',
+                height: '100%',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                color: '#8b7355',
+                fontSize: '0.9rem',
+                background: 'transparent'
               }}>
-                {/* Reel Body */}
                 <div style={{
-                  width: '100%',
-                  height: '100%',
-                  borderRadius: '50%',
-                  background: `conic-gradient(from 0deg, ${reel.color || '#8b6914'} 0deg, #3d2817 60deg, #2a1a10 120deg, ${reel.color || '#8b6914'} 180deg, #3d2817 240deg, #2a1a10 300deg, ${reel.color || '#8b6914'} 360deg)`,
-                  border: '4px solid rgba(0,0,0,0.6)',
-                  boxShadow: hoveredReel === reel.id
-                    ? `0 16px 40px rgba(0,0,0,0.7), 0 0 30px ${reel.color}50`
-                    : '0 8px 24px rgba(0,0,0,0.6)',
-                  position: 'relative',
-                  overflow: 'hidden'
+                  background: 'rgba(26, 15, 8, 0.9)',
+                  padding: '1rem 2rem',
+                  borderRadius: '8px',
+                  border: '2px solid #8b7355'
                 }}>
-                  {/* Spokes */}
-                  {[0, 60, 120, 180, 240, 300].map((angle) => (
-                    <div key={angle} style={{
+                  Loading projector...
+                </div>
+              </div>
+            }>
+              <ProjectorModel 
+                isOn={projectorState !== 'idle'} 
+                state={projectorState}
+                modelPath="/SectionModels/Old Projector/movieprojector.gltf" // Pass explicit path
+              />
+            </Suspense>
+
+            {/* Projector Beam Effect - Only when on */}
+            {projectorState !== 'idle' && (
+              <div style={{
+                position: 'absolute',
+                top: '20%',
+                left: '50%',
+                transform: 'translateX(-50%)',
+                width: '150px',
+                height: '100px',
+                background: 'linear-gradient(180deg, rgba(255,215,0,0.15), transparent)',
+                clipPath: 'polygon(40% 0%, 60% 0%, 100% 100%, 0% 100%)',
+                pointerEvents: 'none',
+                animation: 'projectorBeam 3s ease-in-out infinite',
+                zIndex: -1
+              }} />
+            )}
+          </div>
+
+          {/* Film Reels Shelf - Top Layer (z-index 3) */}
+          <div style={{
+            display: 'flex',
+            gap: '2.5rem',
+            flexWrap: 'wrap',
+            justifyContent: 'center',
+            maxWidth: '1200px',
+            padding: '2rem',
+            background: 'rgba(61, 40, 23, 0.25)',
+            borderRadius: '16px',
+            border: '2px solid rgba(139, 115, 85, 0.3)',
+            position: 'relative',
+            zIndex: 3,
+            backdropFilter: 'blur(8px)',
+            opacity: isProjecting ? 0.4 : 1,
+            transform: isProjecting ? 'translateY(20px)' : 'translateY(0)',
+            transition: 'all 0.4s ease',
+            pointerEvents: isProjecting ? 'none' : 'auto'
+          }}>
+            {eventsData.map((reel, index) => (
+              <div
+                key={reel.id}
+                className="cassette-reel"
+                onClick={() => handleReelClick(reel)}
+                onMouseEnter={() => setHoveredReel(reel.id)}
+                onMouseLeave={() => setHoveredReel(null)}
+                style={{
+                  cursor: 'pointer',
+                  transition: 'all 0.3s ease',
+                  position: 'relative',
+                  transform: hoveredReel === reel.id ? 'translateY(-8px) scale(1.05)' : 'translateY(0) scale(1)',
+                  animationDelay: `${index * 0.1}s`
+                }}
+              >
+                {/* Film Strip Animation */}
+                {filmStripActive && selectedReel?.id === reel.id && (
+                  <div 
+                    className="film-strip"
+                    style={{
                       position: 'absolute',
                       top: '50%',
                       left: '50%',
-                      width: '3px',
-                      height: '40%',
-                      background: 'linear-gradient(to bottom, transparent, rgba(0,0,0,0.4), transparent)',
-                      transform: `translate(-50%, -50%) rotate(${angle}deg)`,
-                      transformOrigin: 'center'
-                    }} />
-                  ))}
+                      width: '40px',
+                      height: '30px',
+                      background: `repeating-linear-gradient(90deg, ${reel.color} 0px, ${reel.color} 8px, transparent 8px, transparent 12px)`,
+                      border: '2px solid rgba(0,0,0,0.5)',
+                      zIndex: 100,
+                      '--travel-x': '0px',
+                      '--travel-y': '-200px'
+                    }}
+                  />
+                )}
 
-                  {/* Center Hub */}
+                {/* Reel Container */}
+                <div style={{
+                  width: '160px',
+                  height: '160px',
+                  position: 'relative',
+                  filter: hoveredReel === reel.id ? 'brightness(1.2)' : 'brightness(1)'
+                }}>
+                  {/* Reel Body */}
+                  <div style={{
+                    width: '100%',
+                    height: '100%',
+                    borderRadius: '50%',
+                    background: `conic-gradient(from 0deg, ${reel.color || '#8b6914'} 0deg, #3d2817 60deg, #2a1a10 120deg, ${reel.color || '#8b6914'} 180deg, #3d2817 240deg, #2a1a10 300deg, ${reel.color || '#8b6914'} 360deg)`,
+                    border: '4px solid rgba(0,0,0,0.6)',
+                    boxShadow: hoveredReel === reel.id
+                      ? `0 16px 40px rgba(0,0,0,0.7), 0 0 30px ${reel.color}50`
+                      : '0 8px 24px rgba(0,0,0,0.6)',
+                    position: 'relative',
+                    overflow: 'hidden'
+                  }}>
+                    {/* Spokes */}
+                    {[0, 60, 120, 180, 240, 300].map((angle) => (
+                      <div key={angle} style={{
+                        position: 'absolute',
+                        top: '50%',
+                        left: '50%',
+                        width: '3px',
+                        height: '40%',
+                        background: 'linear-gradient(to bottom, transparent, rgba(0,0,0,0.4), transparent)',
+                        transform: `translate(-50%, -50%) rotate(${angle}deg)`,
+                        transformOrigin: 'center'
+                      }} />
+                    ))}
+
+                    {/* Center Hub */}
+                    <div style={{
+                      position: 'absolute',
+                      top: '50%',
+                      left: '50%',
+                      transform: 'translate(-50%, -50%)',
+                      width: '50px',
+                      height: '50px',
+                      borderRadius: '50%',
+                      background: 'radial-gradient(circle at 30% 30%, #5a5a5a, #1a1a1a)',
+                      border: '3px solid #0a0a0a',
+                      boxShadow: 'inset 0 2px 8px rgba(255,255,255,0.2), 0 4px 8px rgba(0,0,0,0.5)'
+                    }}>
+                      <div style={{
+                        width: '18px',
+                        height: '18px',
+                        borderRadius: '50%',
+                        background: '#0a0a0a',
+                        margin: '50%',
+                        transform: 'translate(-50%, -50%)',
+                        boxShadow: 'inset 0 2px 4px rgba(0,0,0,0.8)'
+                      }} />
+                    </div>
+
+                    {/* Film texture rings */}
+                    <div style={{
+                      position: 'absolute',
+                      inset: '15%',
+                      border: '1px solid rgba(0,0,0,0.2)',
+                      borderRadius: '50%'
+                    }} />
+                    <div style={{
+                      position: 'absolute',
+                      inset: '25%',
+                      border: '1px solid rgba(0,0,0,0.15)',
+                      borderRadius: '50%'
+                    }} />
+                  </div>
+
+                  {/* Label */}
                   <div style={{
                     position: 'absolute',
-                    top: '50%',
+                    bottom: '-35px',
                     left: '50%',
-                    transform: 'translate(-50%, -50%)',
-                    width: '50px',
-                    height: '50px',
-                    borderRadius: '50%',
-                    background: 'radial-gradient(circle at 30% 30%, #5a5a5a, #1a1a1a)',
-                    border: '3px solid #0a0a0a',
-                    boxShadow: 'inset 0 2px 8px rgba(255,255,255,0.2), 0 4px 8px rgba(0,0,0,0.5)'
+                    transform: 'translateX(-50%)',
+                    background: 'linear-gradient(to bottom, #f6efe2, #e8dcc8)',
+                    padding: '6px 14px',
+                    borderRadius: '4px',
+                    border: '2px solid rgba(139, 115, 85, 0.6)',
+                    whiteSpace: 'nowrap',
+                    boxShadow: '0 4px 12px rgba(0,0,0,0.4)',
+                    transition: 'all 0.3s',
+                    minWidth: '120px'
                   }}>
                     <div style={{
-                      width: '18px',
-                      height: '18px',
+                      fontSize: '0.85rem',
+                      fontWeight: '700',
+                      color: '#1a1410',
+                      textAlign: 'center',
+                      marginBottom: '2px',
+                      fontFamily: "'Crimson Text', serif",
+                      letterSpacing: '0.02em'
+                    }}>
+                      {reel.title}
+                    </div>
+                    <div style={{
+                      fontSize: '0.65rem',
+                      color: '#5d4a2a',
+                      textAlign: 'center',
+                      fontWeight: '600'
+                    }}>
+                      {reel.year} • {reel.frames?.length || 0} FRAMES
+                    </div>
+                  </div>
+
+                  {/* Selection Indicator */}
+                  {selectedReel?.id === reel.id && projectorState !== 'idle' && (
+                    <div style={{
+                      position: 'absolute',
+                      top: '-10px',
+                      right: '-10px',
+                      width: '24px',
+                      height: '24px',
                       borderRadius: '50%',
-                      background: '#0a0a0a',
-                      margin: '50%',
-                      transform: 'translate(-50%, -50%)',
-                      boxShadow: 'inset 0 2px 4px rgba(0,0,0,0.8)'
-                    }} />
-                  </div>
-
-                  {/* Film texture rings */}
-                  <div style={{
-                    position: 'absolute',
-                    inset: '15%',
-                    border: '1px solid rgba(0,0,0,0.2)',
-                    borderRadius: '50%'
-                  }} />
-                  <div style={{
-                    position: 'absolute',
-                    inset: '25%',
-                    border: '1px solid rgba(0,0,0,0.15)',
-                    borderRadius: '50%'
-                  }} />
+                      background: '#c4a574',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      fontSize: '14px',
+                      boxShadow: '0 2px 8px rgba(0,0,0,0.4)',
+                      animation: 'flicker 1s ease-in-out infinite'
+                    }}>
+                      ✓
+                    </div>
+                  )}
                 </div>
-
-                {/* Label */}
-                <div style={{
-                  position: 'absolute',
-                  bottom: '-35px',
-                  left: '50%',
-                  transform: 'translateX(-50%)',
-                  background: 'linear-gradient(to bottom, #f6efe2, #e8dcc8)',
-                  padding: '6px 14px',
-                  borderRadius: '4px',
-                  border: '2px solid rgba(139, 115, 85, 0.6)',
-                  whiteSpace: 'nowrap',
-                  boxShadow: '0 4px 12px rgba(0,0,0,0.4)',
-                  transition: 'all 0.3s',
-                  minWidth: '120px'
-                }}>
-                  <div style={{
-                    fontSize: '0.85rem',
-                    fontWeight: '700',
-                    color: '#1a1410',
-                    textAlign: 'center',
-                    marginBottom: '2px',
-                    fontFamily: "'Crimson Text', serif",
-                    letterSpacing: '0.02em'
-                  }}>
-                    {reel.title}
-                  </div>
-                  <div style={{
-                    fontSize: '0.65rem',
-                    color: '#5d4a2a',
-                    textAlign: 'center',
-                    fontWeight: '600'
-                  }}>
-                    {reel.year} • {reel.frames?.length || 0} FRAMES
-                  </div>
-                </div>
-
-                {/* Selection Indicator */}
-                {selectedReel?.id === reel.id && projectorState !== 'idle' && (
-                  <div style={{
-                    position: 'absolute',
-                    top: '-10px',
-                    right: '-10px',
-                    width: '24px',
-                    height: '24px',
-                    borderRadius: '50%',
-                    background: '#c4a574',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    fontSize: '14px',
-                    boxShadow: '0 2px 8px rgba(0,0,0,0.4)',
-                    animation: 'flicker 1s ease-in-out infinite'
-                  }}>
-                    ✓
-                  </div>
-                )}
               </div>
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
-      </div>
 
-      {/* Projection View - Full Screen Overlay */}
-      {projectorState === 'open' && selectedReel && (
-        <div style={{
-          position: 'fixed',
-          inset: 0,
-          zIndex: 100,
-          animation: 'fadeIn 0.4s ease'
-        }}>
-          <style jsx>{`
-            @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-          `}</style>
-          <Suspense fallback={
-            <div style={{
-              width: '100%',
-              height: '100%',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              color: '#f6efe2',
-              fontSize: '1.2rem',
-              background: '#0a0a0a'
-            }}>
-              Loading projection...
-            </div>
-          }>
-            <FrameViewer reel={selectedReel} onClose={handleCloseReel} />
-          </Suspense>
-        </div>
-      )}
+        {/* Projection View - Full Screen Overlay */}
+        {projectorState === 'open' && selectedReel && (
+          <div style={{
+            position: 'fixed',
+            inset: 0,
+            zIndex: 100,
+            animation: 'fadeIn 0.4s ease',
+            left: '320px' // Account for side rail width
+          }}>
+            <style jsx>{`
+              @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+            `}</style>
+            <Suspense fallback={
+              <div style={{
+                width: '100%',
+                height: '100%',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                color: '#f6efe2',
+                fontSize: '1.2rem',
+                background: '#0a0a0a'
+              }}>
+                Loading projection...
+              </div>
+            }>
+              <FrameViewer reel={selectedReel} onClose={handleCloseReel} />
+            </Suspense>
+          </div>
+        )}
+      </div>
     </div>
   )
 }

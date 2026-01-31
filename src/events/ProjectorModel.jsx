@@ -1,190 +1,265 @@
-// ProjectorModel.jsx - Fixed Version
-import { useRef, useEffect, useState } from 'react'
+// src/events/ProjectorModel.jsx
+import { useRef, useEffect, useState, useCallback } from 'react'
+import * as THREE from 'three'
+import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader'
+import { DRACOLoader } from 'three/examples/jsm/loaders/DRACOLoader'
 
-export default function ProjectorModel({ isOn = false, state = 'idle' }) {
+export default function ProjectorModel({ isOn = false, state = 'idle', modelPath = '/SectionModels/Old Projector/movieprojector.gltf' }) {
   const mountRef = useRef(null)
+  const sceneRef = useRef(null)
   const rendererRef = useRef(null)
+  const cameraRef = useRef(null)
+  const modelGroupRef = useRef(null)
+  const lightRef = useRef(null)
+  const reelsRef = useRef([])
+  const frameIdRef = useRef(null)
+  
   const [error, setError] = useState(null)
   const [loading, setLoading] = useState(true)
+  const [modelLoaded, setModelLoaded] = useState(false)
+
+  // Cleanup function
+  const cleanup = useCallback(() => {
+    if (frameIdRef.current) {
+      cancelAnimationFrame(frameIdRef.current)
+    }
+    if (rendererRef.current && mountRef.current) {
+      rendererRef.current.dispose()
+      if (rendererRef.current.domElement && mountRef.current.contains(rendererRef.current.domElement)) {
+        mountRef.current.removeChild(rendererRef.current.domElement)
+      }
+    }
+    sceneRef.current = null
+    rendererRef.current = null
+    cameraRef.current = null
+    modelGroupRef.current = null
+    reelsRef.current = []
+  }, [])
 
   useEffect(() => {
-    if (typeof window === 'undefined') return
-    
     let isActive = true
-    let scene, camera, renderer, modelGroup, light, filmReels = []
     
     const init = async () => {
       try {
-        // Load three.js if not present
-        if (!window.THREE) {
-          await new Promise((resolve, reject) => {
-            const s = document.createElement('script')
-            s.src = 'https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js'
-            s.onload = resolve
-            s.onerror = () => reject('Failed to load Three.js')
-            document.head.appendChild(s)
-          })
+        // Verify WebGL support
+        const canvas = document.createElement('canvas')
+        const gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl')
+        if (!gl) {
+          throw new Error('WebGL not supported')
         }
-        
-        // Load GLTFLoader if not present (CRITICAL FIX)
-        if (!window.THREE.GLTFLoader) {
-          await new Promise((resolve, reject) => {
-            const s = document.createElement('script')
-            s.src = 'https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js'
-            s.onload = resolve
-            s.onerror = () => reject('Failed to load GLTFLoader')
-            document.head.appendChild(s)
-          })
-        }
-        
-        if (!isActive) return
-        
-        const THREE = window.THREE
+
+        if (!mountRef.current) return
         
         // Scene setup
-        scene = new THREE.Scene()
-        camera = new THREE.PerspectiveCamera(45, mountRef.current.clientWidth / mountRef.current.clientHeight, 0.1, 1000)
+        const scene = new THREE.Scene()
+        sceneRef.current = scene
+        
+        // Camera setup - adjusted for side rail layout
+        const camera = new THREE.PerspectiveCamera(
+          45, 
+          mountRef.current.clientWidth / mountRef.current.clientHeight, 
+          0.1, 
+          1000
+        )
         camera.position.set(3, 2, 5)
+        cameraRef.current = camera
         
         // Renderer with transparency
-        renderer = new THREE.WebGLRenderer({ 
+        const renderer = new THREE.WebGLRenderer({ 
           antialias: true, 
           alpha: true,
-          premultipliedAlpha: false
+          premultipliedAlpha: false,
+          powerPreference: "high-performance"
         })
         renderer.setSize(mountRef.current.clientWidth, mountRef.current.clientHeight)
         renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
         renderer.setClearColor(0x000000, 0)
+        renderer.toneMapping = THREE.ACESFilmicToneMapping
+        renderer.toneMappingExposure = 1.2
+        renderer.shadowMap.enabled = true
+        renderer.shadowMap.type = THREE.PCFSoftShadowMap
         mountRef.current.appendChild(renderer.domElement)
         rendererRef.current = renderer
         
-        // Lighting
-        const ambient = new THREE.AmbientLight(0xffecd1, 0.5)
-        scene.add(ambient)
+        // Lighting setup for vintage projector
+        const ambientLight = new THREE.AmbientLight(0xffecd1, 0.3)
+        scene.add(ambientLight)
         
-        const main = new THREE.DirectionalLight(0xffecd1, 1.0)
-        main.position.set(5, 5, 5)
-        scene.add(main)
+        const mainLight = new THREE.DirectionalLight(0xffecd1, 1.2)
+        mainLight.position.set(5, 5, 5)
+        mainLight.castShadow = true
+        mainLight.shadow.mapSize.width = 1024
+        mainLight.shadow.mapSize.height = 1024
+        scene.add(mainLight)
         
-        // Projector spotlight
-        light = new THREE.SpotLight(0xffd700, 0)
-        light.position.set(0.8, 0, 1.5)
-        light.target.position.set(0, 0, 10)
-        light.angle = Math.PI / 6
-        light.penumbra = 0.5
-        light.distance = 20
-        scene.add(light)
-        scene.add(light.target)
+        // Rim light for metallic edges
+        const rimLight = new THREE.SpotLight(0x00E0FF, 0.8)
+        rimLight.position.set(-3, 2, -3)
+        rimLight.lookAt(0, 0, 0)
+        scene.add(rimLight)
         
-        // Try to load the model
-        let modelLoaded = false
+        // Projector spotlight (the beam)
+        const spotLight = new THREE.SpotLight(0xffd700, 0)
+        spotLight.position.set(0.8, 0, 1.5)
+        spotLight.target.position.set(0, 0, 10)
+        spotLight.angle = Math.PI / 5
+        spotLight.penumbra = 0.4
+        spotLight.distance = 25
+        spotLight.castShadow = true
+        scene.add(spotLight)
+        scene.add(spotLight.target)
+        lightRef.current = spotLight
+        
+        // Try loading GLTF model
+        let gltfLoaded = false
+        
         try {
-          // Try multiple possible paths (FIX FOR FILE LOCATION)
-          const possiblePaths = [
-            '/SectionModels/Old Projector/movieprojector.gltf',
-            '/movieprojector.gltf',
-            '/models/movieprojector.gltf',
-            'movieprojector.gltf'
-          ]
+          const loader = new GLTFLoader()
           
-          // Since you mentioned movieprojector.txt is the GLTF data, 
-          // you might need to change it to .gltf extension in your public folder
+          // Setup DRACO for compressed models (optional but recommended)
+          const dracoLoader = new DRACOLoader()
+          dracoLoader.setDecoderPath('https://www.gstatic.com/draco/versioned/decoders/1.5.6/')
+          loader.setDRACOLoader(dracoLoader)
           
-          const loader = new THREE.GLTFLoader()
+          console.log(`[ProjectorModel] Attempting to load: ${modelPath}`)
           
-          // Add a DRACOLoader if the model is compressed (optional but recommended)
-          // const dracoLoader = new THREE.DRACOLoader()
-          // dracoLoader.setDecoderPath('https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/libs/draco/')
-          // loader.setDRACOLoader(dracoLoader)
+          const gltf = await new Promise((resolve, reject) => {
+            loader.load(
+              modelPath,
+              resolve,
+              (progress) => {
+                const percent = (progress.loaded / progress.total) * 100
+                console.log(`[ProjectorModel] Loading: ${percent.toFixed(1)}%`)
+              },
+              (err) => reject(new Error(`GLTF Load Error: ${err.message}`))
+            )
+          })
           
-          for (const path of possiblePaths) {
-            try {
-              const gltf = await new Promise((resolve, reject) => {
-                loader.load(
-                  path,
-                  resolve,
-                  (progress) => {
-                    console.log(`Loading model from ${path}:`, (progress.loaded / progress.total * 100) + '%')
-                  },
-                  reject
-                )
-              })
+          if (!isActive) return
+          
+          const model = gltf.scene
+          
+          // Auto-calculate bounding box and center
+          const box = new THREE.Box3().setFromObject(model)
+          const center = box.getCenter(new THREE.Vector3())
+          const size = box.getSize(new THREE.Vector3())
+          
+          // Normalize scale to fit view
+          const maxDim = Math.max(size.x, size.y, size.z)
+          const scale = 1.5 / maxDim
+          model.scale.setScalar(scale)
+          
+          // Center the model
+          model.position.sub(center.multiplyScalar(scale))
+          model.position.y -= 0.8 // Lower slightly
+          model.rotation.y = -Math.PI / 2
+          
+          // Enable shadows
+          model.traverse((child) => {
+            if (child.isMesh) {
+              child.castShadow = true
+              child.receiveShadow = true
               
-              modelGroup = gltf.scene
-              modelGroup.position.set(0, -0.8, 0)
-              modelGroup.scale.set(1.5, 1.5, 1.5)
-              modelGroup.rotation.set(0, -Math.PI / 2, 0)
-              scene.add(modelGroup)
-              modelLoaded = true
-              console.log(`Successfully loaded model from: ${path}`)
-              break
-            } catch (e) {
-              console.warn(`Failed to load from ${path}:`, e.message)
-              continue
+              // Enhance materials
+              if (child.material) {
+                child.material.metalness = Math.max(child.material.metalness, 0.6)
+                child.material.roughness = Math.min(child.material.roughness, 0.7)
+                child.material.envMapIntensity = 1.5
+              }
             }
-          }
-        } catch (modelErr) {
-          console.warn('Model loading failed, using fallback:', modelErr)
+          })
+          
+          scene.add(model)
+          modelGroupRef.current = model
+          gltfLoaded = true
+          setModelLoaded(true)
+          console.log('[ProjectorModel] GLTF loaded successfully')
+          
+          // Identify reel objects for animation
+          model.traverse((child) => {
+            const name = child.name.toLowerCase()
+            if (name.includes('reel') || name.includes('spool') || name.includes('film')) {
+              reelsRef.current.push(child)
+              console.log(`[ProjectorModel] Found reel: ${child.name}`)
+            }
+          })
+          
+        } catch (gltfError) {
+          console.warn('[ProjectorModel] GLTF failed, using procedural fallback:', gltfError.message)
         }
         
-        // Fallback: Create procedural vintage projector
-        if (!modelLoaded) {
-          console.log('Using procedural fallback model')
-          modelGroup = createVintageProjector(THREE)
-          scene.add(modelGroup)
+        // Procedural fallback
+        if (!gltfLoaded) {
+          console.log('[ProjectorModel] Generating procedural projector...')
+          const fallbackModel = createProceduralProjector()
+          scene.add(fallbackModel)
+          modelGroupRef.current = fallbackModel
+          
+          // Identify reels in procedural model
+          fallbackModel.traverse((child) => {
+            if (child.name?.includes('reel')) {
+              reelsRef.current.push(child)
+            }
+          })
         }
-        
-        // Store reels for animation
-        modelGroup.traverse((child) => {
-          if (child.name && child.name.toLowerCase().includes('reel')) {
-            filmReels.push(child)
-          }
-        })
         
         setLoading(false)
         
         // Animation loop
         const animate = () => {
           if (!isActive) return
-          requestAnimationFrame(animate)
+          frameIdRef.current = requestAnimationFrame(animate)
           
-          if (modelGroup) {
-            // Smooth state transitions
-            const targetZ = state === 'projecting' ? -1 : state === 'open' ? -2 : 0
-            const targetScale = state === 'projecting' ? 0.9 : state === 'open' ? 0.7 : 1
+          const delta = 0.016 // approximate delta
+          const time = Date.now() * 0.001
+          
+          if (modelGroupRef.current) {
+            // Smooth state transitions (back away when projecting)
+            const targetZ = state === 'projecting' ? -1.5 : state === 'open' ? -2.5 : 0
+            const targetScale = state === 'open' ? 0.7 : state === 'projecting' ? 0.85 : 1.0
             
-            modelGroup.position.z += (targetZ - modelGroup.position.z) * 0.05
+            modelGroupRef.current.position.z += (targetZ - modelGroupRef.current.position.z) * 0.05
             
-            const currentScale = modelGroup.scale.x
-            const targetS = state === 'open' ? 0.7 : state === 'projecting' ? 0.85 : 1.0
-            const newScale = currentScale + (targetS - currentScale) * 0.05
-            modelGroup.scale.set(newScale, newScale, newScale)
+            const currentScale = modelGroupRef.current.scale.x
+            const newScale = currentScale + (targetScale - currentScale) * 0.05
+            modelGroupRef.current.scale.set(newScale, newScale, newScale)
+            
+            // Subtle idle rotation
+            if (state === 'idle') {
+              modelGroupRef.current.rotation.y = -Math.PI / 2 + Math.sin(time * 0.5) * 0.05
+            }
             
             // Rotate reels when projecting
-            if (filmReels.length > 0 && isOn) {
-              filmReels.forEach((reel, i) => {
-                reel.rotation.z -= 0.02 * (i % 2 === 0 ? 1 : -1)
+            if (reelsRef.current.length > 0 && isOn) {
+              reelsRef.current.forEach((reel, i) => {
+                if (reel) {
+                  // Alternate rotation directions for realism
+                  const direction = i % 2 === 0 ? 1 : -1
+                  reel.rotation.z -= 2.0 * delta * direction
+                }
               })
             }
           }
           
-          // Dynamic spotlight
-          if (light) {
-            const targetIntensity = isOn ? (state === 'open' ? 2 : 1.8) : 0
-            light.intensity += (targetIntensity - light.intensity) * 0.1
-            
+          // Dynamic spotlight intensity with flicker effect
+          if (lightRef.current) {
+            let targetIntensity = 0
             if (isOn) {
-              light.intensity += Math.sin(Date.now() * 0.002) * 0.1
+              targetIntensity = state === 'open' ? 2.5 : 2.0
+              // Add subtle flicker
+              targetIntensity += Math.sin(time * 20) * 0.1 + Math.sin(time * 45) * 0.05
             }
+            lightRef.current.intensity += (targetIntensity - lightRef.current.intensity) * 0.1
           }
           
           renderer.render(scene, camera)
         }
+        
         animate()
         
       } catch (err) {
-        console.error('Projector initialization error:', err)
-        setError(err.message || 'Failed to initialize 3D scene')
+        console.error('[ProjectorModel] Initialization error:', err)
+        setError(err.message)
         setLoading(false)
       }
     }
@@ -193,10 +268,14 @@ export default function ProjectorModel({ isOn = false, state = 'idle' }) {
     
     // Resize handler
     const handleResize = () => {
-      if (!camera || !renderer || !mountRef.current) return
-      camera.aspect = mountRef.current.clientWidth / mountRef.current.clientHeight
-      camera.updateProjectionMatrix()
-      renderer.setSize(mountRef.current.clientWidth, mountRef.current.clientHeight)
+      if (!cameraRef.current || !rendererRef.current || !mountRef.current) return
+      
+      const width = mountRef.current.clientWidth
+      const height = mountRef.current.clientHeight
+      
+      cameraRef.current.aspect = width / height
+      cameraRef.current.updateProjectionMatrix()
+      rendererRef.current.setSize(width, height)
     }
     
     window.addEventListener('resize', handleResize)
@@ -204,117 +283,124 @@ export default function ProjectorModel({ isOn = false, state = 'idle' }) {
     return () => {
       isActive = false
       window.removeEventListener('resize', handleResize)
-      if (renderer) {
-        renderer.dispose()
-        if (mountRef.current && renderer.domElement && mountRef.current.contains(renderer.domElement)) {
-          mountRef.current.removeChild(renderer.domElement)
-        }
-      }
+      cleanup()
     }
-  }, [state, isOn])
-  
-  // Procedural vintage projector generator
-  const createVintageProjector = (THREE) => {
+  }, [modelPath, cleanup]) // Re-init if modelPath changes
+
+  // Update state animations when props change
+  useEffect(() => {
+    // This runs when isOn or state changes, handled in animation loop
+  }, [isOn, state])
+
+  const createProceduralProjector = () => {
     const group = new THREE.Group()
     
-    // Main body - vintage metal case
-    const bodyGeo = new THREE.BoxGeometry(2, 1.2, 1.4)
+    // Materials
     const bodyMat = new THREE.MeshStandardMaterial({ 
       color: 0x3d2817, 
-      metalness: 0.6, 
-      roughness: 0.4,
+      metalness: 0.7, 
+      roughness: 0.3,
       name: 'body'
     })
-    const body = new THREE.Mesh(bodyGeo, bodyMat)
-    body.castShadow = true
-    group.add(body)
     
-    // Lens housing
-    const lensHousingGeo = new THREE.CylinderGeometry(0.4, 0.5, 0.8, 32)
-    const lensHousingMat = new THREE.MeshStandardMaterial({ color: 0x2a2a2a, metalness: 0.8, roughness: 0.3 })
-    const lensHousing = new THREE.Mesh(lensHousingGeo, lensHousingMat)
+    const metalMat = new THREE.MeshStandardMaterial({ 
+      color: 0x5a5a5a, 
+      metalness: 0.9, 
+      roughness: 0.2 
+    })
+    
+    const goldMat = new THREE.MeshStandardMaterial({ 
+      color: 0x8b6914, 
+      metalness: 0.8, 
+      roughness: 0.3,
+      emissive: 0x000000
+    })
+    
+    // Main chassis
+    const chassisGeo = new THREE.BoxGeometry(2.2, 1.4, 1.6)
+    const chassis = new THREE.Mesh(chassisGeo, bodyMat)
+    chassis.position.y = 0.2
+    chassis.castShadow = true
+    chassis.receiveShadow = true
+    group.add(chassis)
+    
+    // Lens assembly
+    const lensHousingGeo = new THREE.CylinderGeometry(0.35, 0.45, 1.2, 32)
+    const lensHousing = new THREE.Mesh(lensHousingGeo, metalMat)
     lensHousing.rotation.z = Math.PI / 2
-    lensHousing.position.set(1.2, 0, 0)
+    lensHousing.position.set(1.4, 0.2, 0)
+    lensHousing.castShadow = true
     group.add(lensHousing)
     
     // Lens glass
-    const lensGeo = new THREE.CylinderGeometry(0.25, 0.25, 0.05, 32)
+    const lensGeo = new THREE.CylinderGeometry(0.25, 0.25, 0.1, 32)
     const lensMat = new THREE.MeshPhysicalMaterial({ 
       color: 0x88ccff, 
-      transmission: 0.9, 
+      transmission: 0.9,
       opacity: 1,
       metalness: 0,
       roughness: 0,
       ior: 1.5,
-      thickness: 0.1
+      thickness: 0.5
     })
     const lens = new THREE.Mesh(lensGeo, lensMat)
     lens.rotation.z = Math.PI / 2
-    lens.position.set(1.6, 0, 0)
+    lens.position.set(2.05, 0.2, 0)
     group.add(lens)
     
-    // Film reels (gold colored)
-    const createReel = (yPos) => {
+    // Film reels
+    const createReel = (yPos, name) => {
       const reelGroup = new THREE.Group()
-      reelGroup.position.set(-0.6, yPos, 0)
-      reelGroup.name = `reel_${yPos > 0 ? 'top' : 'bottom'}`
+      reelGroup.position.set(-0.4, yPos, 0)
+      reelGroup.name = name
       
-      // Reel discs
-      const discGeo = new THREE.CylinderGeometry(0.6, 0.6, 0.08, 32)
-      const discMat = new THREE.MeshStandardMaterial({ color: 0x8b6914, metalness: 0.7, roughness: 0.3 })
-      
-      const topDisc = new THREE.Mesh(discGeo, discMat)
-      topDisc.position.y = 0.2
-      reelGroup.add(topDisc)
-      
-      const bottomDisc = new THREE.Mesh(discGeo, discMat)
-      bottomDisc.position.y = -0.2
-      reelGroup.add(bottomDisc)
+      // Outer rim
+      const rimGeo = new THREE.TorusGeometry(0.5, 0.08, 16, 64)
+      const rim = new THREE.Mesh(rimGeo, goldMat)
+      reelGroup.add(rim)
       
       // Center hub
-      const hubGeo = new THREE.CylinderGeometry(0.15, 0.15, 0.45, 16)
-      const hubMat = new THREE.MeshStandardMaterial({ color: 0x1a1a1a, metalness: 0.9 })
-      const hub = new THREE.Mesh(hubGeo, hubMat)
+      const hubGeo = new THREE.CylinderGeometry(0.12, 0.12, 0.3, 16)
+      const hub = new THREE.Mesh(hubGeo, metalMat)
+      hub.rotation.x = Math.PI / 2
       reelGroup.add(hub)
       
-      // Spokes
-      for (let i = 0; i < 6; i++) {
-        const spokeGeo = new THREE.BoxGeometry(0.4, 0.05, 0.05)
-        const spoke = new THREE.Mesh(spokeGeo, discMat)
-        spoke.position.y = 0.2
-        spoke.rotation.y = (i / 6) * Math.PI
-        spoke.position.x = Math.cos((i / 6) * Math.PI * 2) * 0.3
-        spoke.position.z = Math.sin((i / 6) * Math.PI * 2) * 0.3
+      // spokes
+      for (let i = 0; i < 5; i++) {
+        const spokeGeo = new THREE.BoxGeometry(0.6, 0.04, 0.04)
+        const spoke = new THREE.Mesh(spokeGeo, goldMat)
+        spoke.rotation.z = (i / 5) * Math.PI
+        spoke.rotation.x = Math.PI / 2
         reelGroup.add(spoke)
-        
-        const spoke2 = spoke.clone()
-        spoke2.position.y = -0.2
-        reelGroup.add(spoke2)
       }
       
       return reelGroup
     }
     
-    group.add(createReel(0.9))
-    group.add(createReel(-0.9))
+    const topReel = createReel(1.0, 'reel_top')
+    const bottomReel = createReel(-0.6, 'reel_bottom')
+    group.add(topReel)
+    group.add(bottomReel)
     
     // Control knobs
-    const knobGeo = new THREE.CylinderGeometry(0.12, 0.12, 0.2, 16)
-    const knobMat = new THREE.MeshStandardMaterial({ color: 0x1a1a1a, metalness: 0.5 })
-    const knob = new THREE.Mesh(knobGeo, knobMat)
-    knob.rotation.z = Math.PI / 2
-    knob.position.set(0.5, -0.3, 0.6)
-    group.add(knob)
+    const knobGeo = new THREE.CylinderGeometry(0.1, 0.1, 0.25, 16)
+    const knob1 = new THREE.Mesh(knobGeo, metalMat)
+    knob1.rotation.z = Math.PI / 2
+    knob1.position.set(0.6, -0.3, 0.7)
+    group.add(knob1)
     
-    // Feet
-    const footGeo = new THREE.BoxGeometry(0.2, 0.15, 0.2)
-    const footMat = new THREE.MeshStandardMaterial({ color: 0x1a1a1a })
-    const positions = [[-0.8, -0.7, 0.5], [0.8, -0.7, 0.5], [-0.8, -0.7, -0.5], [0.8, -0.7, -0.5]]
-    positions.forEach(pos => {
-      const foot = new THREE.Mesh(footGeo, footMat)
-      foot.position.set(...pos)
-      group.add(foot)
-    })
+    const knob2 = new THREE.Mesh(knobGeo, metalMat)
+    knob2.rotation.z = Math.PI / 2
+    knob2.position.set(0.2, -0.3, 0.7)
+    group.add(knob2)
+    
+    // Vents
+    for (let i = 0; i < 3; i++) {
+      const ventGeo = new THREE.BoxGeometry(0.8, 0.02, 0.1)
+      const vent = new THREE.Mesh(ventGeo, metalMat)
+      vent.position.set(-0.2, 0.4 - (i * 0.15), 0.8)
+      group.add(vent)
+    }
     
     return group
   }
@@ -333,10 +419,16 @@ export default function ProjectorModel({ isOn = false, state = 'idle' }) {
         flexDirection: 'column',
         gap: '1rem',
         padding: '2rem',
-        textAlign: 'center'
+        textAlign: 'center',
+        border: '1px solid rgba(255,100,100,0.2)'
       }}>
-        <div style={{ fontSize: '1.5rem' }}>⚠️ Projector Error</div>
-        <div style={{ fontSize: '0.9rem', opacity: 0.8 }}>{error}</div>
+        <div style={{ fontSize: '1.5rem' }}>⚠️</div>
+        <div style={{ fontSize: '0.9rem', opacity: 0.8, fontFamily: 'monospace' }}>
+          {error}
+        </div>
+        <div style={{ fontSize: '0.8rem', color: '#666' }}>
+          Check console for details
+        </div>
       </div>
     )
   }
@@ -350,10 +442,22 @@ export default function ProjectorModel({ isOn = false, state = 'idle' }) {
         alignItems: 'center',
         justifyContent: 'center',
         color: '#c4a574',
-        fontSize: '0.9rem'
+        fontSize: '0.9rem',
+        flexDirection: 'column',
+        gap: '1rem'
       }}>
-        <div style={{ textAlign: 'center' }}>
-          <div style={{ marginBottom: '1rem', fontSize: '1.5rem' }}>🎬</div>
+        <div style={{ 
+          width: '40px', 
+          height: '40px', 
+          border: '3px solid rgba(196, 165, 116, 0.2)',
+          borderTop: '3px solid #c4a574',
+          borderRadius: '50%',
+          animation: 'spin 1s linear infinite'
+        }} />
+        <style jsx>{`
+          @keyframes spin { to { transform: rotate(360deg); } }
+        `}</style>
+        <div style={{ fontFamily: 'monospace' }}>
           Loading projector...
         </div>
       </div>
@@ -366,7 +470,8 @@ export default function ProjectorModel({ isOn = false, state = 'idle' }) {
       style={{ 
         width: '100%', 
         height: '100%',
-        background: 'transparent'
+        background: 'transparent',
+        cursor: 'grab'
       }}
     />
   )
