@@ -14,7 +14,7 @@ export default function ProfessionalDiary() {
 
   const yearTabs = diaryEntries.map((entry, index) => ({
     index,
-    dateRange: `${entry.dates.start} — ${entry.dates.end}`,
+    dateRange: `${entry.dates.start} - ${entry.dates.end}`,
     organization: entry.organization
   }));
 
@@ -261,7 +261,7 @@ export default function ProfessionalDiary() {
               gap: '0.5rem'
             }}>
               <span style={{ opacity: 0.7 }}>📅</span>
-              {currentEntry.dates.start} — {currentEntry.dates.end}
+              {currentEntry.dates.start} - {currentEntry.dates.end}
             </div>
 
             {currentEntry.tools.length > 0 && (
@@ -357,7 +357,7 @@ export default function ProfessionalDiary() {
                     left: '0.5rem',
                     color: '#8b7355',
                     fontWeight: 'bold'
-                  }}>—</span>
+                  }}>-</span>
                   {note}
                 </div>
               ))}

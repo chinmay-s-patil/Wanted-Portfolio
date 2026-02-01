@@ -268,7 +268,7 @@ export default function WantedPosterLanding() {
                 }}>
                   Known for building CFD pipelines, optimization workflows, and visualization tools. 
                   Frequently spotted working with OpenFOAM, Python, and large datasets. Approach with 
-                  caution—extremely collaborative and solution-oriented.
+                  caution-extremely collaborative and solution-oriented.
                 </p>
               </div>
 

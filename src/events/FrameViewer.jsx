@@ -1,13 +1,11 @@
 // src/events/FrameViewer.jsx
 import { useState, useEffect, useCallback } from 'react'
-import { useNavigate } from 'react-router-dom'
 
 export default function FrameViewer({ reel, onClose }) {
   const [currentFrameIndex, setCurrentFrameIndex] = useState(0)
   const [isPlaying, setIsPlaying] = useState(false)
   const [showDetails, setShowDetails] = useState(false)
   const [direction, setDirection] = useState(0)
-  const navigate = useNavigate()
 
   const currentFrame = reel.frames[currentFrameIndex]
 
@@ -90,141 +88,7 @@ export default function FrameViewer({ reel, onClose }) {
         .frame-content { animation: ${direction === 1 ? 'slideInRight' : direction === -1 ? 'slideInLeft' : 'none'} 0.3s ease; }
       `}</style>
 
-      {/* SIDE RAIL - Consistent with EventsPage */}
-      <aside style={{
-        width: '320px',
-        height: '100%',
-        background: 'rgba(7, 16, 26, 0.95)',
-        backdropFilter: 'blur(12px)',
-        borderRight: '1px solid rgba(148, 163, 184, 0.1)',
-        padding: '24px',
-        display: 'flex',
-        flexDirection: 'column',
-        gap: '12px',
-        zIndex: 50,
-        boxShadow: '4px 0 24px rgba(0,0,0,0.4)'
-      }}>
-        {/* Back Button - Nav-ideas.md style */}
-        <button
-          onClick={onClose}
-          style={{
-            display: 'inline-flex',
-            alignItems: 'center',
-            gap: '8px',
-            padding: '8px 12px',
-            borderRadius: '999px',
-            border: '1px solid rgba(255,255,255,0.08)',
-            background: 'rgba(255,255,255,0.04)',
-            color: '#cbd5e1',
-            fontSize: '0.875rem',
-            fontWeight: 500,
-            cursor: 'pointer',
-            transition: 'all 140ms cubic-bezier(.2,.9,.13,1)',
-            marginBottom: '12px',
-            alignSelf: 'flex-start',
-            fontFamily: "'Inter', sans-serif"
-          }}
-          onMouseEnter={(e) => { 
-            e.currentTarget.style.transform = 'translateY(-2px)';
-            e.currentTarget.style.background = 'rgba(255,255,255,0.08)';
-          }}
-          onMouseLeave={(e) => { 
-            e.currentTarget.style.transform = 'translateY(0)';
-            e.currentTarget.style.background = 'rgba(255,255,255,0.04)';
-          }}
-          aria-label="Back to archive"
-        >
-          ← Back to archive
-        </button>
-
-        {/* Kicker */}
-        <div style={{
-          fontSize: '0.875rem',
-          fontWeight: 600,
-          color: '#94a3b8',
-          letterSpacing: '0.12em',
-          textTransform: 'uppercase',
-          marginTop: '12px'
-        }}>
-          {reel.category || 'Projection'}
-        </div>
-
-        {/* Title */}
-        <h1 style={{
-          fontSize: '1.5rem',
-          fontWeight: 800,
-          lineHeight: 1.1,
-          color: '#EAF2FF',
-          margin: '8px 0 0 0',
-          fontFamily: "'Orbitron', sans-serif",
-          maxWidth: '100%',
-          wordWrap: 'break-word'
-        }}>
-          {reel.title}
-        </h1>
-
-        {/* Description/Metadata */}
-        <div style={{
-          marginTop: '12px',
-          paddingTop: '16px',
-          borderTop: '1px solid rgba(148, 163, 184, 0.2)',
-          display: 'flex',
-          flexDirection: 'column',
-          gap: '12px'
-        }}>
-          <div>
-            <div style={{ fontSize: '0.75rem', color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '4px' }}>Location</div>
-            <div style={{ fontSize: '0.95rem', color: '#bfcfe0' }}>{reel.location}</div>
-          </div>
-          
-          <div>
-            <div style={{ fontSize: '0.75rem', color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '4px' }}>Date</div>
-            <div style={{ fontSize: '0.95rem', color: '#bfcfe0' }}>{reel.dates?.start} — {reel.dates?.end}</div>
-          </div>
-
-          <div>
-            <div style={{ fontSize: '0.75rem', color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '4px' }}>Frame</div>
-            <div style={{ fontSize: '1.1rem', color: '#00E0FF', fontFamily: "'Roboto Mono', monospace", fontWeight: 600 }}>
-              {currentFrameIndex + 1} <span style={{ color: '#64748b' }}>/</span> {reel.frames.length}
-            </div>
-          </div>
-        </div>
-
-        {/* Progress Bar in Rail */}
-        <div style={{ marginTop: '24px' }}>
-          <div style={{ 
-            width: '100%', 
-            height: '4px', 
-            background: 'rgba(255,255,255,0.1)', 
-            borderRadius: '2px',
-            overflow: 'hidden'
-          }}>
-            <div style={{
-              width: `${((currentFrameIndex + 1) / reel.frames.length) * 100}%`,
-              height: '100%',
-              background: '#00E0FF',
-              transition: 'width 0.3s ease'
-            }} />
-          </div>
-        </div>
-
-        {/* Control hints */}
-        <div style={{
-          marginTop: 'auto',
-          fontSize: '0.75rem',
-          color: '#64748b',
-          fontFamily: "'Roboto Mono', monospace",
-          lineHeight: '1.6',
-          paddingTop: '16px',
-          borderTop: '1px solid rgba(148, 163, 184, 0.1)'
-        }}>
-          <div>← → Navigate</div>
-          <div>Space Play/Pause</div>
-          <div>Esc Close</div>
-        </div>
-      </aside>
-
-      {/* Main Projection Area */}
+      {/* Main Projection Area - Full Width (no sidebar) */}
       <div style={{
         flex: 1,
         display: 'flex',
@@ -366,7 +230,7 @@ export default function FrameViewer({ reel, onClose }) {
                     marginBottom: '2rem',
                     fontStyle: 'italic'
                   }}>
-                    {reel.location} • {reel.dates?.start} — {reel.dates?.end}
+                    {reel.location} • {reel.dates?.start} - {reel.dates?.end}
                   </div>
                   {reel.summary && (
                     <p style={{

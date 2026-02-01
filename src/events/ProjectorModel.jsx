@@ -4,7 +4,7 @@ import * as THREE from 'three'
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader'
 import { DRACOLoader } from 'three/examples/jsm/loaders/DRACOLoader'
 
-export default function ProjectorModel({ isOn = false, state = 'idle', modelPath = '/SectionModels/Old Projector/movieprojector.gltf' }) {
+export default function ProjectorModel({ isOn = false, state = 'idle', modelPath = '/movieprojector.gltf' }) {
   const mountRef = useRef(null)
   const sceneRef = useRef(null)
   const rendererRef = useRef(null)
@@ -17,6 +17,18 @@ export default function ProjectorModel({ isOn = false, state = 'idle', modelPath
   const [error, setError] = useState(null)
   const [loading, setLoading] = useState(true)
   const [modelLoaded, setModelLoaded] = useState(false)
+  const [loadAttempt, setLoadAttempt] = useState(0)
+
+  // Multiple paths to try for the GLTF model - prioritize the provided modelPath
+  const MODEL_PATHS = [
+    modelPath,
+    '/movieprojector.gltf',
+    '/SectionModels/Old Projector/movieprojector.gltf',
+    './movieprojector.gltf',
+    './SectionModels/Old Projector/movieprojector.gltf',
+    '/public/movieprojector.gltf',
+    '/public/SectionModels/Old Projector/movieprojector.gltf'
+  ]
 
   // Cleanup function
   const cleanup = useCallback(() => {
@@ -54,7 +66,7 @@ export default function ProjectorModel({ isOn = false, state = 'idle', modelPath
         const scene = new THREE.Scene()
         sceneRef.current = scene
         
-        // Camera setup - adjusted for side rail layout
+        // Camera setup
         const camera = new THREE.PerspectiveCamera(
           45, 
           mountRef.current.clientWidth / mountRef.current.clientHeight, 
@@ -110,85 +122,100 @@ export default function ProjectorModel({ isOn = false, state = 'idle', modelPath
         scene.add(spotLight.target)
         lightRef.current = spotLight
         
-        // Try loading GLTF model
+        // Try loading GLTF model with multiple paths
         let gltfLoaded = false
         
-        try {
-          const loader = new GLTFLoader()
+        const tryLoadGLTF = async (pathIndex = 0) => {
+          if (pathIndex >= MODEL_PATHS.length) {
+            console.log('[ProjectorModel] All GLTF paths failed, using procedural fallback')
+            return false
+          }
+
+          const currentPath = MODEL_PATHS[pathIndex]
           
-          // Setup DRACO for compressed models (optional but recommended)
-          const dracoLoader = new DRACOLoader()
-          dracoLoader.setDecoderPath('https://www.gstatic.com/draco/versioned/decoders/1.5.6/')
-          loader.setDRACOLoader(dracoLoader)
-          
-          console.log(`[ProjectorModel] Attempting to load: ${modelPath}`)
-          
-          const gltf = await new Promise((resolve, reject) => {
-            loader.load(
-              modelPath,
-              resolve,
-              (progress) => {
-                const percent = (progress.loaded / progress.total) * 100
-                console.log(`[ProjectorModel] Loading: ${percent.toFixed(1)}%`)
-              },
-              (err) => reject(new Error(`GLTF Load Error: ${err.message}`))
-            )
-          })
-          
-          if (!isActive) return
-          
-          const model = gltf.scene
-          
-          // Auto-calculate bounding box and center
-          const box = new THREE.Box3().setFromObject(model)
-          const center = box.getCenter(new THREE.Vector3())
-          const size = box.getSize(new THREE.Vector3())
-          
-          // Normalize scale to fit view
-          const maxDim = Math.max(size.x, size.y, size.z)
-          const scale = 1.5 / maxDim
-          model.scale.setScalar(scale)
-          
-          // Center the model
-          model.position.sub(center.multiplyScalar(scale))
-          model.position.y -= 0.8 // Lower slightly
-          model.rotation.y = -Math.PI / 2
-          
-          // Enable shadows
-          model.traverse((child) => {
-            if (child.isMesh) {
-              child.castShadow = true
-              child.receiveShadow = true
-              
-              // Enhance materials
-              if (child.material) {
-                child.material.metalness = Math.max(child.material.metalness, 0.6)
-                child.material.roughness = Math.min(child.material.roughness, 0.7)
-                child.material.envMapIntensity = 1.5
+          try {
+            const loader = new GLTFLoader()
+            
+            // Setup DRACO for compressed models
+            const dracoLoader = new DRACOLoader()
+            dracoLoader.setDecoderPath('https://www.gstatic.com/draco/versioned/decoders/1.5.6/')
+            loader.setDRACOLoader(dracoLoader)
+            
+            console.log(`[ProjectorModel] Attempt ${pathIndex + 1}/${MODEL_PATHS.length}: Loading ${currentPath}`)
+            setLoadAttempt(pathIndex + 1)
+            
+            const gltf = await new Promise((resolve, reject) => {
+              loader.load(
+                currentPath,
+                resolve,
+                (progress) => {
+                  const percent = (progress.loaded / progress.total) * 100
+                  console.log(`[ProjectorModel] ${currentPath}: ${percent.toFixed(1)}%`)
+                },
+                (err) => reject(new Error(`Failed: ${err.message}`))
+              )
+            })
+            
+            if (!isActive) return false
+            
+            const model = gltf.scene
+            
+            // Auto-calculate bounding box and center
+            const box = new THREE.Box3().setFromObject(model)
+            const center = box.getCenter(new THREE.Vector3())
+            const size = box.getSize(new THREE.Vector3())
+            
+            // Normalize scale to fit view
+            const maxDim = Math.max(size.x, size.y, size.z)
+            const scale = 1.5 / maxDim
+            model.scale.setScalar(scale)
+            
+            // Center the model
+            model.position.sub(center.multiplyScalar(scale))
+            model.position.y -= 0.8 // Lower slightly
+            model.rotation.y = -Math.PI / 2
+            
+            // Enable shadows
+            model.traverse((child) => {
+              if (child.isMesh) {
+                child.castShadow = true
+                child.receiveShadow = true
+                
+                // Enhance materials
+                if (child.material) {
+                  child.material.metalness = Math.max(child.material.metalness, 0.6)
+                  child.material.roughness = Math.min(child.material.roughness, 0.7)
+                  child.material.envMapIntensity = 1.5
+                }
               }
-            }
-          })
-          
-          scene.add(model)
-          modelGroupRef.current = model
-          gltfLoaded = true
-          setModelLoaded(true)
-          console.log('[ProjectorModel] GLTF loaded successfully')
-          
-          // Identify reel objects for animation
-          model.traverse((child) => {
-            const name = child.name.toLowerCase()
-            if (name.includes('reel') || name.includes('spool') || name.includes('film')) {
-              reelsRef.current.push(child)
-              console.log(`[ProjectorModel] Found reel: ${child.name}`)
-            }
-          })
-          
-        } catch (gltfError) {
-          console.warn('[ProjectorModel] GLTF failed, using procedural fallback:', gltfError.message)
+            })
+            
+            scene.add(model)
+            modelGroupRef.current = model
+            
+            console.log(`[ProjectorModel] ✓ GLTF loaded successfully from ${currentPath}`)
+            
+            // Identify reel objects for animation
+            model.traverse((child) => {
+              const name = child.name.toLowerCase()
+              if (name.includes('reel') || name.includes('spool') || name.includes('film')) {
+                reelsRef.current.push(child)
+                console.log(`[ProjectorModel] Found reel: ${child.name}`)
+              }
+            })
+            
+            return true
+            
+          } catch (gltfError) {
+            console.warn(`[ProjectorModel] Path ${pathIndex + 1} failed:`, gltfError.message)
+            // Try next path
+            return tryLoadGLTF(pathIndex + 1)
+          }
         }
         
-        // Procedural fallback
+        gltfLoaded = await tryLoadGLTF(0)
+        
+        // Procedural fallback if all GLTF attempts failed
         if (!gltfLoaded) {
           console.log('[ProjectorModel] Generating procedural projector...')
           const fallbackModel = createProceduralProjector()
@@ -203,6 +230,7 @@ export default function ProjectorModel({ isOn = false, state = 'idle', modelPath
           })
         }
         
+        setModelLoaded(true)
         setLoading(false)
         
         // Animation loop
@@ -214,7 +242,7 @@ export default function ProjectorModel({ isOn = false, state = 'idle', modelPath
           const time = Date.now() * 0.001
           
           if (modelGroupRef.current) {
-            // Smooth state transitions (back away when projecting)
+            // Smooth state transitions
             const targetZ = state === 'projecting' ? -1.5 : state === 'open' ? -2.5 : 0
             const targetScale = state === 'open' ? 0.7 : state === 'projecting' ? 0.85 : 1.0
             
@@ -233,7 +261,6 @@ export default function ProjectorModel({ isOn = false, state = 'idle', modelPath
             if (reelsRef.current.length > 0 && isOn) {
               reelsRef.current.forEach((reel, i) => {
                 if (reel) {
-                  // Alternate rotation directions for realism
                   const direction = i % 2 === 0 ? 1 : -1
                   reel.rotation.z -= 2.0 * delta * direction
                 }
@@ -285,7 +312,7 @@ export default function ProjectorModel({ isOn = false, state = 'idle', modelPath
       window.removeEventListener('resize', handleResize)
       cleanup()
     }
-  }, [modelPath, cleanup]) // Re-init if modelPath changes
+  }, [cleanup])
 
   // Update state animations when props change
   useEffect(() => {
@@ -427,7 +454,7 @@ export default function ProjectorModel({ isOn = false, state = 'idle', modelPath
           {error}
         </div>
         <div style={{ fontSize: '0.8rem', color: '#666' }}>
-          Check console for details
+          Using procedural fallback model
         </div>
       </div>
     )
@@ -459,6 +486,9 @@ export default function ProjectorModel({ isOn = false, state = 'idle', modelPath
         `}</style>
         <div style={{ fontFamily: 'monospace' }}>
           Loading projector...
+          {loadAttempt > 0 && <div style={{ fontSize: '0.75rem', opacity: 0.7, marginTop: '4px' }}>
+            Attempt {loadAttempt}/{MODEL_PATHS.length}
+          </div>}
         </div>
       </div>
     )

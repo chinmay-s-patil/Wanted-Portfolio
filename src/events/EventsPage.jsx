@@ -88,10 +88,15 @@ export default function EventsPage() {
           0%, 100% { box-shadow: 0 0 60px rgba(246, 239, 226, 0.1); }
           50% { box-shadow: 0 0 80px rgba(246, 239, 226, 0.15); }
         }
+        @keyframes slideInLeft { 
+          from { opacity: 0; transform: translateX(-30px); } 
+          to { opacity: 1; transform: translateX(0); } 
+        }
         
         .cassette-reel:hover { animation: reelHover 0.6s ease-in-out; }
         .film-strip { animation: filmTravel 0.6s ease-in-out forwards; }
         .screen-glow { animation: screenGlow 4s ease-in-out infinite; }
+        .reel-details-content { animation: slideInLeft 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
         
         /* Nav-ideas.md design tokens */
         :root {
@@ -106,134 +111,298 @@ export default function EventsPage() {
         }
       `}</style>
 
-      {/* SIDE RAIL - Left Panel (per nav-ideas.md) */}
+      {/* SIDE RAIL - Shows Reel Details when selected, otherwise Archive Info */}
       <aside style={{
         width: '320px',
         height: '100vh',
-        background: 'rgba(7, 16, 26, 0.95)',
+        background: selectedReel ? 'rgba(7, 16, 26, 0.98)' : 'rgba(7, 16, 26, 0.95)',
         backdropFilter: 'blur(12px)',
-        borderRight: '1px solid rgba(148, 163, 184, 0.1)',
+        borderRight: `1px solid ${selectedReel ? 'rgba(0, 224, 255, 0.3)' : 'rgba(148, 163, 184, 0.1)'}`,
         padding: '24px',
         display: 'flex',
         flexDirection: 'column',
         gap: '12px',
         position: 'relative',
-        zIndex: 50,
-        boxShadow: '4px 0 24px rgba(0,0,0,0.4)',
-        flexShrink: 0
-      }} role="complementary" aria-labelledby="section-title">
+        zIndex: 100, // Keep above FrameViewer
+        boxShadow: selectedReel 
+          ? '4px 0 24px rgba(0, 224, 255, 0.2)' 
+          : '4px 0 24px rgba(0,0,0,0.4)',
+        flexShrink: 0,
+        transition: 'all 0.3s ease'
+      }} role="complementary" aria-labelledby={selectedReel ? "reel-title" : "section-title"}>
         
-        {/* Back Button - Top of rail (per nav-ideas.md: 24px spacing to kicker) */}
-        <button
-          onClick={() => navigate('/hub')}
-          style={{
-            display: 'inline-flex',
-            alignItems: 'center',
-            gap: '8px',
-            padding: '8px 12px',
-            borderRadius: '999px',
-            border: '1px solid rgba(255,255,255,0.08)',
-            background: 'rgba(255,255,255,0.04)',
-            color: '#cbd5e1',
-            fontSize: '0.875rem',
-            fontWeight: 500,
-            cursor: 'pointer',
-            transition: 'all 140ms cubic-bezier(.2,.9,.13,1)',
-            marginBottom: '12px', // Additional spacing to reach 24px total from rail top
-            alignSelf: 'flex-start',
-            fontFamily: "'Inter', sans-serif"
-          }}
-          onMouseEnter={(e) => { 
-            e.currentTarget.style.transform = 'translateY(-2px)';
-            e.currentTarget.style.background = 'rgba(255,255,255,0.08)';
-          }}
-          onMouseLeave={(e) => { 
-            e.currentTarget.style.transform = 'translateY(0)';
-            e.currentTarget.style.background = 'rgba(255,255,255,0.04)';
-          }}
-          aria-label="Back to office"
-        >
-          ← Back to office
-        </button>
-
-        {/* Kicker - Small uppercase category (per nav-ideas.md) */}
-        <div style={{
-          fontSize: '0.875rem',
-          fontWeight: 600,
-          color: '#94a3b8',
-          letterSpacing: '0.12em',
-          textTransform: 'uppercase',
-          fontFamily: "'Inter', sans-serif",
-          marginTop: '12px',
-          lineHeight: 1
-        }}>
-          Archive
-        </div>
-
-        {/* Title - Display font (per nav-ideas.md) */}
-        <h1 id="section-title" style={{
-          fontSize: '1.75rem',
-          fontWeight: 800,
-          lineHeight: 1.05,
-          color: '#EAF2FF',
-          margin: '8px 0 0 0',
-          fontFamily: "'Orbitron', sans-serif", // Geometric display font per nav-ideas.md
-          maxWidth: '100%',
-          whiteSpace: 'nowrap',
-          textOverflow: 'ellipsis',
-          overflow: 'hidden',
-          letterSpacing: '0.02em'
-        }}>
-          Memory Archives
-        </h1>
-
-        {/* Description - Humanist sans (per nav-ideas.md) */}
-        <p style={{
-          fontSize: '1rem',
-          color: '#bfcfe0',
-          lineHeight: 1.5,
-          marginTop: '12px',
-          fontFamily: "'Inter', sans-serif",
-          maxWidth: '100%'
-        }}>
-          Select a film reel to load into the projector. Each cassette contains captured moments, experiments, and research documentation.
-        </p>
-
-        {/* Metadata tags (optional per nav-ideas.md) */}
-        <div style={{
-          display: 'flex',
-          flexWrap: 'wrap',
-          gap: '0.5rem',
-          marginTop: '16px',
-          paddingTop: '16px',
-          borderTop: '1px solid rgba(148, 163, 184, 0.2)'
-        }}>
-          <span style={{
-            fontSize: '0.75rem',
-            color: '#64748b',
-            fontFamily: "'Roboto Mono', monospace",
-            padding: '4px 8px',
-            background: 'rgba(255,255,255,0.03)',
-            borderRadius: '4px',
-            border: '1px solid rgba(255,255,255,0.05)'
+        {selectedReel ? (
+          // REEL DETAILS VIEW (shown when any reel is selected, including when FrameViewer is open)
+          <div className="reel-details-content" style={{
+            display: 'flex',
+            flexDirection: 'column',
+            gap: '16px',
+            height: '100%',
+            overflowY: 'auto'
           }}>
-            {eventsData.length} Reels
-          </span>
-          <span style={{
-            fontSize: '0.75rem',
-            color: '#64748b',
-            fontFamily: "'Roboto Mono', monospace",
-            padding: '4px 8px',
-            background: 'rgba(255,255,255,0.03)',
-            borderRadius: '4px',
-            border: '1px solid rgba(255,255,255,0.05)'
-          }}>
-            35mm Format
-          </span>
-        </div>
+            {/* Close/Back Button */}
+            <button
+              onClick={handleCloseReel}
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '8px',
+                padding: '8px 12px',
+                borderRadius: '999px',
+                border: '1px solid rgba(0, 224, 255, 0.3)',
+                background: 'rgba(0, 224, 255, 0.1)',
+                color: '#00E0FF',
+                fontSize: '0.875rem',
+                fontWeight: 500,
+                cursor: 'pointer',
+                transition: 'all 140ms cubic-bezier(.2,.9,.13,1)',
+                marginBottom: '12px',
+                alignSelf: 'flex-start',
+                fontFamily: "'Inter', sans-serif"
+              }}
+              onMouseEnter={(e) => { 
+                e.currentTarget.style.transform = 'translateY(-2px)';
+                e.currentTarget.style.background = 'rgba(0, 224, 255, 0.2)';
+              }}
+              onMouseLeave={(e) => { 
+                e.currentTarget.style.transform = 'translateY(0)';
+                e.currentTarget.style.background = 'rgba(0, 224, 255, 0.1)';
+              }}
+              aria-label="Close reel and return to archive"
+            >
+              ← Back to archive
+            </button>
+
+            {/* Kicker */}
+            <div style={{
+              fontSize: '0.875rem',
+              fontWeight: 600,
+              color: '#94a3b8',
+              letterSpacing: '0.12em',
+              textTransform: 'uppercase',
+              marginTop: '12px',
+              lineHeight: 1
+            }}>
+              {selectedReel.category || 'Projection'}
+            </div>
+
+            {/* Title */}
+            <h2 id="reel-title" style={{
+              fontSize: '1.5rem',
+              fontWeight: 800,
+              lineHeight: 1.1,
+              color: '#EAF2FF',
+              margin: '0',
+              fontFamily: "'Orbitron', sans-serif"
+            }}>
+              {selectedReel.title}
+            </h2>
+
+            {/* Summary */}
+            {selectedReel.summary && (
+              <p style={{
+                fontSize: '0.95rem',
+                color: '#bfcfe0',
+                lineHeight: 1.6,
+                margin: '0'
+              }}>
+                {selectedReel.summary}
+              </p>
+            )}
+
+            {/* Metadata */}
+            <div style={{
+              display: 'flex',
+              flexDirection: 'column',
+              gap: '12px',
+              paddingTop: '16px',
+              borderTop: '1px solid rgba(148, 163, 184, 0.2)'
+            }}>
+              <div>
+                <div style={{ fontSize: '0.75rem', color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '4px' }}>Location</div>
+                <div style={{ fontSize: '0.95rem', color: '#bfcfe0' }}>{selectedReel.location}</div>
+              </div>
+              
+              <div>
+                <div style={{ fontSize: '0.75rem', color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '4px' }}>Date</div>
+                <div style={{ fontSize: '0.95rem', color: '#bfcfe0' }}>{selectedReel.dates?.start} - {selectedReel.dates?.end}</div>
+              </div>
+
+              <div>
+                <div style={{ fontSize: '0.75rem', color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '4px' }}>Frames</div>
+                <div style={{ fontSize: '1.1rem', color: '#00E0FF', fontFamily: "'Roboto Mono', monospace", fontWeight: 600 }}>
+                  {selectedReel.frames?.length || 0}
+                </div>
+              </div>
+            </div>
+
+            {/* Highlights */}
+            {selectedReel.highlights && selectedReel.highlights.length > 0 && (
+              <div style={{ marginTop: '8px' }}>
+                <div style={{ fontSize: '0.75rem', color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '8px' }}>
+                  Highlights
+                </div>
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem' }}>
+                  {selectedReel.highlights.map((highlight, i) => (
+                    <span key={i} style={{
+                      fontSize: '0.75rem',
+                      padding: '4px 8px',
+                      background: 'rgba(0, 224, 255, 0.1)',
+                      border: '1px solid rgba(0, 224, 255, 0.3)',
+                      borderRadius: '4px',
+                      color: '#00E0FF'
+                    }}>
+                      {highlight}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Status Indicator - Shows when projecting */}
+            {projectorState !== 'idle' && (
+              <div style={{
+                marginTop: 'auto',
+                paddingTop: '16px',
+                borderTop: '1px solid rgba(0, 224, 255, 0.2)'
+              }}>
+                <div style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '8px',
+                  fontSize: '0.75rem',
+                  color: '#00E0FF',
+                  fontFamily: "'Roboto Mono', monospace"
+                }}>
+                  <div style={{
+                    width: '8px',
+                    height: '8px',
+                    borderRadius: '50%',
+                    background: '#00E0FF',
+                    animation: 'flicker 1s ease-in-out infinite'
+                  }} />
+                  {projectorState === 'projecting' ? 'Warming up projector...' : 
+                   projectorState === 'open' ? 'Now projecting' : 'Loading...'}
+                </div>
+              </div>
+            )}
+          </div>
+        ) : (
+          // GENERAL ARCHIVE VIEW (shown when no reel selected)
+          <>
+            {/* Back Button */}
+            <button
+              onClick={() => navigate('/hub')}
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '8px',
+                padding: '8px 12px',
+                borderRadius: '999px',
+                border: '1px solid rgba(255,255,255,0.08)',
+                background: 'rgba(255,255,255,0.04)',
+                color: '#cbd5e1',
+                fontSize: '0.875rem',
+                fontWeight: 500,
+                cursor: 'pointer',
+                transition: 'all 140ms cubic-bezier(.2,.9,.13,1)',
+                marginBottom: '12px',
+                alignSelf: 'flex-start',
+                fontFamily: "'Inter', sans-serif"
+              }}
+              onMouseEnter={(e) => { 
+                e.currentTarget.style.transform = 'translateY(-2px)';
+                e.currentTarget.style.background = 'rgba(255,255,255,0.08)';
+              }}
+              onMouseLeave={(e) => { 
+                e.currentTarget.style.transform = 'translateY(0)';
+                e.currentTarget.style.background = 'rgba(255,255,255,0.04)';
+              }}
+              aria-label="Back to office"
+            >
+              ← Back to office
+            </button>
+
+            {/* Kicker */}
+            <div style={{
+              fontSize: '0.875rem',
+              fontWeight: 600,
+              color: '#94a3b8',
+              letterSpacing: '0.12em',
+              textTransform: 'uppercase',
+              fontFamily: "'Inter', sans-serif",
+              marginTop: '12px',
+              lineHeight: 1
+            }}>
+              Archive
+            </div>
+
+            {/* Title */}
+            <h1 id="section-title" style={{
+              fontSize: '1.75rem',
+              fontWeight: 800,
+              lineHeight: 1.05,
+              color: '#EAF2FF',
+              margin: '8px 0 0 0',
+              fontFamily: "'Orbitron', sans-serif",
+              maxWidth: '100%',
+              whiteSpace: 'nowrap',
+              textOverflow: 'ellipsis',
+              overflow: 'hidden',
+              letterSpacing: '0.02em'
+            }}>
+              Memory Archives
+            </h1>
+
+            {/* Description */}
+            <p style={{
+              fontSize: '1rem',
+              color: '#bfcfe0',
+              lineHeight: 1.5,
+              marginTop: '12px',
+              fontFamily: "'Inter', sans-serif",
+              maxWidth: '100%'
+            }}>
+              Select a film reel to load into the projector. Each cassette contains captured moments, experiments, and research documentation.
+            </p>
+
+            {/* Metadata tags */}
+            <div style={{
+              display: 'flex',
+              flexWrap: 'wrap',
+              gap: '0.5rem',
+              marginTop: '16px',
+              paddingTop: '16px',
+              borderTop: '1px solid rgba(148, 163, 184, 0.2)'
+            }}>
+              <span style={{
+                fontSize: '0.75rem',
+                color: '#64748b',
+                fontFamily: "'Roboto Mono', monospace",
+                padding: '4px 8px',
+                background: 'rgba(255,255,255,0.03)',
+                borderRadius: '4px',
+                border: '1px solid rgba(255,255,255,0.05)'
+              }}>
+                {eventsData.length} Reels
+              </span>
+              <span style={{
+                fontSize: '0.75rem',
+                color: '#64748b',
+                fontFamily: "'Roboto Mono', monospace",
+                padding: '4px 8px',
+                background: 'rgba(255,255,255,0.03)',
+                borderRadius: '4px',
+                border: '1px solid rgba(255,255,255,0.05)'
+              }}>
+                35mm Format
+              </span>
+            </div>
+          </>
+        )}
       </aside>
 
-      {/* MAIN CONTENT AREA - Archive Room View */}
+      {/* MAIN CONTENT AREA */}
       <div style={{
         flex: 1,
         height: '100vh',
@@ -325,11 +494,11 @@ export default function EventsPage() {
               <ProjectorModel 
                 isOn={projectorState !== 'idle'} 
                 state={projectorState}
-                modelPath="/SectionModels/Old Projector/movieprojector.gltf" // Pass explicit path
+                modelPath="/movieprojector.gltf"
               />
             </Suspense>
 
-            {/* Projector Beam Effect - Only when on */}
+            {/* Projector Beam Effect */}
             {projectorState !== 'idle' && (
               <div style={{
                 position: 'absolute',
@@ -540,7 +709,7 @@ export default function EventsPage() {
           <div style={{
             position: 'fixed',
             inset: 0,
-            zIndex: 100,
+            zIndex: 50, // Below sidebar (z-index 100) so sidebar stays on top
             animation: 'fadeIn 0.4s ease',
             left: '320px' // Account for side rail width
           }}>

@@ -10,7 +10,7 @@ const projectsData = {
           id: 'pyrolysis',
           title: 'Optimization of Pyrolysis-Based Plastic Oil Yield',
           category: 'Experimentation',
-          period: 'Jul 2024 — Jan 2025',
+          period: 'Jul 2024 - Jan 2025',
           description: 'Designed and executed Taguchi-based pyrolysis experiments on HDPE, PS, and blended feeds to maximize oil conversion. Characterized feedstocks via TGA, SEM-EDAX, and analyzed pyrolysis oils with GC-MS. Implemented and benchmarked five ML models, achieving up to 95.96% R² for yield prediction.',
           learnings: [
             'Designed DOE experiments using Taguchi methodology',
@@ -31,7 +31,7 @@ const projectsData = {
           id: 'battery-cooling',
           title: 'Hybrid Battery Cooling Mechanism',
           category: 'Thermal',
-          period: 'Jul 2024 — Jan 2025',
+          period: 'Jul 2024 - Jan 2025',
           description: 'Developed a thermal management system using TIM, PCM, and liquid coolant to enhance battery performance. Utilized SolidWorks for 3D design and Ansys for simulation, realizing a 67.31% improvement in cooling efficiency.',
           learnings: [
             'Achieved 67.31% cooling efficiency improvement',
@@ -115,7 +115,7 @@ const projectsData = {
           id: 'truck-platooning',
           title: 'Simulation of Truck Platooning',
           category: 'CFD',
-          period: 'Nov 2024 — Feb 2025',
+          period: 'Nov 2024 - Feb 2025',
           description: 'CFD simulation in OpenFOAM studying aerodynamic interactions in truck platooning. Investigated drag reduction and fuel efficiency improvements with optimal vehicle spacing.',
           learnings: [
             'Quantified drag reduction in platooning',
@@ -131,7 +131,7 @@ const projectsData = {
           id: 'immersion-cooling',
           title: 'Immersion Cooling in Battery Thermal Management',
           category: 'Thermal',
-          period: 'Nov 2024 — Feb 2025',
+          period: 'Nov 2024 - Feb 2025',
           description: 'Parametric analysis of coolant type, C-rating, and inlet velocity for battery cooling in OpenFOAM. Achieved a 43.99% temperature reduction with optimal configuration.',
           learnings: [
             'Conducted parametric thermal analysis',
@@ -144,7 +144,7 @@ const projectsData = {
           id: 'solar-arrays',
           title: 'Aerodynamics of Ground-Mounted Solar Arrays',
           category: 'CFD',
-          period: 'Dec 2024 — Feb 2025',
+          period: 'Dec 2024 - Feb 2025',
           description: 'Steady-state and transient CFD mapping of pressure and force on solar panel arrays. Assessment guided design for optimized structural durability and cost-efficiency.',
           learnings: [
             'Mapped pressure distributions on solar arrays',
@@ -168,7 +168,7 @@ const projectsData = {
           id: 's500-drone',
           title: 'Reverse Engineering S500 Drone',
           category: 'CAD',
-          period: 'Jan 2024 — Mar 2024',
+          period: 'Jan 2024 - Mar 2024',
           description: 'Captured detailed 3D scans and rebuilt a SolidWorks model with 0.01mm tolerance for the S500 drone, including full assembly validation against kit documentation.',
           learnings: [
             'Performed high-precision 3D scanning',
@@ -257,7 +257,7 @@ const projectsData = {
           id: 'bullet-impact',
           title: 'Bullet Impact Simulations',
           category: 'Explicit Dynamics',
-          period: 'Dec 2024 — Present',
+          period: 'Dec 2024 - Present',
           description: 'Explicit dynamics simulation of bullet impact on bolted plates using Abaqus. Evaluated stress distribution, deformation, and ballistic resistance to support protective structure design.',
           learnings: [
             'Performed explicit dynamics simulation in Abaqus',
@@ -274,7 +274,7 @@ const projectsData = {
           id: 'inclined-crack',
           title: 'Computational Correlation of J-Integral for Inclined Crack',
           category: 'FEA',
-          period: 'Nov 2023 — Dec 2023',
+          period: 'Nov 2023 - Dec 2023',
           description: 'Simulated angled crack propagation in COMSOL with the J-integral method. Compiled data from 172,000+ fracture cases and built neural network models achieving 99.99% accuracy.',
           learnings: [
             'Simulated crack propagation with J-integral',
@@ -316,7 +316,7 @@ const projectsData = {
           id: 'language-music',
           title: 'Language Identification in Music',
           category: 'ML',
-          period: 'Aug 2024 — Nov 2024',
+          period: 'Aug 2024 - Nov 2024',
           description: 'Designed a deep learning model (97% accuracy) for identifying language in music using MFCC features. Built a robust preprocessing pipeline in PyTorch for noisy real-world inputs.',
           learnings: [
             'Achieved 97% language detection accuracy',
@@ -336,7 +336,7 @@ const projectsData = {
           id: 'aero-lab',
           title: 'Aerodynamics Lab Experiments',
           category: 'Experimentation',
-          period: 'Feb 2023 — Mar 2025',
+          period: 'Feb 2023 - Mar 2025',
           description: 'Hands-on experiments in the Aerodynamics Laboratory (wind turbine instrumentation, hot-wire anemometry, pitot tube analysis) under Dr. Vinayagamurthy. Gained practical expertise in wind measurement and analysis techniques.',
           learnings: [
             'Wind turbine instrumentation setup',

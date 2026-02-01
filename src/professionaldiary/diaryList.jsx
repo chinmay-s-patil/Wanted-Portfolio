@@ -19,7 +19,7 @@ const diaryEntries = [
       'Developed Python-based automation tools for data post-processing workflows',
       'Coordinated multidisciplinary teams across mechanical, electronics, and software domains'
     ],
-    insight: 'Manufacturing constraints should drive design decisions from day one—DFAM isn\'t an afterthought, it\'s a design philosophy.'
+    insight: 'Manufacturing constraints should drive design decisions from day one-DFAM isn\'t an afterthought, it\'s a design philosophy.'
   },
   {
     id: 'iisc-2025',
@@ -41,7 +41,7 @@ const diaryEntries = [
       'Integrated Ffowcs Williams–Hawkings analogy for propeller noise characterization',
       'Collaborated with leading aerospace faculty on cutting-edge research projects'
     ],
-    insight: 'Hybrid CFD/CAA methods reveal acoustic physics that pure simulations miss—the coupling between flow and sound is everything.'
+    insight: 'Hybrid CFD/CAA methods reveal acoustic physics that pure simulations miss-the coupling between flow and sound is everything.'
   },
   {
     id: 'csir-2024',
@@ -98,7 +98,7 @@ const diaryEntries = [
       'Developed neural network models achieving exceptional prediction accuracy',
       'Automated simulation data workflows using Python scripting'
     ],
-    insight: 'Large, well-structured datasets transform simulation from an art into predictive science—data quality matters more than model complexity.'
+    insight: 'Large, well-structured datasets transform simulation from an art into predictive science-data quality matters more than model complexity.'
   },
   {
     id: 'appbell-2023',
@@ -121,7 +121,7 @@ const diaryEntries = [
       'Contributed to Android app development with focus on UI/UX improvements',
       'Learned practical challenges of deploying ML models in production environments'
     ],
-    insight: 'Real-world ML is 90% data cleaning and edge case handling, 10% modeling—production deployment teaches what textbooks can\'t.'
+    insight: 'Real-world ML is 90% data cleaning and edge case handling, 10% modeling-production deployment teaches what textbooks can\'t.'
   }
 ];
 

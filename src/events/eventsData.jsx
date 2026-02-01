@@ -20,7 +20,7 @@ const eventsData = [
       {
         type: 'image',
         src: '/events/aiaa2024/poster-session.jpg',
-        caption: 'Poster session — evening reception (June 13, 2024)'
+        caption: 'Poster session - evening reception (June 13, 2024)'
       },
       {
         type: 'image',

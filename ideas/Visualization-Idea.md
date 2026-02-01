@@ -1,6 +1,6 @@
 # Concept (one sentence)
 
-A retro workstation window that opens small “program windows” — each window shows one visualization artifact (static image, interactive iframe, video, or notebook preview) with quick actions to view source, download data, or open full-screen.
+A retro workstation window that opens small “program windows” - each window shows one visualization artifact (static image, interactive iframe, video, or notebook preview) with quick actions to view source, download data, or open full-screen.
 
 # What the user experiences
 
@@ -12,9 +12,9 @@ A retro workstation window that opens small “program windows” — each windo
 
 # Visual design & UX rules
 
-* Keep the monitor frame simple and slightly nostalgic — subtle bevel, small LED “power” dot.
+* Keep the monitor frame simple and slightly nostalgic - subtle bevel, small LED “power” dot.
 * Inside the monitor, use window chrome consistent with your XP/wiki motif: title bar, close/minimize, 1–3 small action icons.
-* Thumbnails: small poster images that hint at the visualization — ensure clean crop and readable tiny captions.
+* Thumbnails: small poster images that hint at the visualization - ensure clean crop and readable tiny captions.
 * White-border rule: clickable tiles and title-bar buttons show the white outline on hover/focus.
 * Micro-interactions: window opening = fade + scale (120–200 ms). Hover = slight lift. Respect `prefers-reduced-motion`.
 * Mobile: open artifacts as full-screen modals; controls become bottom bar buttons.
@@ -77,16 +77,16 @@ A retro workstation window that opens small “program windows” — each windo
 
 # Component breakdown (React / Next-friendly)
 
-* `VizComputer` — top-level component with monitor frame and thumbnail grid.
-* `VizTile` — thumbnail + brief meta, clickable.
-* `VizWindow` — the window that opens inside monitor (title bar + content area).
-* `LazyIframe` — loads iframe only on mount / on click; sets sandbox and `loading=lazy`.
-* `ImageLightbox` — fullscreen image view with caption and download.
-* `ModelViewer` — dynamic 3D viewer (ssr: false).
-* `NotebookPreview` — dynamic HTML embed or link to full notebook page.
-* `FilesList` — present downloadable artifacts with size + md5/hash optionally.
-* `useLazyAsset` hook — prefetch on hover (small), mount heavy asset on open, clean up on close.
-* `PrefetchPolicy` util — respects `navigator.connection.saveData` and `prefers-reduced-data`.
+* `VizComputer` - top-level component with monitor frame and thumbnail grid.
+* `VizTile` - thumbnail + brief meta, clickable.
+* `VizWindow` - the window that opens inside monitor (title bar + content area).
+* `LazyIframe` - loads iframe only on mount / on click; sets sandbox and `loading=lazy`.
+* `ImageLightbox` - fullscreen image view with caption and download.
+* `ModelViewer` - dynamic 3D viewer (ssr: false).
+* `NotebookPreview` - dynamic HTML embed or link to full notebook page.
+* `FilesList` - present downloadable artifacts with size + md5/hash optionally.
+* `useLazyAsset` hook - prefetch on hover (small), mount heavy asset on open, clean up on close.
+* `PrefetchPolicy` util - respects `navigator.connection.saveData` and `prefers-reduced-data`.
 
 # Technical patterns and best practices (must-follow)
 
@@ -100,7 +100,7 @@ A retro workstation window that opens small “program windows” — each windo
 
 # File formats & guidelines
 
-* Static figures: SVG (for line plots) or WebP (photos/screens) — use `srcset`.
+* Static figures: SVG (for line plots) or WebP (photos/screens) - use `srcset`.
 * Animated flows: WebM (good compression) with MP4 fallback.
 * Interactive charts: Plotly/React-Plotly JSON or Observable embeds.
 * Notebooks: `nbconvert --to html` outputs hosted HTML; also provide raw `.ipynb`.
@@ -117,7 +117,7 @@ A retro workstation window that opens small “program windows” — each windo
 # Performance & memory safeguards
 
 * Only one iframe or 3D viewer should be active at any time inside the monitor. Opening a second should unmount the first.
-* Limit autoplay — never autoplay video with sound; prefer click-to-play. Use `muted` + autoplay if you must have muted previews.
+* Limit autoplay - never autoplay video with sound; prefer click-to-play. Use `muted` + autoplay if you must have muted previews.
 * For Plotly / heavy JS libs, consider rendering as server-side static images for the landing, then load interactive version on demand.
 * Use IntersectionObserver / hover prefetch for thumbnails only; avoid bulk prefetch on pageload.
 * Implement a `dispose` or `cleanup` routine on all heavy components to free memory.
@@ -148,7 +148,7 @@ A retro workstation window that opens small “program windows” — each windo
 
 # Small design tokens & copy examples
 
-* Window title examples: `Flow: Wing Vorticity — Jul 2024`
+* Window title examples: `Flow: Wing Vorticity - Jul 2024`
 * Tile captions: `ParaView: pressureContours.png`
 * Button labels: `Open Interactive` | `Download Data` | `Open Notebook` | `Open 3D`
 
@@ -190,8 +190,8 @@ export default function LazyIframe({ src, title }) {
 }
 ```
 
-# Final notes — storytelling & priorities
+# Final notes - storytelling & priorities
 
 * The Visualization Computer should feel like a **technical toolset**, not a fancy gallery. Keep tone utilitarian, not flashy.
 * Prioritize clarity: if you can’t make an interactive version small and robust, prefer a well-made static poster + download + link to reproducible artifact.
-* Keep provenance visible — engineers LOVE reproducibility and it doubles as credibility for recruiting.
+* Keep provenance visible - engineers LOVE reproducibility and it doubles as credibility for recruiting.

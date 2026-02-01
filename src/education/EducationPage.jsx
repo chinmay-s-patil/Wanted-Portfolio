@@ -80,14 +80,14 @@ export default function EducationPage() {
       title: 'Master of Science',
       institution: 'Technical University of Munich',
       shortName: 'TUM',
-      period: 'Oct 2025 — Present',
+      period: 'Oct 2025 - Present',
       location: 'Munich, Germany',
       description: 'Pursuing advanced studies in aerospace engineering with specialization in computational fluid dynamics and aerodynamics. Engaging with cutting-edge research in turbulence modeling, high-performance computing, and numerical methods for complex flow simulations.',
       skills: ['Advanced CFD', 'Turbulence Modeling', 'HPC', 'Numerical Methods', 'Aerodynamics', 'Research'],
       imageCount: 7,
       imageBase: '/Education/TUM/TUM',
       imageExt: '.jpg',
-      gpa: '—',
+      gpa: '-',
       focus: 'CFD & Aeroacoustics'
     },
     {
@@ -100,7 +100,7 @@ export default function EducationPage() {
       title: 'Bachelor of Technology',
       institution: 'VIT Chennai',
       shortName: 'VITC',
-      period: 'Jun 2021 — May 2025',
+      period: 'Jun 2021 - May 2025',
       location: 'Chennai, India',
       description: 'Completed comprehensive undergraduate program in mechanical engineering, developing strong fundamentals in thermodynamics, fluid mechanics, and computational methods. Gained hands-on experience through laboratory work, projects, and industry internships.',
       skills: ['Fluid Mechanics', 'CFD', 'Heat Transfer', 'Thermodynamics', 'Engineering Analysis', 'Mechanical Design'],
@@ -117,7 +117,7 @@ export default function EducationPage() {
       number: '???',
       color: '#4a2a5d',
       message: "We ain't there yet, buddy.",
-      subtitle: "A little ambition goes a long way — plans TBD."
+      subtitle: "A little ambition goes a long way - plans TBD."
     }
   ], [])
 
