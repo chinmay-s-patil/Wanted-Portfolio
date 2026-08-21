@@ -24,3 +24,6 @@ dist-ssr
 *.sw?
 
 *.txt
+
+Models/
+ideas/

@@ -1,4 +1,3 @@
-// app/projects/projectsData.js
 const projectsData = {
   drawers: [
     {

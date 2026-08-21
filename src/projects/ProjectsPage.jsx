@@ -1,20 +1,21 @@
-'use client'
-
-import React, { useState, useCallback, lazy, Suspense } from 'react'
+import { useState, useCallback, lazy, Suspense, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
+import CabinetScene from './CabinetScene'
+import DrawerControls from './DrawerControls'
+import DrawerPanel from './DrawerPanel'
+import { useCabinetStore } from './useCabinetStore'
 import projectsData from './projectsData'
+import './Projects.css'
 
-// Lazy load the project folder component
 const ProjectFolder = lazy(() => import('./ProjectFolder'))
 
 export default function ProjectsPage() {
-  const [openDrawer, setOpenDrawer] = useState(null)
   const [selectedProject, setSelectedProject] = useState(null)
+  const [showDrawerList, setShowDrawerList] = useState(false)
   const navigate = useNavigate()
 
-  const handleDrawerClick = useCallback((drawerId) => {
-    setOpenDrawer(prev => prev === drawerId ? null : drawerId)
-  }, [])
+  const openDrawerId = useCabinetStore((s) => s.openDrawerId)
+  const setOpenDrawer = useCabinetStore((s) => s.setOpenDrawer)
 
   const handleProjectClick = useCallback((project) => {
     setSelectedProject(project)
@@ -24,305 +25,241 @@ export default function ProjectsPage() {
     setSelectedProject(null)
   }, [])
 
-  return (
-    <div style={{
-      width: '100vw',
-      minHeight: '100vh',
-      background: 'linear-gradient(135deg, #1a1410 0%, #0f0d0a 100%)',
-      overflow: 'auto',
-      position: 'relative',
-      fontFamily: "'Special Elite', monospace"
-    }}>
-      <style jsx>{`
-        @import url('https://fonts.googleapis.com/css2?family=Special+Elite&display=swap');
-        
-        @keyframes drawerOpen {
-          from { max-height: 0; opacity: 0; }
-          to { max-height: 2000px; opacity: 1; }
-        }
-        
-        .drawer-content {
-          animation: drawerOpen 0.4s ease-out;
-          overflow: hidden;
-        }
-      `}</style>
+  // Reset showDrawerList if drawer is closed
+  useEffect(() => {
+    if (!openDrawerId) {
+      setShowDrawerList(false)
+    }
+  }, [openDrawerId])
 
-      {/* Back Button */}
+  // Mouse wheel scroll changes open drawer ONLY if a drawer is open AND list panel is closed
+  useEffect(() => {
+    let lastScrollTime = 0
+
+    const handleWheel = (e) => {
+      // Don't intercept scroll if project detail modal OR file list panel is open
+      if (selectedProject || showDrawerList) return
+
+      const currentDrawerId = useCabinetStore.getState().openDrawerId
+      if (!currentDrawerId) return
+
+      const now = Date.now()
+      if (now - lastScrollTime < 240) return
+
+      const drawerIds = projectsData.drawers.map((d) => d.id)
+      const setDrawer = useCabinetStore.getState().setOpenDrawer
+
+      const currentIndex = drawerIds.indexOf(currentDrawerId)
+      if (currentIndex === -1) return
+
+      if (e.deltaY > 0) {
+        lastScrollTime = now
+        const nextIndex = (currentIndex + 1) % drawerIds.length
+        setDrawer(drawerIds[nextIndex])
+      } else if (e.deltaY < 0) {
+        lastScrollTime = now
+        const prevIndex = (currentIndex - 1 + drawerIds.length) % drawerIds.length
+        setDrawer(drawerIds[prevIndex])
+      }
+    }
+
+    window.addEventListener('wheel', handleWheel, { passive: true })
+    return () => window.removeEventListener('wheel', handleWheel)
+  }, [selectedProject, showDrawerList])
+
+  // Keyboard Navigation Matrix
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (selectedProject) {
+        if (e.key === 'Escape') {
+          e.preventDefault()
+          handleCloseProject()
+        }
+        return
+      }
+
+      if (showDrawerList) {
+        if (e.key === 'Escape') {
+          e.preventDefault()
+          setShowDrawerList(false)
+        }
+        return
+      }
+
+      const drawerIds = projectsData.drawers.map((d) => d.id)
+      const currentDrawerId = useCabinetStore.getState().openDrawerId
+      const setDrawer = useCabinetStore.getState().setOpenDrawer
+      const activeFolderIndex = useCabinetStore.getState().activeFolderIndex
+      const setActiveFolderIndex = useCabinetStore.getState().setActiveFolderIndex
+
+      const currentDrawerIndex = currentDrawerId ? drawerIds.indexOf(currentDrawerId) : -1
+      const currentDrawer = currentDrawerId ? projectsData.drawers.find((d) => d.id === currentDrawerId) : null
+      const totalFolders = currentDrawer?.folders?.length || 0
+
+      if (currentDrawerId) {
+        if (e.key === 'ArrowUp') {
+          e.preventDefault()
+          const prevIndex = (currentDrawerIndex - 1 + drawerIds.length) % drawerIds.length
+          setDrawer(drawerIds[prevIndex])
+        } else if (e.key === 'ArrowDown') {
+          e.preventDefault()
+          const nextIndex = (currentDrawerIndex + 1) % drawerIds.length
+          setDrawer(drawerIds[nextIndex])
+        } else if (e.key === 'ArrowLeft') {
+          e.preventDefault()
+          if (totalFolders > 1) {
+            setActiveFolderIndex((activeFolderIndex - 1 + totalFolders) % totalFolders)
+          }
+        } else if (e.key === 'ArrowRight') {
+          e.preventDefault()
+          if (totalFolders > 1) {
+            setActiveFolderIndex((activeFolderIndex + 1) % totalFolders)
+          }
+        } else if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault()
+          if (currentDrawer && currentDrawer.folders[activeFolderIndex]) {
+            handleProjectClick(currentDrawer.folders[activeFolderIndex])
+          }
+        } else if (e.key === 'Escape') {
+          e.preventDefault()
+          setDrawer(null)
+        }
+      }
+    }
+
+    window.addEventListener('keydown', handleKeyDown)
+    return () => window.removeEventListener('keydown', handleKeyDown)
+  }, [selectedProject, showDrawerList, handleCloseProject, handleProjectClick])
+
+  useEffect(() => {
+    if (selectedProject) {
+      document.body.style.overflow = 'hidden'
+    } else {
+      document.body.style.overflow = 'unset'
+    }
+    return () => { document.body.style.overflow = 'unset' }
+  }, [selectedProject])
+
+  return (
+    <div className="evidence-room" aria-label="Evidence Locker Archive">
+      {/* SVG Noise Texture Overlay */}
+      <svg className="evidence-noise-overlay" xmlns="http://www.w3.org/2000/svg" width="100%" height="100%">
+        <filter id="evidenceGritFilter">
+          <feTurbulence type="fractalNoise" baseFrequency="0.8" numOctaves="3" stitchTiles="stitch" />
+          <feColorMatrix type="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 0.12 0" />
+        </filter>
+        <rect width="100%" height="100%" filter="url(#evidenceGritFilter)" />
+      </svg>
+
+      {/* Atmospheric Overhead Spotlight Cone */}
+      <div className="evidence-spotlight" aria-hidden="true" />
+      <div className="evidence-light-cone" aria-hidden="true" />
+
+      {/* Back to Hub Button */}
       <button
-        onClick={() => router.push('/hub')}
-        style={{
-          position: 'fixed',
-          top: '2rem',
-          left: '2rem',
-          background: 'rgba(196, 165, 116, 0.2)',
-          border: '2px solid #8b7355',
-          color: '#f6efe2',
-          padding: '0.75rem 1.5rem',
-          borderRadius: '8px',
-          fontSize: '1rem',
-          cursor: 'pointer',
-          zIndex: 1000,
-          transition: 'all 0.3s ease',
-          boxShadow: '0 4px 12px rgba(0,0,0,0.5)'
-        }}
+        type="button"
+        className="projects-back-btn"
+        onClick={() => navigate('/hub')}
+        aria-label="Back to Hub"
       >
-        ← BACK TO HQ
+        ← Back to Hub
       </button>
 
-      {/* Main Content */}
-      <div style={{
-        width: '100%',
-        minHeight: '100vh',
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        padding: '8rem 2rem 4rem',
-      }}>
-        {/* Title */}
-        <div style={{
-          textAlign: 'center',
-          marginBottom: '3rem'
-        }}>
-          <h1 style={{
-            fontSize: 'clamp(2rem, 4vw, 3.5rem)',
-            color: '#f6efe2',
-            marginBottom: '0.5rem',
-            textShadow: '0 4px 12px rgba(0,0,0,0.8)',
-            letterSpacing: '0.05em'
-          }}>
-            CASE FILES ARCHIVE
+      {/* Vintage Directory Sidebar */}
+      <div className="directory-sidebar">
+        <div className="directory-title">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+            <path d="M4 6h16M4 12h16M4 18h16" />
+          </svg>
+          EVIDENCE DIRECTORY
+        </div>
+
+        {projectsData.drawers.map((d, index) => {
+          const isActive = openDrawerId === d.id
+          return (
+            <button
+              key={d.id}
+              className={`directory-btn ${isActive ? 'active' : ''}`}
+              onClick={() => setOpenDrawer(d.id)}
+              title={`Open Drawer ${index + 1}: ${d.label}`}
+            >
+              <div className="directory-label">
+                <span
+                  className="directory-dot"
+                  style={{
+                    backgroundColor: d.color || '#c4a574',
+                    boxShadow: isActive ? `0 0 8px ${d.color}` : 'none'
+                  }}
+                />
+                <span>0{index + 1} &bull; {d.label}</span>
+              </div>
+              <span className="directory-count">{d.folders.length}</span>
+            </button>
+          )
+        })}
+      </div>
+
+      {/* Main Page Layout */}
+      <div className="evidence-page-layout">
+        <div className="evidence-header-block">
+          <h1 className="evidence-title">
+            EVIDENCE LOCKER
           </h1>
-          <div style={{
-            width: '180px',
-            height: '3px',
-            background: 'linear-gradient(90deg, transparent, #c4a574, transparent)',
-            margin: '0 auto 1rem'
-          }} />
-          <p style={{
-            fontSize: 'clamp(0.85rem, 1.3vw, 1rem)',
-            color: '#8b7355',
-            fontStyle: 'italic',
-            letterSpacing: '0.08em'
-          }}>
-            Click drawers to view folders inside
+          <div className="evidence-header-divider" />
+          <p className="evidence-subtitle">
+            Click any drawer to inspect files &bull; &uarr;&darr; Drawers &bull; &larr;&rarr; Files &bull; [ESC] Close
           </p>
         </div>
 
-        {/* Filing Cabinet */}
-        <div style={{
-          width: '100%',
-          maxWidth: '900px',
-          display: 'flex',
-          flexDirection: 'column',
-          gap: '2rem'
-        }}>
-          {projectsData.drawers.map((drawer) => (
-            <div key={drawer.id} style={{ width: '100%' }}>
-              {/* Drawer Front */}
-              <div
-                onClick={() => handleDrawerClick(drawer.id)}
-                style={{
-                  position: 'relative',
-                  width: '100%',
-                  height: '90px',
-                  background: `linear-gradient(180deg, ${drawer.color}dd 0%, ${drawer.color}aa 100%)`,
-                  border: '4px solid rgba(0,0,0,0.5)',
-                  borderRadius: '8px',
-                  cursor: 'pointer',
-                  transition: 'all 0.3s ease',
-                  boxShadow: openDrawer === drawer.id 
-                    ? '0 8px 24px rgba(0,0,0,0.7)'
-                    : '0 6px 16px rgba(0,0,0,0.6)',
-                  transform: openDrawer === drawer.id ? 'translateY(-2px)' : 'translateY(0)',
-                  overflow: 'hidden'
-                }}
-              >
-                {/* Handle */}
-                <div style={{
-                  position: 'absolute',
-                  left: '50%',
-                  top: '50%',
-                  transform: 'translate(-50%, -50%)',
-                  width: '120px',
-                  height: '40px',
-                  background: 'linear-gradient(180deg, #2a2a2a 0%, #1a1a1a 50%, #2a2a2a 100%)',
-                  borderRadius: '6px',
-                  border: '3px solid rgba(0,0,0,0.6)',
-                  boxShadow: 'inset 0 2px 4px rgba(255,255,255,0.1)',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center'
-                }}>
-                  <div style={{
-                    width: '70px',
-                    height: '6px',
-                    background: 'linear-gradient(90deg, #3a3a3a, #1a1a1a, #3a3a3a)',
-                    borderRadius: '3px'
-                  }} />
-                </div>
-
-                {/* Label */}
-                <div style={{
-                  position: 'absolute',
-                  top: '12px',
-                  left: '50%',
-                  transform: 'translateX(-50%)',
-                  background: 'rgba(246, 239, 226, 0.95)',
-                  padding: '6px 20px',
-                  borderRadius: '4px',
-                  border: '2px solid rgba(0,0,0,0.3)',
-                  fontSize: '0.9rem',
-                  fontWeight: '700',
-                  color: '#1a1410',
-                  letterSpacing: '0.12em'
-                }}>
-                  {drawer.label}
-                </div>
-
-                {/* File Count */}
-                <div style={{
-                  position: 'absolute',
-                  bottom: '8px',
-                  right: '12px',
-                  background: 'rgba(0,0,0,0.6)',
-                  padding: '4px 10px',
-                  borderRadius: '4px',
-                  fontSize: '0.7rem',
-                  color: '#c4a574',
-                  fontWeight: '700'
-                }}>
-                  {drawer.folders.length} FILES
-                </div>
-              </div>
-
-              {/* Drawer Contents */}
-              {openDrawer === drawer.id && (
-                <div className="drawer-content" style={{
-                  marginTop: '1rem',
-                  padding: '2rem',
-                  background: 'rgba(61, 40, 23, 0.3)',
-                  border: '3px solid #3d2817',
-                  borderRadius: '8px',
-                  backdropFilter: 'blur(10px)'
-                }}>
-                  <div style={{
-                    display: 'grid',
-                    gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))',
-                    gap: '1.5rem'
-                  }}>
-                    {drawer.folders.map((folder) => (
-                      <div
-                        key={folder.id}
-                        onClick={() => handleProjectClick(folder)}
-                        style={{
-                          position: 'relative',
-                          cursor: 'pointer',
-                          transition: 'transform 0.2s ease'
-                        }}
-                        onMouseEnter={(e) => {
-                          e.currentTarget.style.transform = 'translateY(-8px) rotate(-2deg)'
-                        }}
-                        onMouseLeave={(e) => {
-                          e.currentTarget.style.transform = 'translateY(0) rotate(0deg)'
-                        }}
-                      >
-                        {/* Folder Tab */}
-                        <div style={{
-                          position: 'absolute',
-                          top: '-12px',
-                          left: '20px',
-                          width: '100px',
-                          height: '28px',
-                          background: `linear-gradient(180deg, ${drawer.color}dd, ${drawer.color}bb)`,
-                          borderRadius: '6px 6px 0 0',
-                          border: '2px solid rgba(0,0,0,0.3)',
-                          borderBottom: 'none',
-                          zIndex: 2,
-                          display: 'flex',
-                          alignItems: 'center',
-                          justifyContent: 'center'
-                        }}>
-                          <div style={{
-                            fontSize: '0.65rem',
-                            fontWeight: '700',
-                            color: '#f6efe2',
-                            letterSpacing: '0.05em',
-                            textShadow: '0 1px 2px rgba(0,0,0,0.5)',
-                            overflow: 'hidden',
-                            textOverflow: 'ellipsis',
-                            whiteSpace: 'nowrap',
-                            padding: '0 0.25rem'
-                          }}>
-                            {folder.shortTitle || folder.title.substring(0, 8)}
-                          </div>
-                        </div>
-
-                        {/* Folder Body */}
-                        <div style={{
-                          width: '100%',
-                          height: '160px',
-                          background: 'linear-gradient(135deg, #f6efe2 0%, #e8dcc8 100%)',
-                          border: '3px solid #8b7355',
-                          borderRadius: '0 8px 8px 8px',
-                          boxShadow: '0 8px 20px rgba(0,0,0,0.6)',
-                          position: 'relative',
-                          overflow: 'hidden',
-                          zIndex: 1
-                        }}>
-                          {/* Classified stamp */}
-                          <div style={{
-                            position: 'absolute',
-                            top: '50%',
-                            left: '50%',
-                            transform: 'translate(-50%, -50%) rotate(-12deg)',
-                            fontSize: '1.3rem',
-                            fontWeight: '900',
-                            color: 'rgba(139, 0, 0, 0.15)',
-                            border: '3px solid rgba(139, 0, 0, 0.15)',
-                            padding: '0.3rem 1rem',
-                            letterSpacing: '0.2em',
-                            pointerEvents: 'none'
-                          }}>
-                            CASE FILE
-                          </div>
-
-                          {/* Case Number */}
-                          <div style={{
-                            position: 'absolute',
-                            top: '10px',
-                            right: '10px',
-                            fontSize: '0.65rem',
-                            fontWeight: '700',
-                            color: '#8b7355',
-                            fontFamily: "'Courier Prime', monospace"
-                          }}>
-                            #{folder.id.substring(0, 6).toUpperCase()}
-                          </div>
-                        </div>
-
-                        {/* Hover label */}
-                        <div style={{
-                          marginTop: '0.5rem',
-                          fontSize: '0.75rem',
-                          color: '#c4a574',
-                          textAlign: 'center',
-                          fontWeight: '600'
-                        }}>
-                          {folder.title.length > 30 ? folder.title.substring(0, 30) + '...' : folder.title}
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              )}
-            </div>
-          ))}
+        <div className="scene-container">
+          <CabinetScene onSelectProject={handleProjectClick} />
         </div>
       </div>
 
-      {/* Project Folder Modal - Lazy Loaded */}
+      {/* Bottom Console Controls when a drawer is open */}
+      <DrawerControls
+        onSelectProject={handleProjectClick}
+        onToggleList={() => setShowDrawerList((prev) => !prev)}
+      />
+
+      {/* Slide-out Drawer File List Panel */}
+      {showDrawerList && (
+        <DrawerPanel
+          onSelectProject={handleProjectClick}
+          onClose={() => setShowDrawerList(false)}
+        />
+      )}
+
+      {/* Full Project File Detail Inspection Modal */}
       {selectedProject && (
-        <Suspense fallback={<div>Loading...</div>}>
+        <Suspense fallback={
+          <div style={{
+            position: 'fixed',
+            inset: 0,
+            zIndex: 100,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            background: 'rgba(0,0,0,0.88)',
+            color: '#c4a574',
+            fontFamily: "'Special Elite', monospace",
+            backdropFilter: 'blur(8px)'
+          }}>
+            <div style={{ textAlign: 'center' }}>
+              <div style={{
+                width: '40px',
+                height: '40px',
+                border: '3px solid rgba(196,165,116,0.2)',
+                borderTopColor: '#c4a574',
+                borderRadius: '50%',
+                animation: 'spin 1s linear infinite',
+                margin: '0 auto 1rem'
+              }} />
+              <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
+              Retrieving case file...
+            </div>
+          </div>
+        }>
           <ProjectFolder project={selectedProject} onClose={handleCloseProject} />
         </Suspense>
       )}

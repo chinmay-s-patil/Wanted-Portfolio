@@ -7,17 +7,30 @@ export default function HubPage() {
   const [hoveredItem, setHoveredItem] = useState(null)
   const navigate = useNavigate()
 
+
+
+  // <Route path="/education-old" element={<EducationPageOld />} />
+  // <Route path="/upcoming-old" element={<UpcomingPageHolo />} />
+  // <Route path="/cadtron" element={<CADSectionCADTron />} />
+  // <Route path="/projects-old" element={<ProjectsPageOld />} />
+  // <Route path="/projects-old-2" element={<ProjectsPageOld2 />} />
+  // <Route path="/hub3D" element={<Hub3D />} />
+
   // Memoize hub items to prevent recreation on every render
   const hubItems = useMemo(() => [
-    { id: 'landing', label: 'Landing', theme: 'Map Spread on a Table', icon: '🗺️', path: '/' },
+    { id: 'landing', label: 'Landing', theme: 'Newspaper', icon: '📰', path: '/' },
     { id: 'education', label: 'Education', theme: 'Lockers', icon: '🔒', path: '/education' },
     { id: 'professionaldiary', label: 'Professional Timeline', theme: 'Diary', icon: '📔', path: '/professionaldiary' },
     { id: 'projects', label: 'Projects', theme: 'Police-like Archive Drawers', icon: '🗄️', path: '/projects' },
-    { id: 'openfoam', label: 'OpenFOAM', theme: 'Bookshelf', icon: '📚', path: '/openfoam' },
-    { id: 'cad', label: 'CAD', theme: 'CRT', icon: '🖥️', path: '/cad' },
-    { id: 'visualization', label: 'Visualization', theme: 'Computer', icon: '💻', path: '/visualization' },
+    { id: 'openfoam', label: 'OpenFOAM', theme: 'Specimen Rack', icon: '🧪', path: '/openfoam' },
+    { id: 'cad', label: 'CAD', theme: 'CRT', icon: '🖨️', path: '/cad' },
+    { id: 'visualization', label: 'Visualization', theme: 'Computer', icon: '🌐', path: '/visualization' },
     { id: 'events', label: 'Events', theme: 'Photo Reels', icon: '🎞️', path: '/events' },
-    { id: 'upcoming', label: 'Upcoming', theme: 'Robot?', icon: '🤖', path: '/upcoming' },
+    { id: 'upcoming', label: 'Upcoming', theme: 'Radar', icon: '✈️', path: '/upcoming' },
+    { id: 'solvers', label: 'Solvers', theme: 'Terminal', icon: '🧑‍💻', path: '/solvers' },
+    { id: 'contactme', label: 'Contact Me', theme: 'Rotary Phone', icon: '☎️', path: '/contactme' },
+    { id: 'hub3D', label: 'Hub 3D', theme: '3D Version of Hub', icon: '🏘️', path: '/hub3D' },
+
   ], [])
 
   const handleClick = (path) => {
@@ -170,7 +183,7 @@ export default function HubPage() {
         }
       `}</style>
 
-      <button className="hub-back" onClick={() => router.push('/')}>
+      <button className="hub-back" onClick={() => navigate('/')}>
         ← Back to Landing
       </button>
 

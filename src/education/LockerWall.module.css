@@ -1,0 +1,345 @@
+/* LockerWall.module.css — Streamlined School Hallway Locker Bank */
+
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@600;700;800&display=swap');
+
+.hallwayContainer {
+	width: 100%;
+	height: 100%;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	padding: 1.25rem 2rem 2.5rem;
+	box-sizing: border-box;
+	overflow-y: auto;
+	perspective: 1400px;
+	perspective-origin: 50% 35%;
+}
+
+.hallwayWall {
+	width: 100%;
+	max-width: 1100px;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+}
+
+/* Industrial Metal Locker Bank Frame */
+.lockerBankFrame {
+	width: 100%;
+	background: linear-gradient(135deg, #2a2632 0%, #3e3747 50%, #1f1a26 100%);
+	border: 4px solid #4a4254;
+	border-radius: 6px;
+	box-shadow: 
+		0 30px 70px rgba(0, 0, 0, 0.95), 
+		0 0 35px rgba(0, 0, 0, 0.85);
+	padding: 14px;
+	display: flex;
+	flex-direction: column;
+	gap: 12px;
+	position: relative;
+	transform-style: preserve-3d;
+}
+
+/* 3D Side Walls */
+.frameSideLeft {
+	position: absolute;
+	top: -4px;
+	bottom: -4px;
+	left: -14px;
+	width: 14px;
+	background: linear-gradient(90deg, #15121b 0%, #352f3f 100%);
+	border-left: 2px solid #5a5166;
+	transform-origin: right center;
+	transform: rotateY(-90deg);
+	border-radius: 4px 0 0 4px;
+}
+
+.frameSideRight {
+	position: absolute;
+	top: -4px;
+	bottom: -4px;
+	right: -14px;
+	width: 14px;
+	background: linear-gradient(-90deg, #15121b 0%, #352f3f 100%);
+	border-right: 2px solid #5a5166;
+	transform-origin: left center;
+	transform: rotateY(90deg);
+	border-radius: 0 4px 4px 0;
+}
+
+/* Grid for 2 Rows */
+.lockerGrid {
+	display: flex;
+	flex-direction: column;
+	gap: 12px;
+	transform-style: preserve-3d;
+}
+
+.lockerRow {
+	display: grid;
+	grid-template-columns: repeat(6, 1fr);
+	gap: 12px;
+	transform-style: preserve-3d;
+}
+
+.emptySlot {
+	height: 215px;
+}
+
+/* Locker Door Base */
+.lockerDoor {
+	height: 215px;
+	background: var(--locker-color, #4a4056);
+	border-radius: 5px;
+	border: 2px solid rgba(255, 255, 255, 0.15);
+	border-bottom: 3px solid rgba(0, 0, 0, 0.85);
+	border-right: 3px solid rgba(0, 0, 0, 0.7);
+	box-shadow: 
+		0 10px 24px rgba(0, 0, 0, 0.85), 
+		inset 2px 2px 3px rgba(255, 255, 255, 0.25), 
+		inset -3px -3px 6px rgba(0, 0, 0, 0.85);
+	position: relative;
+	padding: 8px 8px;
+	cursor: default;
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+	box-sizing: border-box;
+	transition: transform 0.35s cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 0.35s ease, border-color 0.25s ease;
+	outline: none;
+	overflow: visible;
+	transform-style: preserve-3d;
+}
+
+/* 3D Metal Hinges on Left Edge */
+.doorHingeTop,
+.doorHingeBottom {
+	position: absolute;
+	left: -5px;
+	width: 7px;
+	height: 16px;
+	background: linear-gradient(90deg, #090a0c 0%, #a1a1aa 50%, #27272a 100%);
+	border: 1px solid #18181b;
+	border-radius: 2px 0 0 2px;
+	box-shadow: -2px 2px 4px rgba(0, 0, 0, 0.8);
+	z-index: 10;
+}
+
+.doorHingeTop { top: 22px; }
+.doorHingeBottom { bottom: 22px; }
+
+/* Metallic Bevel Reflection */
+.doorBevelShine {
+	position: absolute;
+	top: 0;
+	left: 0;
+	right: 0;
+	height: 2px;
+	background: linear-gradient(90deg, transparent 0%, rgba(255, 255, 255, 0.45) 50%, transparent 100%);
+	pointer-events: none;
+}
+
+.doorFace {
+	height: 100%;
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+	align-items: center;
+	position: relative;
+	z-index: 2;
+	transform-style: preserve-3d;
+}
+
+/* Silver Riveted Number Plate */
+.topNumberPlate {
+	background: linear-gradient(135deg, #e2e8f0 0%, #cbd5e1 50%, #94a3b8 100%);
+	border: 1px solid #64748b;
+	border-radius: 2px;
+	padding: 1px 8px;
+	box-shadow: 0 3px 6px rgba(0, 0, 0, 0.8);
+	display: flex;
+	align-items: center;
+	gap: 6px;
+	transform: translateZ(4px);
+}
+
+.numberText {
+	font-family: 'JetBrains Mono', monospace;
+	font-size: 0.7rem;
+	font-weight: 800;
+	color: #0f172a;
+	letter-spacing: 1px;
+}
+
+.plateRivetLeft,
+.plateRivetRight {
+	width: 4px;
+	height: 4px;
+	background: radial-gradient(circle at 35% 35%, #ffffff 0%, #64748b 100%);
+	border: 1px solid #334155;
+	border-radius: 50%;
+}
+
+/* Ventilation Louvers */
+.ventClusterTop,
+.ventClusterBottom {
+	display: flex;
+	flex-direction: column;
+	gap: 3px;
+	width: 84%;
+}
+
+.ventLouver {
+	height: 3.5px;
+	background: rgba(10, 10, 15, 0.9);
+	border-bottom: 1px solid rgba(255, 255, 255, 0.25);
+	border-radius: 1px;
+	box-shadow: inset 0 2px 3px rgba(0, 0, 0, 0.95);
+}
+
+/* Recessed Chrome Handle Cup & Lift Latch */
+.recessedHandleCup {
+	width: 32px;
+	height: 48px;
+	background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+	border: 2px solid #64748b;
+	border-radius: 3px;
+	box-shadow: 
+		inset 0 3px 8px rgba(0, 0, 0, 0.95),
+		0 4px 10px rgba(0, 0, 0, 0.85);
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: space-around;
+	padding: 4px 2px;
+	position: relative;
+	transform: translateZ(6px);
+}
+
+.liftLatchBar {
+	width: 14px;
+	height: 24px;
+	background: linear-gradient(90deg, #94a3b8 0%, #f8fafc 50%, #475569 100%);
+	border: 1.5px solid #334155;
+	border-radius: 2px;
+	box-shadow: 3px 4px 8px rgba(0, 0, 0, 0.9);
+}
+
+.keyholeDial {
+	width: 12px;
+	height: 12px;
+	background: radial-gradient(circle at 35% 35%, #e2e8f0 0%, #475569 100%);
+	border-radius: 50%;
+	border: 1px solid #1e293b;
+}
+
+/* Academic Label Tag */
+.academicLabelTag {
+	background: rgba(12, 10, 8, 0.88);
+	border: 1px solid rgba(234, 179, 8, 0.45);
+	border-radius: 3px;
+	padding: 2px 6px;
+	align-self: flex-start;
+	display: flex;
+	flex-direction: column;
+	margin-top: 2px;
+	box-shadow: 0 3px 6px rgba(0, 0, 0, 0.7);
+	transform: translateZ(3px);
+}
+
+.tagLabel {
+	font-family: 'JetBrains Mono', monospace;
+	font-size: 0.6rem;
+	font-weight: 800;
+	color: #f3f4f6;
+	letter-spacing: 0.5px;
+}
+
+.tagShort {
+	font-family: 'JetBrains Mono', monospace;
+	font-size: 0.52rem;
+	color: #eab308;
+}
+
+/* Status LED */
+.statusLed {
+	width: 7px;
+	height: 7px;
+	border-radius: 50%;
+	position: absolute;
+	top: 6px;
+	right: 6px;
+	border: 1px solid rgba(0, 0, 0, 0.8);
+	transform: translateZ(5px);
+}
+
+.ledActive {
+	background: #22c55e;
+	box-shadow: 0 0 8px #22c55e;
+}
+
+.ledLocked {
+	background: #dc2626;
+	box-shadow: 0 0 6px #dc2626;
+}
+
+/* Interactive Hover & 3D Tilt Effect */
+.realLocker {
+	cursor: pointer;
+}
+
+.realLocker:hover,
+.realLocker:focus-visible {
+	border-color: #eab308;
+	outline: none;
+	transform: perspective(800px) translateZ(16px) rotateY(-7deg) rotateX(2deg);
+	box-shadow: 
+		-12px 16px 32px rgba(0, 0, 0, 0.95), 
+		0 0 25px rgba(234, 179, 8, 0.45);
+	z-index: 50;
+}
+
+.hoverChip {
+	position: absolute;
+	bottom: -28px;
+	left: 50%;
+	transform: translateX(-50%) translateZ(10px);
+	font-family: 'JetBrains Mono', monospace;
+	font-size: 0.62rem;
+	font-weight: 800;
+	color: #eab308;
+	background: #0d0c0a;
+	border: 1.5px solid #eab308;
+	padding: 3px 12px;
+	border-radius: 12px;
+	white-space: nowrap;
+	opacity: 0;
+	pointer-events: none;
+	transition: opacity 0.25s ease;
+	z-index: 60;
+}
+
+.realLocker:hover .hoverChip,
+.realLocker:focus-visible .hoverChip {
+	opacity: 1;
+}
+
+.fillerLocker {
+	filter: contrast(0.85) brightness(0.75);
+	cursor: default;
+}
+
+/* Base Plinth */
+.bankPlinth {
+	height: 18px;
+	background: linear-gradient(180deg, #27272a 0%, #18181b 100%);
+	border-radius: 0 0 4px 4px;
+	border-top: 2px solid #09090b;
+}
+
+@media (max-width: 900px) {
+	.lockerRow {
+		grid-template-columns: repeat(3, 1fr);
+	}
+}

@@ -113,7 +113,6 @@ const diaryEntries = [
       '/Experience/AppBell/AppBell (1).png',
       '/Experience/AppBell/AppBell (2).png',
       '/Experience/AppBell/AppBell (3).png',
-      '/Experience/AppBell/AppBell (1).jpg',
     ],
     notes: [
       'Enhanced facial recognition algorithms using Python to improve attendance system accuracy',

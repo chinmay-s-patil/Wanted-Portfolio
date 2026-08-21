@@ -31,7 +31,9 @@ export default function WikiBrowser({ viz, onClose }) {
         fontFamily: "'Tahoma', sans-serif",
         animation: 'ieOpen 0.2s ease-out',
         overflow: 'hidden',
-        position: 'relative'
+        position: 'relative',
+        userSelect: 'text',
+        WebkitUserSelect: 'text'
       }}
     >
       <style jsx>{`
@@ -198,10 +200,10 @@ export default function WikiBrowser({ viz, onClose }) {
         {/* Screenshot Gallery */}
         {viz.screenshots && viz.screenshots.length > 0 && (
           <div style={{
-            float: 'right', marginLeft: '16px', marginBottom: '16px',
-            width: '300px', border: '1px solid #A7D7F9', background: '#F9F9F9', padding: '4px'
+            float: 'right', marginLeft: '20px', marginBottom: '20px',
+            width: '420px', border: '1px solid #A7D7F9', background: '#F9F9F9', padding: '6px'
           }}>
-            <div style={{ position: 'relative', width: '100%', height: '200px', background: '#000', marginBottom: '4px' }}>
+            <div style={{ position: 'relative', width: '100%', height: '270px', background: '#000', marginBottom: '6px' }}>
               {viz.screenshots.map((screenshot, idx) => (
                 <img
                   key={idx}
@@ -217,19 +219,19 @@ export default function WikiBrowser({ viz, onClose }) {
             </div>
             
             {viz.screenshots.length > 1 && (
-              <div style={{ display: 'flex', justifyContent: 'center', gap: '4px', padding: '4px' }}>
-                <button onClick={prevScreen} style={{ padding: '2px 8px', fontSize: '11px', background: '#fff', border: '1px solid #ccc', cursor: 'pointer' }}>‹ Prev</button>
-                <span style={{ fontSize: '11px', padding: '2px 8px' }}>{currentScreenIndex + 1} / {viz.screenshots.length}</span>
-                <button onClick={nextScreen} style={{ padding: '2px 8px', fontSize: '11px', background: '#fff', border: '1px solid #ccc', cursor: 'pointer' }}>Next ›</button>
+              <div style={{ display: 'flex', justifyContent: 'center', gap: '6px', padding: '4px' }}>
+                <button onClick={prevScreen} style={{ padding: '3px 10px', fontSize: '12px', background: '#fff', border: '1px solid #ccc', cursor: 'pointer' }}>‹ Prev</button>
+                <span style={{ fontSize: '12px', padding: '2px 8px' }}>{currentScreenIndex + 1} / {viz.screenshots.length}</span>
+                <button onClick={nextScreen} style={{ padding: '3px 10px', fontSize: '12px', background: '#fff', border: '1px solid #ccc', cursor: 'pointer' }}>Next ›</button>
               </div>
             )}
             
-            <div style={{ fontSize: '11px', color: '#666', padding: '4px', textAlign: 'center' }}>{viz.title} Interface</div>
+            <div style={{ fontSize: '12px', color: '#666', padding: '4px', textAlign: 'center' }}>{viz.title} Interface</div>
           </div>
         )}
 
         {/* Wiki Content */}
-        <div style={{ fontSize: '13px', lineHeight: '1.6', color: '#000' }}>
+        <div style={{ fontSize: '14px', lineHeight: '1.65', color: '#000' }}>
           <p style={{ margin: '0 0 12px 0' }}>
             <strong>{viz.title}</strong> is a {viz.type} application designed for {viz.category.toLowerCase()}. 
             {viz.isWIP && ' This project is currently in development.'}

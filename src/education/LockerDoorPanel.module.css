@@ -1,0 +1,768 @@
+/* LockerDoorPanel.module.css — Reference Photo Accurate Open Locker Interior Stage */
+
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@600;700;800&family=Special+Elite&family=Playfair+Display:wght@700;800&family=Caveat:wght@700&display=swap');
+
+.modalOverlay {
+	position: fixed;
+	inset: 0;
+	z-index: 500;
+	background: rgba(4, 3, 2, 0.94);
+	backdrop-filter: blur(14px);
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	padding: 1.5rem;
+	animation: overlayFade 0.3s ease-out;
+	user-select: none;
+	perspective: 1600px;
+}
+
+@keyframes overlayFade {
+	from { opacity: 0; }
+	to { opacity: 1; }
+}
+
+.closeBtn {
+	position: fixed;
+	top: 1.5rem;
+	right: 2rem;
+	background: linear-gradient(135deg, #7f1d1d 0%, #450a0a 100%);
+	border: 1.5px solid #dc2626;
+	color: #fef2f2;
+	padding: 0.55rem 1.25rem;
+	border-radius: 4px;
+	font-family: 'JetBrains Mono', monospace;
+	font-size: 0.78rem;
+	font-weight: 800;
+	cursor: pointer;
+	z-index: 550;
+	box-shadow: 0 6px 20px rgba(0, 0, 0, 0.8), inset 0 1px 1px rgba(255, 255, 255, 0.2);
+	transition: all 0.2s ease;
+	letter-spacing: 1px;
+}
+
+.closeBtn:hover,
+.closeBtn:focus {
+	background: #991b1b;
+	transform: scale(1.04);
+	border-color: #ef4444;
+	box-shadow: 0 0 15px rgba(239, 68, 68, 0.4);
+	outline: none;
+}
+
+/* Container */
+.lockerContainer {
+	width: 100%;
+	max-width: 1000px;
+	height: calc(100vh - 4rem);
+	max-height: 720px;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: space-between;
+	gap: 1rem;
+	position: relative;
+}
+
+/* Centered Single 3D Locker Stage */
+.singleLockerUnit {
+	width: min(540px, 90vw);
+	height: min(640px, 78vh);
+	position: relative;
+	perspective: 1400px;
+	margin: 0 auto;
+	box-shadow: 0 35px 85px rgba(0, 0, 0, 0.98), 0 0 40px rgba(0,0,0,0.9);
+	border-radius: 6px;
+	transform-style: preserve-3d;
+}
+
+/* Frame Iron Hinges on Left Edge */
+.frameHingeTop,
+.frameHingeBottom {
+	position: absolute;
+	left: -12px;
+	width: 12px;
+	height: 28px;
+	background: linear-gradient(90deg, #090a0c 0%, #52525b 50%, #18181b 100%);
+	border: 1px solid #27272a;
+	border-radius: 3px 0 0 3px;
+	box-shadow: -4px 4px 10px rgba(0, 0, 0, 0.9), inset 0 1px 1px rgba(255, 255, 255, 0.4);
+	z-index: 100;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
+.frameHingeTop { top: 40px; }
+.frameHingeBottom { bottom: 40px; }
+
+.hingePin {
+	width: 4px;
+	height: 100%;
+	background: linear-gradient(90deg, #d4d4d8 0%, #52525b 100%);
+	border-radius: 2px;
+}
+
+/* 1. Deep Cast Iron Locker Cavity */
+.innerCavity {
+	width: 100%;
+	height: 100%;
+	background: linear-gradient(135deg, #0d0f14 0%, #171c26 50%, #080a0e 100%);
+	border: 4px solid #2d3340;
+	border-radius: 6px;
+	box-shadow: 
+		inset 0 0 70px rgba(0, 0, 0, 0.98), 
+		inset 0 0 120px rgba(0, 0, 0, 0.8),
+		0 0 30px rgba(0, 0, 0, 0.9);
+	display: flex;
+	flex-direction: column;
+	overflow: hidden;
+	position: relative;
+	box-sizing: border-box;
+}
+
+.cavityLightCone {
+	position: absolute;
+	top: 0;
+	left: 50%;
+	transform: translateX(-50%);
+	width: 80%;
+	height: 100%;
+	background: radial-gradient(ellipse at 50% 0%, rgba(234, 179, 8, 0.09) 0%, rgba(234, 179, 8, 0.02) 45%, transparent 75%);
+	pointer-events: none;
+	z-index: 1;
+}
+
+.cavityWallLeft {
+	position: absolute;
+	top: 0;
+	bottom: 0;
+	left: 0;
+	width: 16px;
+	background: linear-gradient(90deg, rgba(0, 0, 0, 0.8) 0%, transparent 100%);
+	pointer-events: none;
+	z-index: 2;
+}
+
+.cavityWallRight {
+	position: absolute;
+	top: 0;
+	bottom: 0;
+	right: 0;
+	width: 16px;
+	background: linear-gradient(-90deg, rgba(0, 0, 0, 0.8) 0%, transparent 100%);
+	pointer-events: none;
+	z-index: 2;
+}
+
+/* Top Storage Shelf — Slanted Colorful Textbooks & Binders (Photos 1 & 3) */
+.topShelf {
+	height: 68px;
+	background: linear-gradient(180deg, #221c16 0%, #3d3126 70%, #1a1510 100%);
+	border-bottom: 4px solid #0f0c09;
+	box-shadow: 0 10px 24px rgba(0, 0, 0, 0.9), inset 0 1px 2px rgba(255, 255, 255, 0.2);
+	padding: 0 1.25rem;
+	display: flex;
+	align-items: flex-end;
+	flex-shrink: 0;
+	position: relative;
+	z-index: 5;
+}
+
+.shelfSurface {
+	width: 100%;
+	display: flex;
+	justify-content: space-between;
+	align-items: flex-end;
+	padding-bottom: 4px;
+}
+
+.slantedBooksRack {
+	display: flex;
+	align-items: flex-end;
+	gap: 6px;
+}
+
+.slantedBook {
+	font-family: 'JetBrains Mono', monospace;
+	font-size: 0.55rem;
+	font-weight: 800;
+	color: #ffffff;
+	padding: 6px 8px;
+	border-radius: 3px 3px 0 0;
+	box-shadow: inset 0 1px 2px rgba(255, 255, 255, 0.4), -3px 4px 8px rgba(0,0,0,0.8);
+	border: 1px solid rgba(0,0,0,0.6);
+	transform-origin: bottom left;
+	height: 48px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
+.book1 { background: linear-gradient(180deg, #ec4899 0%, #be185d 100%); transform: rotate(-14deg); }
+.book2 { background: linear-gradient(180deg, #f97316 0%, #c2410c 100%); transform: rotate(-10deg); }
+.book3 { background: linear-gradient(180deg, #3b82f6 0%, #1d4ed8 100%); transform: rotate(-6deg); }
+.book4 { background: linear-gradient(180deg, #a855f7 0%, #6b21a8 100%); transform: rotate(-2deg); }
+
+.campusLanyard {
+	font-family: 'JetBrains Mono', monospace;
+	font-size: 0.65rem;
+	color: #eab308;
+	background: rgba(30, 24, 16, 0.9);
+	border: 1.5px solid #854d0e;
+	padding: 3px 9px;
+	border-radius: 4px;
+	box-shadow: 0 3px 8px rgba(0, 0, 0, 0.7);
+}
+
+/* Main Compartment Interior */
+.mainCompartment {
+	flex: 1;
+	padding: 1.25rem 1.5rem;
+	display: flex;
+	flex-direction: column;
+	gap: 1.25rem;
+	overflow-y: auto;
+	position: relative;
+	z-index: 5;
+}
+
+/* Pinned Diploma Poster */
+.diplomaPoster {
+	background: linear-gradient(135deg, #f4ecd8 0%, #e6d8b8 100%);
+	color: #1a1714;
+	padding: 1.35rem;
+	border-radius: 3px;
+	border: 1px solid #c4b595;
+	box-shadow: 0 14px 40px rgba(0, 0, 0, 0.9), inset 0 0 30px rgba(120, 80, 20, 0.2);
+	position: relative;
+	cursor: pointer;
+	transition: transform 0.25s cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 0.25s ease;
+	display: flex;
+	flex-direction: column;
+	gap: 0.5rem;
+}
+
+.diplomaPoster:hover {
+	transform: translateY(-3px) scale(1.015);
+	box-shadow: 0 18px 45px rgba(0, 0, 0, 0.95);
+}
+
+.posterPinTop {
+	width: 14px;
+	height: 14px;
+	background: radial-gradient(circle at 35% 35%, #ef4444 0%, #991b1b 70%, #450a0a 100%);
+	border-radius: 50%;
+	position: absolute;
+	top: -7px;
+	left: 50%;
+	transform: translateX(-50%);
+	box-shadow: 0 4px 8px rgba(0, 0, 0, 0.85);
+	border: 1px solid #450a0a;
+}
+
+.recordHeader {
+	font-family: 'JetBrains Mono', monospace;
+	font-size: 0.62rem;
+	font-weight: 800;
+	color: #78350f;
+	letter-spacing: 2.5px;
+}
+
+.degreeTitle {
+	font-family: 'Playfair Display', Georgia, serif;
+	font-size: 1.35rem;
+	font-weight: 800;
+	margin: 0;
+	color: #1c1917;
+	letter-spacing: 0.5px;
+}
+
+.institutionName {
+	font-family: 'Special Elite', monospace;
+	font-size: 0.92rem;
+	margin: 0;
+	color: #292524;
+}
+
+.periodLocation {
+	font-family: 'JetBrains Mono', monospace;
+	font-size: 0.7rem;
+	color: #78716c;
+	margin: 0;
+}
+
+.descriptionText {
+	font-family: 'Special Elite', monospace;
+	font-size: 0.78rem;
+	line-height: 1.48;
+	color: #44403c;
+	margin: 0.3rem 0;
+}
+
+.highlightsList {
+	margin: 0;
+	padding-left: 1.2rem;
+	font-family: 'Special Elite', monospace;
+	font-size: 0.72rem;
+	color: #292524;
+	display: flex;
+	flex-direction: column;
+	gap: 0.25rem;
+}
+
+.skillsTagRow {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 0.35rem;
+	margin-top: 0.4rem;
+}
+
+.skillBadge {
+	font-family: 'JetBrains Mono', monospace;
+	font-size: 0.62rem;
+	color: #fef3c7;
+	padding: 0.2rem 0.55rem;
+	border-radius: 3px;
+	font-weight: 700;
+	box-shadow: inset 0 1px 1px rgba(255,255,255,0.2), 0 2px 4px rgba(0,0,0,0.4);
+}
+
+.officialStamp {
+	position: absolute;
+	bottom: 12px;
+	right: 14px;
+	border: 2px stroke #991b1b;
+	outline: 2px dashed #991b1b;
+	color: #991b1b;
+	font-family: 'JetBrains Mono', monospace;
+	font-size: 0.55rem;
+	font-weight: 800;
+	padding: 2px 6px;
+	transform: rotate(-8deg);
+	opacity: 0.75;
+	letter-spacing: 1px;
+}
+
+/* ✉️ Vintage Manila Envelope & Scroll Cards */
+.documentsSection {
+	display: flex;
+	flex-direction: column;
+	gap: 0.65rem;
+}
+
+.docHeaderTitle {
+	font-family: 'JetBrains Mono', monospace;
+	font-size: 0.65rem;
+	font-weight: 800;
+	color: #eab308;
+	letter-spacing: 2.5px;
+}
+
+.envelopeList {
+	display: flex;
+	flex-direction: column;
+	gap: 0.75rem;
+}
+
+.vintageEnvelopeCard {
+	background: linear-gradient(135deg, #e5d3b3 0%, #d4bf98 50%, #c4ab80 100%);
+	border: 2px solid #926d40;
+	border-radius: 5px;
+	padding: 0.75rem 0.9rem;
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	cursor: pointer;
+	position: relative;
+	box-shadow: 
+		0 8px 20px rgba(0, 0, 0, 0.85), 
+		inset 0 1px 2px rgba(255, 255, 255, 0.6), 
+		inset 0 -2px 5px rgba(90, 60, 30, 0.25);
+	transition: transform 0.25s cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 0.25s ease;
+}
+
+.vintageEnvelopeCard:hover {
+	transform: translateY(-3px) scale(1.02);
+	border-color: #b48348;
+	box-shadow: 
+		0 14px 28px rgba(0, 0, 0, 0.95), 
+		0 0 15px rgba(212, 191, 152, 0.4);
+}
+
+.stringClaspBtn {
+	width: 14px;
+	height: 14px;
+	background: radial-gradient(circle at 35% 35%, #78350f 0%, #451a03 100%);
+	border-radius: 50%;
+	border: 1.5px solid #d97706;
+	box-shadow: 0 2px 4px rgba(0,0,0,0.6);
+}
+
+.envelopeBodyContent {
+	flex: 1;
+	display: flex;
+	align-items: center;
+	gap: 0.75rem;
+	padding: 0 0.6rem;
+}
+
+.envelopeIcon {
+	font-size: 1.5rem;
+	filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.4));
+}
+
+.envelopeTextGroup {
+	display: flex;
+	flex-direction: column;
+}
+
+.envelopeTitle {
+	font-family: 'Caveat', cursive, 'Special Elite', monospace;
+	font-size: 1.15rem;
+	font-weight: 700;
+	color: #36220f;
+	margin: 0;
+	letter-spacing: 0.5px;
+}
+
+.envelopeSub {
+	font-family: 'Special Elite', monospace;
+	font-size: 0.72rem;
+	color: #634323;
+	margin: 0.1rem 0 0;
+}
+
+.envelopeTag {
+	font-family: 'JetBrains Mono', monospace;
+	font-size: 0.58rem;
+	font-weight: 800;
+	color: #855325;
+	margin-top: 0.2rem;
+}
+
+.unsealActionBadge {
+	font-family: 'JetBrains Mono', monospace;
+	font-size: 0.65rem;
+	font-weight: 800;
+	color: #451a03;
+	background: rgba(255, 255, 255, 0.8);
+	border: 1.5px solid #78350f;
+	padding: 0.25rem 0.6rem;
+	border-radius: 4px;
+	box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+}
+
+/* 🎒 Locker Bottom Floor Items (Backpack, Water Bottle, Pencil Pouch - Photos 1 & 2) */
+.lockerBottomFloor {
+	display: flex;
+	align-items: center;
+	justify-content: space-around;
+	background: linear-gradient(180deg, rgba(20, 16, 12, 0.8) 0%, rgba(10, 8, 6, 0.95) 100%);
+	border: 1.5px solid #3f352b;
+	border-radius: 5px;
+	padding: 0.6rem 0.75rem;
+	margin-top: 0.5rem;
+	box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.8);
+}
+
+.floorBackpack,
+.floorWaterBottle,
+.floorPencilCase {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: 2px;
+}
+
+.itemIcon {
+	font-size: 1.35rem;
+	filter: drop-shadow(0 3px 5px rgba(0, 0, 0, 0.8));
+}
+
+.itemLabel {
+	font-family: 'JetBrains Mono', monospace;
+	font-size: 0.58rem;
+	font-weight: 700;
+	color: #d4c8b0;
+}
+
+/* 2. 🚪 Swung Metal Door — Overlapped on Top of Cavity */
+.hingedDoorWrapper {
+	position: absolute;
+	inset: 0;
+	width: 100%;
+	height: 100%;
+	z-index: 50;
+	transform-origin: left center;
+	transform: rotateY(0deg);
+	transition: transform 0.75s cubic-bezier(0.16, 1, 0.3, 1);
+	pointer-events: auto;
+	transform-style: preserve-3d;
+}
+
+.doorSwungOpen {
+	transform: rotateY(-115deg);
+}
+
+.doorThicknessEdge {
+	position: absolute;
+	top: 0;
+	bottom: 0;
+	right: -8px;
+	width: 8px;
+	background: linear-gradient(90deg, #161a22 0%, #2b3240 50%, #0d0f14 100%);
+	border-right: 1px solid #474c59;
+	transform-origin: left center;
+	transform: rotateY(90deg);
+	border-radius: 0 2px 2px 0;
+}
+
+.innerDoorFace {
+	width: 100%;
+	height: 100%;
+	background: linear-gradient(135deg, var(--door-color, #1e3a8a) 0%, rgba(10, 14, 22, 0.96) 100%);
+	border: 3.5px solid #1c212b;
+	border-radius: 6px;
+	box-shadow: 
+		-35px 20px 60px rgba(0, 0, 0, 0.95), 
+		inset 0 0 25px rgba(0, 0, 0, 0.7);
+	padding: 1rem;
+	display: flex;
+	flex-direction: column;
+	gap: 0.9rem;
+	box-sizing: border-box;
+	transform: scaleX(-1);
+	position: relative;
+	overflow-y: auto;
+}
+
+.doorVentsTop {
+	display: flex;
+	flex-direction: column;
+	gap: 3px;
+	width: 80%;
+	margin: 0 auto;
+}
+
+.ventLine {
+	height: 3px;
+	background: rgba(0, 0, 0, 0.75);
+	border-radius: 1px;
+}
+
+/* 📋 White Magnetic Memo Whiteboard (Photo 1) */
+.magneticMemoBoard {
+	background: #ffffff;
+	border: 2px solid #cbd5e1;
+	border-radius: 4px;
+	padding: 0.65rem 0.85rem;
+	box-shadow: 0 8px 20px rgba(0, 0, 0, 0.7);
+	position: relative;
+	color: #0f172a;
+}
+
+.magnetDot {
+	width: 8px;
+	height: 8px;
+	border-radius: 50%;
+	position: absolute;
+	box-shadow: 0 2px 4px rgba(0, 0, 0, 0.6);
+	border: 1px solid rgba(0,0,0,0.4);
+}
+
+.magnetRed { top: 6px; left: 8px; background: #ef4444; }
+.magnetYellow { top: 6px; right: 8px; background: #eab308; }
+.magnetBlue { bottom: 6px; right: 8px; background: #3b82f6; }
+
+.memoBoardHeader {
+	font-family: 'JetBrains Mono', monospace;
+	font-size: 0.62rem;
+	font-weight: 800;
+	color: #475569;
+	letter-spacing: 1px;
+	display: block;
+	margin-bottom: 0.3rem;
+}
+
+.memoList {
+	margin: 0;
+	padding-left: 1rem;
+	font-family: 'Caveat', cursive, 'Special Elite', monospace;
+	font-size: 0.95rem;
+	font-weight: 700;
+	color: #1e293b;
+	line-height: 1.3;
+}
+
+/* ✏️ Magnetic Pencil Cup (Photos 1 & 3) */
+.magneticPencilCup {
+	background: #f8fafc;
+	border: 2px solid #94a3b8;
+	border-radius: 4px;
+	padding: 0.5rem 0.75rem;
+	box-shadow: 0 6px 16px rgba(0, 0, 0, 0.7);
+	position: relative;
+	display: flex;
+	align-items: center;
+}
+
+.cupMagnetPin {
+	width: 10px;
+	height: 10px;
+	background: radial-gradient(circle, #64748b 0%, #1e293b 100%);
+	border-radius: 50%;
+	position: absolute;
+	top: -5px;
+	left: 50%;
+	transform: translateX(-50%);
+	box-shadow: 0 2px 4px rgba(0,0,0,0.6);
+}
+
+.pencilCupBody {
+	width: 100%;
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+}
+
+.pensCluster {
+	display: flex;
+	gap: 4px;
+	font-size: 1.1rem;
+}
+
+.cupLabel {
+	font-family: 'JetBrains Mono', monospace;
+	font-size: 0.6rem;
+	font-weight: 800;
+	color: #475569;
+}
+
+/* Taped Polaroid Photo Gallery */
+.doorPhotoPolaroid {
+	background: #fdfbf7;
+	padding: 8px 8px 12px 8px;
+	border-radius: 3px;
+	border: 1px solid #e7e0d3;
+	box-shadow: 0 12px 30px rgba(0, 0, 0, 0.8);
+	position: relative;
+	transform: rotate(-2deg);
+}
+
+.tapeStripTop {
+	position: absolute;
+	top: -9px;
+	left: 30%;
+	width: 55px;
+	height: 18px;
+	background: rgba(245, 230, 180, 0.75);
+	border: 1px solid rgba(210, 190, 140, 0.4);
+	transform: rotate(-4deg);
+	box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+}
+
+.polaroidFrame {
+	width: 100%;
+	height: 140px;
+	background: #0d0c0a;
+	border-radius: 2px;
+	overflow: hidden;
+	cursor: pointer;
+	position: relative;
+}
+
+.polaroidImg {
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+	filter: sepia(0.25) contrast(1.05);
+}
+
+.polaroidCaption {
+	padding-top: 6px;
+	font-family: 'Special Elite', monospace;
+	font-size: 0.7rem;
+	color: #292524;
+	text-align: center;
+}
+
+.photoNavMini {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	margin-top: 4px;
+	font-family: 'JetBrains Mono', monospace;
+	font-size: 0.65rem;
+	color: #57534e;
+}
+
+.photoNavMini button {
+	background: #e7e5e4;
+	border: 1px solid #a8a29e;
+	border-radius: 3px;
+	padding: 1px 6px;
+	cursor: pointer;
+	font-size: 0.85rem;
+	font-weight: bold;
+}
+
+/* Yellow Sticky Note */
+.stickyNote {
+	background: #fef08a;
+	color: #713f12;
+	padding: 0.7rem;
+	border-radius: 2px;
+	box-shadow: 0 8px 18px rgba(0, 0, 0, 0.6);
+	transform: rotate(2deg);
+	position: relative;
+	font-family: 'Special Elite', monospace;
+	font-size: 0.78rem;
+	line-height: 1.35;
+	border-bottom-right-radius: 12px 3px;
+}
+
+.notePin {
+	position: absolute;
+	top: -6px;
+	right: 10px;
+	font-size: 0.85rem;
+}
+
+.noteText {
+	margin: 0;
+}
+
+/* Footer Navigation Controls */
+.lockerNavFooter {
+	display: flex;
+	justify-content: center;
+	gap: 1rem;
+}
+
+.navBtn {
+	background: linear-gradient(135deg, #1c1917 0%, #0c0a09 100%);
+	border: 1.5px solid #854d0e;
+	color: #d4c8b0;
+	padding: 0.5rem 1.25rem;
+	border-radius: 4px;
+	font-family: 'JetBrains Mono', monospace;
+	font-size: 0.78rem;
+	font-weight: 700;
+	cursor: pointer;
+	transition: all 0.2s ease;
+	box-shadow: 0 4px 12px rgba(0, 0, 0, 0.8);
+}
+
+.navBtn:hover:not(:disabled) {
+	background: linear-gradient(135deg, #2e2820 0%, #15120e 100%);
+	border-color: #eab308;
+	color: #eab308;
+	box-shadow: 0 6px 16px rgba(0, 0, 0, 0.9);
+}
+
+.navBtn:disabled {
+	opacity: 0.35;
+	cursor: not-allowed;
+	border-color: #44403c;
+}

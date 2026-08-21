@@ -1,10 +1,10 @@
-// app/projects/ProjectFolder.jsx
-'use client'
-
 import { useEffect, useState, useRef } from 'react'
 
 export default function ProjectFolder({ project, onClose }) {
+  const [currentPage, setCurrentPage] = useState(1) // 1: Media & Summary, 2: Findings & Tools
   const [currentMediaIndex, setCurrentMediaIndex] = useState(0)
+  const [isPlaying, setIsPlaying] = useState(true)
+  const [isFlipping, setIsFlipping] = useState(false)
   const videoRefs = useRef([])
 
   useEffect(() => {
@@ -15,29 +15,25 @@ export default function ProjectFolder({ project, onClose }) {
   }, [])
 
   useEffect(() => {
-    const handleEscape = (e) => {
-      if (e.key === 'Escape') onClose()
-    }
-    window.addEventListener('keydown', handleEscape)
-    return () => window.removeEventListener('keydown', handleEscape)
-  }, [onClose])
-
-  // Video playback management
-  useEffect(() => {
     if (!project.media || project.media.length === 0) return
-    
+
     const currentMedia = project.media[currentMediaIndex]
-    
+
     videoRefs.current.forEach((video) => {
       if (video) {
         video.pause()
-        video.currentTime = 0
       }
     })
-    
+
     const currentVideo = videoRefs.current[currentMediaIndex]
     if (currentVideo && currentMedia?.type === 'video') {
-      currentVideo.play().catch(err => console.log('Autoplay prevented:', err))
+      currentVideo.currentTime = 0
+      currentVideo.play()
+        .then(() => setIsPlaying(true))
+        .catch((err) => {
+          console.log('Autoplay prevented:', err)
+          setIsPlaying(false)
+        })
     }
   }, [currentMediaIndex, project.media])
 
@@ -46,7 +42,6 @@ export default function ProjectFolder({ project, onClose }) {
       videoRefs.current.forEach((video) => {
         if (video) {
           video.pause()
-          video.currentTime = 0
         }
       })
     }
@@ -64,6 +59,28 @@ export default function ProjectFolder({ project, onClose }) {
     setCurrentMediaIndex((prev) => (prev - 1 + project.media.length) % project.media.length)
   }
 
+  const togglePlayVideo = () => {
+    const currentVideo = videoRefs.current[currentMediaIndex]
+    if (currentVideo) {
+      if (currentVideo.paused) {
+        currentVideo.play()
+        setIsPlaying(true)
+      } else {
+        currentVideo.pause()
+        setIsPlaying(false)
+      }
+    }
+  }
+
+  const handlePageTurn = (targetPage) => {
+    if (isFlipping || targetPage === currentPage) return
+    setIsFlipping(true)
+    setTimeout(() => {
+      setCurrentPage(targetPage)
+      setIsFlipping(false)
+    }, 280)
+  }
+
   const getYouTubeEmbedUrl = (url) => {
     const patterns = [
       /(?:youtube\.com\/watch\?v=)([^&\s]+)/,
@@ -71,466 +88,296 @@ export default function ProjectFolder({ project, onClose }) {
       /(?:youtu\.be\/)([^?\s]+)/,
       /(?:youtube\.com\/v\/)([^?\s]+)/
     ]
-    
+
     for (const pattern of patterns) {
       const match = url.match(pattern)
       if (match && match[1]) {
         const videoId = match[1]
-        return `https://www.youtube.com/embed/${videoId}?autoplay=1&loop=1&mute=1&controls=0&playlist=${videoId}`
+        return `https://www.youtube.com/embed/${videoId}?autoplay=1&loop=1&mute=1&controls=1&playlist=${videoId}`
       }
     }
-    
+
     return url
   }
 
-  const currentMedia = project.media?.[currentMediaIndex]
-
   return (
-    <div
-      style={{
-        position: 'fixed',
-        inset: 0,
-        zIndex: 100,
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        padding: '2rem',
-        animation: 'fadeIn 0.3s ease'
-      }}
-      onClick={onClose}
-    >
-      <style jsx>{`
-        @keyframes fadeIn {
-          from { opacity: 0; }
-          to { opacity: 1; }
-        }
+    <div className="project-folder-modal-root" onClick={onClose}>
+      {/* Darkened Backdrop */}
+      <div className="project-folder-backdrop" />
 
-        @keyframes slideUp {
-          from {
-            opacity: 0;
-            transform: translateY(40px);
-          }
-          to {
-            opacity: 1;
-            transform: translateY(0);
-          }
-        }
-
-        .folder-content-scroll::-webkit-scrollbar {
-          width: 8px;
-        }
-
-        .folder-content-scroll::-webkit-scrollbar-track {
-          background: rgba(255, 255, 255, 0.05);
-          border-radius: 4px;
-        }
-
-        .folder-content-scroll::-webkit-scrollbar-thumb {
-          background: #c4a574;
-          border-radius: 4px;
-        }
-
-        .folder-content-scroll::-webkit-scrollbar-thumb:hover {
-          background: #8b7355;
-        }
-      `}</style>
-
-      {/* Backdrop */}
-      <div
-        style={{
-          position: 'absolute',
-          inset: 0,
-          background: 'rgba(0, 0, 0, 0.85)',
-          backdropFilter: 'blur(8px)'
-        }}
-      />
-
-      {/* Folder */}
-      <div
-        onClick={(e) => e.stopPropagation()}
-        style={{
-          position: 'relative',
-          maxWidth: '1200px',
-          width: '100%',
-          maxHeight: '90vh',
-          background: 'linear-gradient(135deg, #f6efe2 0%, #e8dcc8 100%)',
-          borderRadius: '0 12px 12px 12px',
-          border: '8px solid #3d2817',
-          boxShadow: '0 20px 80px rgba(0, 0, 0, 0.6)',
-          overflow: 'hidden',
-          display: 'flex',
-          flexDirection: 'column',
-          animation: 'slideUp 0.4s cubic-bezier(0.4, 0, 0.2, 1)'
-        }}
-      >
-        {/* Folder Tab */}
-        <div style={{
-          position: 'absolute',
-          top: '-40px',
-          left: '0',
-          width: '200px',
-          height: '48px',
-          background: 'linear-gradient(135deg, #f6efe2 0%, #e8dcc8 100%)',
-          borderRadius: '12px 12px 0 0',
-          border: '8px solid #3d2817',
-          borderBottom: 'none',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          fontSize: '1rem',
-          fontWeight: '700',
-          color: '#3d2817',
-          fontFamily: "'Special Elite', monospace"
-        }}>
-          CASE FILE
+      {/* Manila Folder Shell */}
+      <div className="manila-folder-wrapper" onClick={(e) => e.stopPropagation()}>
+        {/* Top Folder Tab */}
+        <div className="manila-tab">
+          <span>CASE FILE #{project.id?.substring(0, 8).toUpperCase()}</span>
         </div>
 
         {/* Close Button */}
         <button
+          type="button"
+          className="folder-close-btn"
           onClick={onClose}
-          style={{
-            position: 'absolute',
-            top: '1.5rem',
-            right: '1.5rem',
-            width: '40px',
-            height: '40px',
-            borderRadius: '50%',
-            background: '#3d2817',
-            border: '2px solid #8b7355',
-            cursor: 'pointer',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            transition: 'all 0.2s ease',
-            zIndex: 10
-          }}
           aria-label="Close folder"
+          title="Close case file (ESC)"
         >
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-            <path d="M18 6L6 18M6 6L18 18" stroke="#f6efe2" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+            <path d="M18 6L6 18M6 6L18 18" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" />
           </svg>
         </button>
 
-        {/* Content */}
-        <div 
-          className="folder-content-scroll"
-          style={{ 
-            overflowY: 'auto',
-            overflowX: 'hidden',
-            padding: '2.5rem',
-            paddingTop: '4rem',
-            flex: 1
-          }}
-        >
-          {/* Header */}
-          <div style={{ marginBottom: '2rem' }}>
-            <div style={{
-              fontSize: '0.85rem',
-              color: '#8b7355',
-              fontWeight: '600',
-              letterSpacing: '0.1em',
-              textTransform: 'uppercase',
-              marginBottom: '0.75rem'
-            }}>
-              {project.category || 'Project'}
+        {/* Paper Document Page */}
+        <div className={`paper-document ${isFlipping ? 'flipping' : ''}`} key={currentPage}>
+          {/* Metallic Paperclip Clipping the Top-Left Edge */}
+          <div className="paperclip-container">
+            <svg viewBox="0 0 24 52" fill="none" style={{ width: '100%', height: '100%' }}>
+              {/* Back Loop */}
+              <path
+                d="M8 18V36C8 39.3137 10.6863 42 14 42C17.3137 42 20 39.3137 20 36V12C20 6.47715 15.5228 2 10 2C4.47715 2 0 6.47715 0 12V38"
+                stroke="#686662"
+                strokeWidth="2.8"
+                strokeLinecap="round"
+              />
+              {/* Front Loop clipping over paper */}
+              <path
+                d="M6 18V36C6 38.2091 7.79086 40 10 40C12.2091 40 14 38.2091 14 36V14"
+                stroke="#a4a29e"
+                strokeWidth="2.8"
+                strokeLinecap="round"
+              />
+            </svg>
+          </div>
+
+          {/* Typewriter Document Header */}
+          <div className="folder-doc-header">
+            <div className="folder-doc-sub">
+              <span>DEPARTMENT OF ENGINEERING INVESTIGATIONS</span>
+              <span>EXHIBIT PAGE {currentPage} OF 2</span>
             </div>
-            
-            <h2 style={{
-              fontSize: '2.5rem',
-              fontWeight: '700',
-              marginBottom: '0.75rem',
-              color: '#1a1a1a',
-              fontFamily: "'Crimson Text', serif"
-            }}>
+
+            <h2 className="folder-doc-title">
               {project.title}
             </h2>
 
-            <div style={{
-              display: 'flex',
-              gap: '2rem',
-              flexWrap: 'wrap',
-              alignItems: 'center',
-              marginTop: '1rem'
-            }}>
-              <div style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: '0.5rem',
-                fontSize: '0.95rem',
-                color: '#666'
-              }}>
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-                  <rect x="3" y="4" width="18" height="18" rx="2" stroke="currentColor" strokeWidth="2"/>
-                  <path d="M16 2v4M8 2v4M3 10h18" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
-                </svg>
-                {project.period}
-              </div>
+            <div className="folder-doc-meta">
+              <span><strong>CATEGORY:</strong> {project.category?.toUpperCase() || 'GENERAL'}</span>
+              <span>&bull;</span>
+              <span><strong>DATE FILED:</strong> {project.period}</span>
             </div>
           </div>
 
-          {/* Media Section */}
-          {project.media && project.media.length > 0 && (
-            <div style={{
-              position: 'relative',
-              width: '100%',
-              height: '400px',
-              marginBottom: '2rem',
-              borderRadius: '12px',
-              overflow: 'hidden',
-              background: 'rgba(0, 0, 0, 0.1)',
-              border: '3px solid #3d2817',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center'
-            }}>
-              {project.media.map((item, idx) => (
-                <div
-                  key={idx}
-                  style={{
-                    position: 'absolute',
-                    inset: 0,
-                    opacity: idx === currentMediaIndex ? 1 : 0,
-                    transition: 'opacity 0.5s ease',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    pointerEvents: idx === currentMediaIndex ? 'auto' : 'none'
-                  }}
-                >
-                  {item.type === 'link' && (
-                    <iframe
-                      src={getYouTubeEmbedUrl(item.src)}
-                      title={item.caption || project.title}
-                      style={{
-                        width: '100%',
-                        height: '100%',
-                        border: 'none'
-                      }}
-                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                      allowFullScreen
-                    />
-                  )}
+          {/* PAGE 1: MEDIA & EXECUTIVE OVERVIEW */}
+          {currentPage === 1 && (
+            <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '0.9rem' }}>
+              {/* Media Deck */}
+              {project.media && project.media.length > 0 && (
+                <div className="evidence-media-deck">
+                  {/* Viewport */}
+                  <div className="evidence-media-viewport">
+                    {/* Top Overlay Badge */}
+                    <div className="evidence-media-header">
+                      <div className="evidence-media-badge">
+                        EXHIBIT {currentMediaIndex + 1} OF {project.media.length} &bull; {(project.media[currentMediaIndex]?.type || 'FILE').toUpperCase()}
+                      </div>
+                    </div>
 
-                  {item.type === 'video' && (
-                    <video
-                      ref={el => videoRefs.current[idx] = el}
-                      src={item.src}
-                      loop
-                      muted
-                      playsInline
-                      style={{
-                        width: '100%',
-                        height: '100%',
-                        objectFit: 'contain'
-                      }}
-                    />
-                  )}
+                    {/* Media Items */}
+                    {project.media.map((item, idx) => (
+                      <div
+                        key={idx}
+                        style={{
+                          position: 'absolute',
+                          inset: 0,
+                          opacity: idx === currentMediaIndex ? 1 : 0,
+                          transition: 'opacity 0.35s ease',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          pointerEvents: idx === currentMediaIndex ? 'auto' : 'none'
+                        }}
+                      >
+                        {item.type === 'link' && (
+                          <iframe
+                            src={getYouTubeEmbedUrl(item.src)}
+                            title={item.caption || project.title}
+                            style={{ width: '100%', height: '100%', border: 'none' }}
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                            allowFullScreen
+                          />
+                        )}
 
-                  {item.type === 'image' && (
-                    <img
-                      src={item.src}
-                      alt={item.caption || project.title}
-                      style={{
-                        width: '100%',
-                        height: '100%',
-                        objectFit: 'contain'
-                      }}
-                    />
+                        {item.type === 'video' && (
+                          <div style={{ position: 'relative', width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                            <video
+                              ref={(el) => (videoRefs.current[idx] = el)}
+                              src={item.src}
+                              loop
+                              muted
+                              playsInline
+                              onClick={togglePlayVideo}
+                              style={{ width: '100%', height: '100%', objectFit: 'contain', cursor: 'pointer' }}
+                            />
+                            {!isPlaying && idx === currentMediaIndex && (
+                              <button
+                                type="button"
+                                className="media-play-overlay-btn"
+                                onClick={togglePlayVideo}
+                                aria-label="Play video"
+                              >
+                                &#9654;
+                              </button>
+                            )}
+                          </div>
+                        )}
+
+                        {item.type === 'image' && (
+                          <img
+                            src={item.src}
+                            alt={item.caption || project.title}
+                            style={{
+                              width: '100%',
+                              height: '100%',
+                              objectFit: 'contain',
+                              background: 'radial-gradient(circle, #1a1612 0%, #080706 100%)'
+                            }}
+                          />
+                        )}
+                      </div>
+                    ))}
+
+                    {/* Prev/Next Overlay Buttons */}
+                    {hasMultipleMedia && (
+                      <>
+                        <button
+                          type="button"
+                          className="media-nav-overlay-btn media-nav-prev"
+                          onClick={prevMedia}
+                          aria-label="Previous exhibit"
+                        >
+                          &#9664;
+                        </button>
+
+                        <button
+                          type="button"
+                          className="media-nav-overlay-btn media-nav-next"
+                          onClick={nextMedia}
+                          aria-label="Next exhibit"
+                        >
+                          &#9654;
+                        </button>
+                      </>
+                    )}
+                  </div>
+
+                  {/* Caption */}
+                  <div className="evidence-media-caption">
+                    <span>{project.media[currentMediaIndex]?.caption || project.title}</span>
+                    <span style={{ fontSize: '0.68rem', opacity: 0.65 }}>PHOTOGRAPHIC EVIDENCE REEL</span>
+                  </div>
+
+                  {/* Filmstrip Thumbnails Row */}
+                  {hasMultipleMedia && (
+                    <div className="evidence-filmstrip">
+                      {project.media.map((m, i) => (
+                        <div
+                          key={i}
+                          className={`filmstrip-thumb ${i === currentMediaIndex ? 'active' : ''}`}
+                          onClick={() => setCurrentMediaIndex(i)}
+                          title={`Exhibit #${i + 1}`}
+                        >
+                          {m.type === 'image' && (
+                            <img src={m.src} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                          )}
+                          {m.type === 'video' && (
+                            <span style={{ fontSize: '0.75rem', color: '#c4a574' }}>▶ VID</span>
+                          )}
+                          {m.type === 'link' && (
+                            <span style={{ fontSize: '0.75rem', color: '#c4a574' }}>🎬 YT</span>
+                          )}
+                        </div>
+                      ))}
+                    </div>
                   )}
                 </div>
-              ))}
+              )}
 
-              {hasMultipleMedia && (
-                <>
-                  <button
-                    onClick={prevMedia}
-                    style={{
-                      position: 'absolute',
-                      left: '1rem',
-                      top: '50%',
-                      transform: 'translateY(-50%)',
-                      width: '48px',
-                      height: '48px',
-                      borderRadius: '50%',
-                      background: 'rgba(61, 40, 23, 0.8)',
-                      border: '2px solid #8b7355',
-                      cursor: 'pointer',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      transition: 'all 0.2s ease',
-                      zIndex: 10
-                    }}
-                    aria-label="Previous media"
-                  >
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-                      <path d="M15 18L9 12L15 6" stroke="#f6efe2" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                    </svg>
-                  </button>
-
-                  <button
-                    onClick={nextMedia}
-                    style={{
-                      position: 'absolute',
-                      right: '1rem',
-                      top: '50%',
-                      transform: 'translateY(-50%)',
-                      width: '48px',
-                      height: '48px',
-                      borderRadius: '50%',
-                      background: 'rgba(61, 40, 23, 0.8)',
-                      border: '2px solid #8b7355',
-                      cursor: 'pointer',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      transition: 'all 0.2s ease',
-                      zIndex: 10
-                    }}
-                    aria-label="Next media"
-                  >
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-                      <path d="M9 18L15 12L9 6" stroke="#f6efe2" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                    </svg>
-                  </button>
-
-                  <div style={{
-                    position: 'absolute',
-                    bottom: '1rem',
-                    left: '50%',
-                    transform: 'translateX(-50%)',
-                    display: 'flex',
-                    gap: '0.5rem',
-                    zIndex: 10
-                  }}>
-                    {project.media.map((_, idx) => (
-                      <button
-                        key={idx}
-                        onClick={() => setCurrentMediaIndex(idx)}
-                        style={{
-                          width: idx === currentMediaIndex ? '32px' : '8px',
-                          height: '8px',
-                          borderRadius: '4px',
-                          background: idx === currentMediaIndex 
-                            ? '#8b7355'
-                            : 'rgba(61, 40, 23, 0.4)',
-                          border: 'none',
-                          cursor: 'pointer',
-                          transition: 'all 0.3s ease'
-                        }}
-                        aria-label={`View media ${idx + 1}`}
-                      />
-                    ))}
-                  </div>
-                </>
+              {/* Executive Summary */}
+              {project.description && (
+                <div>
+                  <h3 className="folder-section-title">
+                    [1.0] EXECUTIVE SUMMARY
+                  </h3>
+                  <p className="folder-summary-text">
+                    {project.description}
+                  </p>
+                </div>
               )}
             </div>
           )}
 
-          {/* Description */}
-          {project.description && (
-            <div style={{ marginBottom: '2rem' }}>
-              <h3 style={{
-                fontSize: '1.25rem',
-                fontWeight: '600',
-                marginBottom: '1rem',
-                color: '#1a1a1a',
-                fontFamily: "'Crimson Text', serif"
-              }}>
-                Overview
-              </h3>
-              <p style={{
-                fontSize: '1rem',
-                lineHeight: '1.8',
-                color: '#2a2a2a'
-              }}>
-                {project.description}
-              </p>
+          {/* PAGE 2: FINDINGS & HIGH-VISIBILITY TECH TAGS */}
+          {currentPage === 2 && (
+            <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '1.1rem' }}>
+              {/* Findings Section */}
+              {project.learnings && project.learnings.length > 0 && (
+                <div>
+                  <h3 className="folder-section-title">
+                    [2.0] INVESTIGATION FINDINGS & RESULTS
+                  </h3>
+                  <div className="finding-card-list">
+                    {project.learnings.map((learning, i) => (
+                      <div key={i} className="finding-card">
+                        <span className="finding-card-num">
+                          #{i + 1}
+                        </span>
+                        <span className="finding-card-text">
+                          {learning}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* High-Visibility Technical Equipment Badges */}
+              {project.tags && project.tags.length > 0 && (
+                <div style={{ marginTop: '0.4rem' }}>
+                  <h3 className="folder-section-title">
+                    [3.0] TECHNICAL EQUIPMENT & TOOLING
+                  </h3>
+                  <div className="evidence-tags-row">
+                    {project.tags.map((tag, i) => (
+                      <span key={i} className="evidence-tag">
+                        {tag}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              )}
             </div>
           )}
 
-          {/* Key Learnings */}
-          {project.learnings && project.learnings.length > 0 && (
-            <div style={{ marginBottom: '2rem' }}>
-              <h3 style={{
-                fontSize: '1.25rem',
-                fontWeight: '600',
-                marginBottom: '1rem',
-                color: '#1a1a1a',
-                fontFamily: "'Crimson Text', serif"
-              }}>
-                Key Findings
-              </h3>
-              <ul style={{
-                display: 'grid',
-                gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
-                gap: '1rem',
-                listStyle: 'none',
-                padding: 0
-              }}>
-                {project.learnings.map((learning, i) => (
-                  <li
-                    key={i}
-                    style={{
-                      display: 'flex',
-                      gap: '0.75rem',
-                      padding: '1rem',
-                      background: 'rgba(61, 40, 23, 0.08)',
-                      border: '2px solid rgba(61, 40, 23, 0.15)',
-                      borderRadius: '8px'
-                    }}
-                  >
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" style={{ flexShrink: 0, marginTop: '0.2rem' }}>
-                      <circle cx="12" cy="12" r="10" stroke="#8b7355" strokeWidth="2"/>
-                      <path d="M8 12l2 2 4-4" stroke="#8b7355" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                    </svg>
-                    <span style={{
-                      fontSize: '0.95rem',
-                      lineHeight: '1.6',
-                      color: '#2a2a2a'
-                    }}>
-                      {learning}
-                    </span>
-                  </li>
-                ))}
-              </ul>
+          {/* DYNAMIC PAGE TURN CORNER CURLS */}
+          {/* On Page 1 -> Show Bottom-Right corner curl to flip to Page 2 */}
+          {currentPage === 1 && (
+            <div
+              className="page-turn-curl curl-right"
+              onClick={() => handlePageTurn(2)}
+              title="Turn to Page 2 (Findings & Tech Stack)"
+            >
+              <div className="curl-visual" />
+              <div className="curl-label">PG 2 ➔</div>
             </div>
           )}
 
-          {/* Technologies */}
-          {project.tags && project.tags.length > 0 && (
-            <div>
-              <h3 style={{
-                fontSize: '1.25rem',
-                fontWeight: '600',
-                marginBottom: '1rem',
-                color: '#1a1a1a',
-                fontFamily: "'Crimson Text', serif"
-              }}>
-                Technologies Used
-              </h3>
-              <div style={{
-                display: 'flex',
-                flexWrap: 'wrap',
-                gap: '0.75rem'
-              }}>
-                {project.tags.map((tag, i) => (
-                  <span
-                    key={i}
-                    style={{
-                      padding: '0.5rem 1.25rem',
-                      borderRadius: '8px',
-                      fontSize: '0.9rem',
-                      fontWeight: '600',
-                      background: 'rgba(61, 40, 23, 0.12)',
-                      border: '2px solid rgba(61, 40, 23, 0.2)',
-                      color: '#3d2817'
-                    }}
-                  >
-                    {tag}
-                  </span>
-                ))}
-              </div>
+          {/* On Page 2 -> Show Bottom-Left corner curl to flip back to Page 1 */}
+          {currentPage === 2 && (
+            <div
+              className="page-turn-curl curl-left"
+              onClick={() => handlePageTurn(1)}
+              title="Turn back to Page 1 (Executive Summary)"
+            >
+              <div className="curl-visual" />
+              <div className="curl-label">⬅ PG 1</div>
             </div>
           )}
         </div>
