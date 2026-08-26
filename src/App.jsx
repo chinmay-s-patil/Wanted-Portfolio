@@ -12,6 +12,7 @@ import SolversSection from './solvers/SolversSection'
 import RotaryPhoneContact from './ContactMe/RotaryPhoneContact'
 import Landing from './Landing-newspaper/Landing'
 import Hub3D from './hub3D/Hub3D'
+import Hub3DV2 from './hub3DV2/Hub3DV2'
 
 
 function App() {
@@ -31,6 +32,7 @@ function App() {
         <Route path="/solvers" element={<SolversSection />} />
         <Route path="/contactme" element={<RotaryPhoneContact />} />
         <Route path="/hub3D" element={<Hub3D />} />
+        <Route path="/hub3DV2" element={<Hub3DV2 />} />
       </Routes>
     </BrowserRouter>
   )

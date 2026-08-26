@@ -30,7 +30,7 @@ export default function HubPage() {
     { id: 'solvers', label: 'Solvers', theme: 'Terminal', icon: '🧑‍💻', path: '/solvers' },
     { id: 'contactme', label: 'Contact Me', theme: 'Rotary Phone', icon: '☎️', path: '/contactme' },
     { id: 'hub3D', label: 'Hub 3D', theme: '3D Version of Hub', icon: '🏘️', path: '/hub3D' },
-
+    { id: 'hub3DV2', label: 'Hub 3D V2', theme: '3D Version of Hub V2', icon: '🏘️', path: '/hub3DV2' },
   ], [])
 
   const handleClick = (path) => {

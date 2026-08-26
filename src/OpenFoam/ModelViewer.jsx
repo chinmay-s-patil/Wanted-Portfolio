@@ -142,6 +142,7 @@ const ModelViewer = ({ modelPath, alt }) => {
 
   return (
     <div
+      onContextMenu={(e) => e.preventDefault()}
       style={{
         position: 'relative',
         width: '100%',

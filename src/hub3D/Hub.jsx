@@ -17,7 +17,7 @@ export default function HubPage() {
 
   return (
     <div className="hub-container">
-      <style jsx>{`
+      <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Special+Elite&display=swap');
 
         .hub-container {
