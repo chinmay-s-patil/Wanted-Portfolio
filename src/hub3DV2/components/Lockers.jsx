@@ -5,7 +5,7 @@ import * as THREE from 'three'
 import TightSilhouetteOutline from '../utils/TightSilhouetteOutline'
 import useDragProtectedClick from '../utils/useDragProtectedClick'
 
-const MODEL_PATH = '/hubModels/Lockers2/school_locker_row/scene.gltf'
+const MODEL_PATH = '/hubModels/Lockers2/school_locker_row/optimized_lockers.gltf'
 
 useGLTF.preload(MODEL_PATH)
 

@@ -2,7 +2,7 @@ import React, { useMemo } from 'react'
 import { useGLTF } from '@react-three/drei'
 import * as THREE from 'three'
 
-const MODEL_PATH = '/hubModels/TvTable/childhood_-_a_diorama/scene.gltf'
+const MODEL_PATH = '/hubModels/TvTable/childhood_-_a_diorama/optimized_tv.gltf'
 
 useGLTF.preload(MODEL_PATH)
 

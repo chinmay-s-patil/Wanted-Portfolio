@@ -1,28 +1,26 @@
-import React, { useMemo, useState } from 'react'
+import React, { useMemo } from 'react'
 import { useGLTF } from '@react-three/drei'
 import * as THREE from 'three'
-import TightSilhouetteOutline from '../utils/TightSilhouetteOutline'
 
-const MODEL_PATH = '/hubModels/sofa/sofa/scene.gltf'
+const MODEL_PATH = '/hubModels/SofaSet/couchsofa_set/optimized_sofa.gltf'
 
 useGLTF.preload(MODEL_PATH)
 
 /**
- * Sofa Component
+ * Sofa Component (couchsofa_set)
  *
- * Interactive 3D executive sofa model.
- * Supports hover state, cursor pointer change, and customizable silhouette outline.
+ * Renders the couchsofa_set model:
+ * 1. Keeps the 3-section sofa (Couch.001_23).
+ * 2. Keeps the 1-section armchair (Armchair_30).
+ * 3. Hides the 2-section seat (Couch_9).
+ * 4. Removes ALL pillows entirely (pillow_5, pillow.001..pillow.003).
  */
 export default function Sofa({
-  position = [0, -0.6, 0],
-  scale = [1.3, 1.3, 1.3],
+  position = [0, -0.6, 0.8],
+  scale = [1.8, 1.8, 1.8],
   rotation = [0, 0, 0],
-  outlineColor = '#ffaa00', // Warm amber silhouette outline
-  outlineThickness = 0.035,
-  alwaysShowOutline = false,
   onClick
 }) {
-  const [hovered, setHovered] = useState(false)
   const { scene } = useGLTF(MODEL_PATH)
 
   const clonedScene = useMemo(() => {
@@ -30,10 +28,23 @@ export default function Sofa({
     const cloned = scene.clone(true)
 
     cloned.traverse((child) => {
+      const name = (child.name || '').toLowerCase()
+
+      // 1. Remove / hide the 2-section seat (Couch_9)
+      if (name.includes('couch_9')) {
+        child.visible = false
+        return
+      }
+
+      // 2. Remove / hide ALL pillows entirely
+      if (name.includes('pillow')) {
+        child.visible = false
+        return
+      }
+
       if (child.isMesh) {
         child.castShadow = true
         child.receiveShadow = true
-
         if (child.material) {
           child.material.side = THREE.DoubleSide
           if (child.material.map) {
@@ -44,18 +55,28 @@ export default function Sofa({
       }
     })
 
-    // Force matrix update for exact 3D bounding box calculation
+    // Compute bounding box strictly over visible sub-meshes
     cloned.updateMatrixWorld(true)
-    const box = new THREE.Box3().setFromObject(cloned)
+    const box = new THREE.Box3()
+    cloned.traverse((child) => {
+      if (child.isMesh && child.visible) {
+        child.geometry.computeBoundingBox()
+        const b = child.geometry.boundingBox.clone()
+        b.applyMatrix4(child.matrixWorld)
+        box.union(b)
+      }
+    })
 
     const centerX = (box.min.x + box.max.x) / 2
     const centerZ = (box.min.z + box.max.z) / 2
 
+    const wrapper = new THREE.Group()
+    wrapper.add(cloned)
     cloned.position.x = -centerX
     cloned.position.z = -centerZ
     cloned.position.y = -box.min.y + 0.003
 
-    return cloned
+    return wrapper
   }, [scene])
 
   if (!clonedScene) return null
@@ -64,34 +85,15 @@ export default function Sofa({
     <group
       position={position}
       rotation={rotation}
+      scale={scale}
       onClick={(e) => {
         if (onClick) {
           e.stopPropagation()
           onClick(e)
         }
       }}
-      onPointerOver={(e) => {
-        if (onClick) {
-          e.stopPropagation()
-          setHovered(true)
-          document.body.style.cursor = 'pointer'
-        }
-      }}
-      onPointerOut={() => {
-        setHovered(false)
-        document.body.style.cursor = 'auto'
-      }}
     >
-      <group scale={scale}>
-        <primitive object={clonedScene} />
-        {(hovered || alwaysShowOutline) && (
-          <TightSilhouetteOutline
-            scene={clonedScene}
-            color={outlineColor}
-            thickness={outlineThickness}
-          />
-        )}
-      </group>
+      <primitive object={clonedScene} />
     </group>
   )
 }

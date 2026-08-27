@@ -1,8 +1,7 @@
-import React, { useMemo, useState } from 'react'
+import React, { useMemo } from 'react'
 import { useGLTF } from '@react-three/drei'
 import * as THREE from 'three'
 import { generateWoodTexture } from '../utils/textureUtils'
-import TightSilhouetteOutline from '../utils/TightSilhouetteOutline'
 
 const MODEL_PATH = '/hubModels/CenterTable/CENTER TABLE.glb'
 
@@ -11,20 +10,16 @@ useGLTF.preload(MODEL_PATH)
 /**
  * CenterTable Component
  *
- * Interactive 3D center coffee table model with custom mahogany & brass materials.
+ * Decorative 3D center coffee table model with custom mahogany & brass materials.
  * Internal geometry is normalized to realistic coffee table proportions so that
- * any outer `scale` prop applies 100% UNIFORM scaling without stretching.
+ * any outer `scale` prop applies 100% UNIFORM scaling without distortion.
  */
 export default function CenterTable({
   position = [0, -0.6, 2.65],
-  scale = [1.35, 1.35, 1.35], // 100% Uniform scaling
+  scale = [1.35, 1.35, 1.35],
   rotation = [0, 0, 0],
-  outlineColor = '#ffd700', // Gold silhouette outline
-  outlineThickness = 0.035,
-  alwaysShowOutline = false,
   onClick
 }) {
-  const [hovered, setHovered] = useState(false)
   const { scene } = useGLTF(MODEL_PATH)
 
   const clonedScene = useMemo(() => {
@@ -134,25 +129,8 @@ export default function CenterTable({
           onClick(e)
         }
       }}
-      onPointerOver={(e) => {
-        e.stopPropagation()
-        setHovered(true)
-        document.body.style.cursor = 'pointer'
-      }}
-      onPointerOut={() => {
-        setHovered(false)
-        document.body.style.cursor = 'auto'
-      }}
     >
       <primitive object={clonedScene} />
-
-      {(hovered || alwaysShowOutline) && (
-        <TightSilhouetteOutline
-          scene={clonedScene}
-          color={outlineColor}
-          thickness={outlineThickness}
-        />
-      )}
     </group>
   )
 }

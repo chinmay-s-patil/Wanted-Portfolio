@@ -26,6 +26,7 @@ export default function PrinterTable({
   rotation = [0, -Math.PI, 0],
   outlineColor = '#ffea00', // High-contrast neon yellow outline
   outlineThickness = 0.008,
+  alwaysShowOutline = false,
   onClick
 }) {
   const [printerHovered, setPrinterHovered] = useState(false)
@@ -200,8 +201,8 @@ export default function PrinterTable({
         onClick={handleClick}
       />
 
-      {/* Neon Yellow Silhouette Outline on Hover */}
-      {printerHovered && printerOutlineScene && (
+      {/* Neon Yellow Silhouette Outline on Hover or Always Show */}
+      {(printerHovered || alwaysShowOutline) && printerOutlineScene && (
         <TightSilhouetteOutline
           scene={printerOutlineScene}
           color={outlineColor}

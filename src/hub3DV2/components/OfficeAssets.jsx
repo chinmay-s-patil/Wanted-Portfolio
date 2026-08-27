@@ -5,7 +5,7 @@ import * as THREE from 'three'
 import TightSilhouetteOutline from '../utils/TightSilhouetteOutline'
 import useDragProtectedClick from '../utils/useDragProtectedClick'
 
-const MODEL_PATH = '/hubModels/OfficeAssets/office_-_assets/scene.gltf'
+const MODEL_PATH = '/hubModels/OfficeAssets/office_-_assets/optimized_office.gltf'
 
 useGLTF.preload(MODEL_PATH)
 
@@ -55,6 +55,7 @@ export default function OfficeAssets({
   rotation,
   outlineColor = '#00ffff', // High-contrast neon cyan outline for computer
   outlineThickness = 0.008,
+  alwaysShowOutline = false,
   onClick
 }) {
   const [computerHovered, setComputerHovered] = useState(false)
@@ -89,8 +90,14 @@ export default function OfficeAssets({
 
       const isPicture = name.includes('photo') || name.includes('poster')
       const isCactus = name.includes('cactus')
+      const isTapeRecorder =
+        name.includes('taperecorder') ||
+        name.includes('microphone') ||
+        name === 'object_70' ||
+        name === 'object_71' ||
+        name === 'object_73'
 
-      if (isVent || isPicture || isCactus) {
+      if (isVent || isPicture || isCactus || isTapeRecorder) {
         child.visible = false
         return
       }
@@ -184,7 +191,7 @@ export default function OfficeAssets({
         onPointerDown={onDown}
         onClick={onClk}
       />
-      {computerHovered && (
+      {(computerHovered || alwaysShowOutline) && (
         <TightSilhouetteOutline
           scene={computerScene}
           color={outlineColor}
