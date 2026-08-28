@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { useEasterEgg } from './EasterEggContext'
-import { moonlightSonataAttribution, kreutzerSonataAttribution, mcnaughtAttribution } from './easterEggsData'
+import { moonlightSonataAttribution, kreutzerSonataAttribution, mcnaughtAttribution, nightMountainAttribution } from './easterEggsData'
 
 /**
  * DraggableMiniTvPlayer Component
@@ -126,7 +126,9 @@ export default function DraggableMiniTvPlayer() {
   const isInside3DHub = location.pathname === '/hub3DV2' || location.pathname === '/hub3D'
   if (!activeEgg || isInside3DHub) return null
 
-  const data = activeEgg === 'mcnaught'
+  const data = activeEgg === 'nightMountain'
+    ? nightMountainAttribution
+    : activeEgg === 'mcnaught'
     ? mcnaughtAttribution
     : activeEgg === 'violin'
     ? kreutzerSonataAttribution
@@ -134,7 +136,7 @@ export default function DraggableMiniTvPlayer() {
 
   const startSec = initialTimeRef.current
   const embedUrlWithTime = `${data.source.embedUrl}${startSec > 0 ? `&start=${startSec}` : ''}`
-  const icon = activeEgg === 'mcnaught' ? '☄️' : activeEgg === 'violin' ? '🎻' : '🎹'
+  const icon = activeEgg === 'nightMountain' ? '🔭' : activeEgg === 'mcnaught' ? '☄️' : activeEgg === 'violin' ? '🎻' : '🎹'
 
   return (
     <div

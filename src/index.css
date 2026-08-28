@@ -72,6 +72,21 @@ body:has(.bookshelf) {
   background-color: #0a0a0a;
 }
 
+/* OpenFOAM drive-in owns the full viewport — avoid body flex centering clipping content */
+body:has(.openfoamDriveIn) {
+  display: block;
+  min-height: 100dvh;
+  overflow: hidden;
+}
+
+body:has(.openfoamDriveIn) #root {
+  max-width: none;
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  min-height: 100dvh;
+}
+
 /* Ensure bookshelf uses pure black */
 .bookshelf {
   background-color: #0a0a0a !important;

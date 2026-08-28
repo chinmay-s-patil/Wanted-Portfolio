@@ -2,22 +2,59 @@
 @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Oswald:wght@500;700&family=Share+Tech+Mono&display=swap');
 
 .container {
-  width: 100vw;
-  height: 100vh;
-  max-height: 100vh;
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  min-height: 100vh;
+  min-height: 100dvh;
   background:
     radial-gradient(ellipse at 50% 0%, rgba(56, 120, 180, 0.35) 0%, transparent 55%),
     radial-gradient(circle at 50% 20%, rgba(30, 41, 59, 0.7) 0%, rgba(15, 23, 42, 0.98) 50%, #07090e 100%);
   color: #f1f5f9;
   font-family: 'Share Tech Mono', 'Courier New', monospace;
-  position: relative;
+  z-index: 1;
   overflow: hidden;
+  box-sizing: border-box;
+}
+
+/* ============================================================
+   VIEWPORT SCALE STAGE
+   Scales a 1920x1080 design canvas to fit any viewport exactly.
+   The outer scaleViewport fills the screen; the inner scaleCanvas
+   is 1920x1080 and has transform: scale(N) applied by JS so that
+   it fits perfectly at any resolution or OS DPI scale (125%, etc.)
+   ============================================================ */
+.scaleViewport {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.scaleCanvas {
+  position: relative;
+  flex-shrink: 0;
+  transform-origin: center center;
+  overflow: hidden;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+.mainStage {
+  width: 100%;
+  height: 100%;
   box-sizing: border-box;
 }
 
 /* PROMINENT FLOATING GO BACK BUTTON (GAME UI STYLED) */
 .prominentBackBtn {
-  position: fixed;
+  position: absolute;
   top: 20px;
   left: 24px;
   z-index: 150;
@@ -28,7 +65,7 @@
   border: 2px solid #fbbf24;
   color: #fbbf24;
   padding: 10px 22px;
-  border-radius: 30px;
+  border-radius: 2rem;
   font-size: 0.88rem;
   font-weight: 700;
   font-family: 'Oswald', sans-serif;
@@ -41,6 +78,7 @@
   backdrop-filter: blur(12px);
   transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
   text-transform: uppercase;
+  min-height: 40px;
 }
 
 .prominentBackBtn:hover {
@@ -86,6 +124,8 @@
 
 /* STAGE TRANSITIONS */
 .zoomOutStage {
+  width: 100%;
+  height: 100%;
   animation: zoomIntoDriveIn 0.7s cubic-bezier(0.7, 0, 0.3, 1) forwards;
 }
 
@@ -104,16 +144,19 @@
   100% { transform: scale(1); opacity: 1; }
 }
 
-/* DISPENSER STAGE */
+/* DISPENSER STAGE — authored at 1920×1080, scaled globally via ViewportScaleStage */
 .dispenserStage {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  min-height: calc(100vh - 120px);
-  padding: 40px 20px 32px;
+  width: 100%;
+  height: 100%;
+  padding: 72px 24px 32px;
   position: relative;
   z-index: 10;
+  box-sizing: border-box;
+  gap: 20px;
 }
 
 /* ============================================================
@@ -133,8 +176,7 @@
   border: 3px solid #5c4630;
   border-radius: 2px;
   padding: 0 18px 0;
-  width: 100%;
-  max-width: 520px;
+  width: 520px;
   box-shadow:
     0 24px 50px rgba(0, 0, 0, 0.85),
     inset 0 0 40px rgba(0, 0, 0, 0.12);
@@ -142,7 +184,9 @@
   flex-direction: column;
   align-items: center;
   position: relative;
-  margin-bottom: 8px;
+  margin-bottom: 0;
+  box-sizing: border-box;
+  flex-shrink: 0;
 }
 
 /* Rooftop marquee — horizontally ribbed cream, bold red caps */
@@ -171,7 +215,7 @@
 
 .boothRoofSignLine {
   font-family: 'Oswald', 'Arial Narrow', sans-serif;
-  font-size: clamp(1.35rem, 4vw, 1.85rem);
+  font-size: 1.85rem;
   font-weight: 700;
   letter-spacing: 0.14em;
   color: #c41e1e;
@@ -411,9 +455,9 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 10px;
+  gap: 12px;
   width: 100%;
-  margin-bottom: 14px;
+  margin-bottom: 16px;
   flex-wrap: wrap;
 }
 
@@ -431,6 +475,10 @@
   box-shadow: 0 6px 18px rgba(196, 30, 30, 0.4);
   transition: all 0.2s ease;
   text-transform: uppercase;
+  min-height: 42px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .dispenseBtn:hover {
@@ -446,7 +494,7 @@
   background: #1e293b;
   border: 1.5px solid #c9b896;
   color: #f3ecd9;
-  padding: 8px 12px;
+  padding: 8px 14px;
   border-radius: 3px;
   font-size: 0.72rem;
   font-weight: bold;
@@ -454,6 +502,10 @@
   letter-spacing: 0.08em;
   cursor: pointer;
   transition: all 0.2s ease;
+  min-height: 42px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .reelNavBtn:hover {
@@ -479,8 +531,8 @@
 /* White rural mailbox with red flag */
 .boothMailbox {
   position: absolute;
-  left: max(12px, calc(50% - 320px));
-  bottom: 42%;
+  left: -28px;
+  bottom: 38%;
   width: 44px;
   height: 70px;
   z-index: 5;
@@ -537,9 +589,10 @@
    ============================================================ */
 .ticketPerspectiveWrapper {
   perspective: 1200px;
-  width: 100%;
+  width: 480px;
   max-width: 480px;
-  margin-top: 18px;
+  margin-top: 0;
+  flex-shrink: 0;
 }
 
 .ticketCard3D {
@@ -795,15 +848,21 @@
   background: #1c1917;
   color: #f3e8d4;
   border: 1.5px solid #d27a4a;
-  padding: 7px 14px;
+  padding: 9px 16px;
   border-radius: 3px;
-  font-size: 0.72rem;
+  font-size: 0.78rem;
   font-weight: bold;
   font-family: 'Oswald', sans-serif;
   letter-spacing: 0.08em;
   cursor: pointer;
   transition: all 0.2s ease;
   text-transform: uppercase;
+  min-height: 38px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  z-index: 10;
 }
 
 .enterDriveInBtn:hover {
@@ -817,16 +876,15 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: space-between;
-  padding: 12px 20px;
-  max-width: 1140px;
-  height: calc(100vh - 75px);
-  max-height: calc(100vh - 75px);
-  margin: 0 auto;
+  justify-content: flex-start;
+  padding: 12px 20px 24px;
+  width: 100%;
+  height: 100%;
+  max-width: none;
+  margin: 0;
   position: relative;
   z-index: 10;
   box-sizing: border-box;
-  overflow: hidden;
 }
 
 .screenMarquee {
@@ -937,6 +995,7 @@
 .outdoorTheaterLot {
   width: 100%;
   flex: 1;
+  min-height: 520px;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -1008,7 +1067,7 @@
 .screenViewport {
   width: 100%;
   aspect-ratio: 16 / 9;
-  max-height: 52vh;
+  max-height: 480px;
   background: #000000;
   position: relative;
   overflow: hidden;
@@ -1095,7 +1154,7 @@
 }
 
 .ticketModalOverlay {
-  position: fixed;
+  position: absolute;
   inset: 0;
   z-index: 200;
   background: rgba(0, 0, 0, 0.45);
@@ -1573,7 +1632,7 @@
 }
 
 .ticketModalOverlay {
-  position: fixed;
+  position: absolute;
   inset: 0;
   z-index: 200;
   background: rgba(0, 0, 0, 0.45);
@@ -1695,7 +1754,7 @@
 .androidPhoneDevice {
   position: relative;
   width: 380px;
-  max-width: 95vw;
+  max-width: 380px;
   background: #0f172a;
   border: 10px solid #1e293b;
   border-radius: 44px;
@@ -1932,14 +1991,17 @@
 
 .phoneCodeSnippet {
   font-family: 'Share Tech Mono', monospace;
-  font-size: 0.66rem;
+  font-size: 0.68rem;
   color: #fbbf24;
   background: #04070d;
-  padding: 8px;
+  padding: 10px;
   border-radius: 4px;
   border: 1px solid #1e293b;
   margin: 0;
   overflow-x: auto;
+  white-space: pre-wrap;
+  word-break: break-word;
+  max-width: 100%;
 }
 
 .phoneFooterSpacer {

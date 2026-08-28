@@ -7,6 +7,7 @@ import styles from './DriveInSection.module.css';
 
 import { TicketDispenser } from './TicketDispenser';
 import DriveInScreen from './DriveInScreen';
+import ViewportScaleStage from './ViewportScaleStage';
 
 export default function DriveInSection() {
   const navigate = useNavigate();
@@ -51,43 +52,47 @@ export default function DriveInSection() {
   }, [viewMode, handleNext, handlePrev]);
 
   return (
-    <div className={styles.container}>
+    <div className={`${styles.container} openfoamDriveIn`}>
       <div className={styles.starrySky} />
 
-      {/* Prominent Floating "Go Back" Button (No Top Strip) */}
-      <button
-        type="button"
-        className={styles.prominentBackBtn}
-        onClick={() => navigate('/hub')}
-        title="Return to Main Hub"
-        aria-label="Go Back to Hub"
-      >
-        <span className={styles.backBtnArrow}>&larr;</span>
-        <span className={styles.backBtnText}>GO BACK</span>
-      </button>
-
-      <main>
-        {viewMode === 'dispenser' ? (
-          <div className={isZooming ? styles.zoomOutStage : ''}>
-            <TicketDispenser
-              specimen={currentSpecimen}
-              index={currentIndex}
-              total={totalSpecimens}
-              onEnterDriveIn={handleEnterDriveIn}
-              onPrev={handlePrev}
-              onNext={handleNext}
-            />
-          </div>
-        ) : (
-          <DriveInScreen
-            specimens={specimens}
-            currentIndex={currentIndex}
-            onPrevIndex={handlePrev}
-            onNextIndex={handleNext}
-            onReturnToBooth={() => setViewMode('dispenser')}
-          />
+      <ViewportScaleStage>
+        {/* Prominent Floating "Go Back" Button (Visible only in Ticket Booth view) */}
+        {viewMode === 'dispenser' && (
+          <button
+            type="button"
+            className={styles.prominentBackBtn}
+            onClick={() => navigate('/hub')}
+            title="Return to Main Hub"
+            aria-label="Go Back to Hub"
+          >
+            <span className={styles.backBtnArrow}>&larr;</span>
+            <span className={styles.backBtnText}>GO BACK</span>
+          </button>
         )}
-      </main>
+
+        <main className={styles.mainStage}>
+          {viewMode === 'dispenser' ? (
+            <div className={isZooming ? styles.zoomOutStage : ''}>
+              <TicketDispenser
+                specimen={currentSpecimen}
+                index={currentIndex}
+                total={totalSpecimens}
+                onEnterDriveIn={handleEnterDriveIn}
+                onPrev={handlePrev}
+                onNext={handleNext}
+              />
+            </div>
+          ) : (
+            <DriveInScreen
+              specimens={specimens}
+              currentIndex={currentIndex}
+              onPrevIndex={handlePrev}
+              onNextIndex={handleNext}
+              onReturnToBooth={() => setViewMode('dispenser')}
+            />
+          )}
+        </main>
+      </ViewportScaleStage>
     </div>
   );
 }

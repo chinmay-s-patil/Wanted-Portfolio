@@ -231,13 +231,13 @@ export function TicketDispenser({
         </div>
 
         <div className={styles.boothCurb} />
-      </div>
 
-      {/* Rural mailbox accent in front of booth */}
-      <div className={styles.boothMailbox} aria-hidden="true">
-        <div className={styles.mailboxBody} />
-        <div className={styles.mailboxFlag} />
-        <div className={styles.mailboxPost} />
+        {/* Rural mailbox accent in front of booth */}
+        <div className={styles.boothMailbox} aria-hidden="true">
+          <div className={styles.mailboxBody} />
+          <div className={styles.mailboxFlag} />
+          <div className={styles.mailboxPost} />
+        </div>
       </div>
 
       {isDispensed && (

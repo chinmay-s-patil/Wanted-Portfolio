@@ -33,12 +33,18 @@ export default function CenterTableGLTF({
       side: THREE.DoubleSide
     })
 
-    // Rich dark polished mahogany wood material for tabletop surface
-    const woodMaterial = new THREE.MeshStandardMaterial({
-      map: woodTex,
-      color: new THREE.Color('#4a2e1b'),
-      roughness: 0.22,
-      metalness: 0.08,
+    // Elegant translucent white frosted acrylic / glass material for tabletop surface
+    const translucentWhiteMaterial = new THREE.MeshPhysicalMaterial({
+      color: new THREE.Color('#ffffff'),
+      transparent: true,
+      opacity: 0.6,
+      roughness: 0.1,
+      metalness: 0.05,
+      transmission: 0.7,
+      ior: 1.45,
+      thickness: 0.5,
+      clearcoat: 0.8,
+      clearcoatRoughness: 0.1,
       side: THREE.DoubleSide
     })
 
@@ -62,20 +68,16 @@ export default function CenterTableGLTF({
             const g = origColor.g
             const b = origColor.b
 
-            // Table top surface (original CAD light grey / white)
-            if (r > 0.8 && g > 0.8 && b > 0.8) {
-              child.material = woodMaterial
+            // Table top surface — dark in the GLB (near-black), replace with translucent white
+            if (r < 0.25 && g < 0.25 && b < 0.25) {
+              child.material = translucentWhiteMaterial
             }
-            // Dark joints / feet pads
-            else if (r < 0.15 && g < 0.15 && b < 0.15) {
-              child.material = darkAccentMaterial
-            }
-            // Structural frame & legs
+            // Structural legs & frame — medium gray in the GLB
             else {
               child.material = brassMaterial
             }
           } else {
-            child.material = brassMaterial
+            child.material = translucentWhiteMaterial
           }
         }
       }

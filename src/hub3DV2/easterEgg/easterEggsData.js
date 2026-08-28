@@ -101,3 +101,38 @@ export const mcnaughtAttribution = {
     showWatchLink: true
   }
 };
+
+/**
+ * Snowy Mountain Night Sky Easter Egg — Metadata & Attribution Data
+ */
+export const nightMountainAttribution = {
+  title: "Snowy mountain peak under starry sky",
+  work: "Starry Night Mountain",
+
+  creator: {
+    name: "Manuel Will",
+    role: "Photographer",
+    url: "https://unsplash.com/@manufactured"
+  },
+
+  source: {
+    type: "website",
+    name: "Unsplash",
+    url: "https://unsplash.com/photos/snowy-mountain-peak-under-starry-sky-gd3t5Dtbwkw",
+    embedUrl: "https://www.youtube.com/embed/JuSsvM8B4Jc?autoplay=1&loop=1&playlist=JuSsvM8B4Jc&controls=0&modestbranding=1&rel=0&disablekb=1&fs=0&iv_load_policy=3&enablejsapi=1"
+  },
+
+  license: "Unsplash License",
+
+  permission: {
+    status: "not-required",
+    notes: "Unsplash License permits free commercial and non-commercial use."
+  },
+
+  display: {
+    description: "Photo by Manuel Will on Unsplash",
+    showCreatorRole: false,
+    showSource: true,
+    showWatchLink: true
+  }
+};

@@ -13,7 +13,7 @@ const IMAGE_PATH = '/mc_naught55.jpg'
  * Zero back-depth to eliminate wall mesh clipping, and zero outline highlight.
  *
  * Interactions:
- * - Single Click: Opens inspection lightbox with photo and full attribution details:
+ * - Single Click: Opens compact inspection lightbox crediting ESO:
  *     Comet C/2006 P1 (McNaught)
  *     Paranal Observatory, January 2007
  *     S. Deiries / ESO
@@ -117,20 +117,20 @@ export default function McNaughtFrame({
         />
       </mesh>
 
-      {/* Single-Click Inspection Lightbox Overlay */}
+      {/* Single-Click Compact Inspection Lightbox Overlay (Dynamic 3D Distance Scaling) */}
       {showLightbox && (
-        <Html position={[0, 0, 0.5]} center style={{ pointerEvents: 'auto', zIndex: 100000 }}>
+        <Html distanceFactor={6} position={[0, 0, 0.3]} center style={{ pointerEvents: 'auto', zIndex: 100000 }}>
           <div
             style={{
               background: 'rgba(10, 14, 20, 0.96)',
               border: '1.5px solid #e3b341',
-              borderRadius: '16px',
-              padding: '24px',
+              borderRadius: '12px',
+              padding: '14px',
               color: '#ffffff',
               fontFamily: "'Inter', sans-serif",
-              boxShadow: '0 20px 60px rgba(0, 0, 0, 0.9), 0 0 30px rgba(227, 179, 65, 0.3)',
-              width: '520px',
-              maxWidth: '90vw',
+              boxShadow: '0 12px 36px rgba(0, 0, 0, 0.85), 0 0 20px rgba(227, 179, 65, 0.25)',
+              width: '320px',
+              maxWidth: '85vw',
               display: 'flex',
               flexDirection: 'column',
               alignItems: 'center',
@@ -138,9 +138,9 @@ export default function McNaughtFrame({
             }}
           >
             {/* Header / Close */}
-            <div style={{ width: '100%', display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
-              <div style={{ fontSize: '11px', fontWeight: '700', letterSpacing: '1.5px', color: '#e3b341', textTransform: 'uppercase' }}>
-                📷 PRECINCT EVIDENCE ARCHIVE • EXHIBIT #55
+            <div style={{ width: '100%', display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
+              <div style={{ fontSize: '10px', fontWeight: '700', letterSpacing: '1px', color: '#e3b341', textTransform: 'uppercase' }}>
+                📷 PRECINCT EVIDENCE • EXHIBIT #55
               </div>
               <button
                 onClick={(e) => {
@@ -151,61 +151,61 @@ export default function McNaughtFrame({
                   background: 'rgba(255, 255, 255, 0.1)',
                   border: '1px solid rgba(255, 255, 255, 0.2)',
                   color: '#fff',
-                  borderRadius: '6px',
-                  padding: '4px 10px',
+                  borderRadius: '4px',
+                  padding: '2px 8px',
                   cursor: 'pointer',
-                  fontSize: '12px',
+                  fontSize: '11px',
                   fontWeight: '600'
                 }}
               >
-                Close [×]
+                ✕
               </button>
             </div>
 
-            {/* Photo Image */}
-            <div style={{ width: '100%', borderRadius: '10px', overflow: 'hidden', border: '1px solid rgba(227, 179, 65, 0.4)', background: '#000' }}>
+            {/* Photo Thumbnail */}
+            <div style={{ width: '100%', height: '160px', borderRadius: '8px', overflow: 'hidden', border: '1px solid rgba(227, 179, 65, 0.3)', background: '#000' }}>
               <img
                 src={IMAGE_PATH}
                 alt="Comet C/2006 P1 (McNaught)"
-                style={{ width: '100%', height: 'auto', display: 'block' }}
+                style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
               />
             </div>
 
-            {/* Exact Requested Caption */}
+            {/* Caption Card */}
             <div
               style={{
                 width: '100%',
-                marginTop: '16px',
-                padding: '12px 16px',
+                marginTop: '10px',
+                padding: '10px 12px',
                 background: 'rgba(227, 179, 65, 0.08)',
                 borderLeft: '3px solid #e3b341',
                 borderRadius: '4px',
                 color: '#e6edf3',
-                fontSize: '14px',
-                lineHeight: '1.6'
+                fontSize: '12px',
+                lineHeight: '1.4'
               }}
             >
-              <div style={{ fontSize: '17px', fontWeight: '700', color: '#ffffff' }}>
+              <div style={{ fontSize: '13px', fontWeight: '700', color: '#ffffff' }}>
                 Comet C/2006 P1 (McNaught)
               </div>
-              <div style={{ color: '#c9d1d9', marginTop: '2px' }}>
+              <div style={{ color: '#c9d1d9', marginTop: '2px', fontSize: '11px' }}>
                 Paranal Observatory, January 2007
               </div>
-              <div style={{ color: '#8b949e', fontSize: '13px', marginTop: '2px' }}>
+              <div style={{ color: '#8b949e', fontSize: '10px', marginTop: '2px' }}>
                 S. Deiries / ESO
               </div>
             </div>
 
-            {/* Hint / Attribution Link */}
-            <div style={{ width: '100%', display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '14px', fontSize: '12px' }}>
-              <span style={{ color: '#8b949e' }}>💡 Double-click the frame to reveal hidden media</span>
+            {/* Footer Links & Hint */}
+            <div style={{ width: '100%', display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '10px', fontSize: '10px' }}>
+              <span style={{ color: '#8b949e' }}>💡 Double-click to play video</span>
               <a
                 href={mcnaughtAttribution.source.url}
                 target="_blank"
                 rel="noopener noreferrer"
                 style={{ color: '#58a6ff', textDecoration: 'none' }}
               >
-                ESO Image Record ↗
+                ESO Record ↗
               </a>
             </div>
           </div>

@@ -1,7 +1,7 @@
 import React, { useEffect, useRef } from 'react'
 import { Html } from '@react-three/drei'
 import { useEasterEgg } from './EasterEggContext'
-import { moonlightSonataAttribution, kreutzerSonataAttribution, mcnaughtAttribution } from './easterEggsData'
+import { moonlightSonataAttribution, kreutzerSonataAttribution, mcnaughtAttribution, nightMountainAttribution } from './easterEggsData'
 
 /**
  * TvEasterEggScreen Component
@@ -32,7 +32,9 @@ export default function TvEasterEggScreen({ isActive, activeEgg, isPaused = fals
 
   if (!egg) return null
 
-  const data = egg === 'mcnaught'
+  const data = egg === 'nightMountain'
+    ? nightMountainAttribution
+    : egg === 'mcnaught'
     ? mcnaughtAttribution
     : egg === 'violin'
     ? kreutzerSonataAttribution
@@ -40,8 +42,10 @@ export default function TvEasterEggScreen({ isActive, activeEgg, isPaused = fals
 
   const startSec = initialTimeRef.current
   const embedUrlWithTime = `${data.source.embedUrl}${startSec > 0 ? `&start=${startSec}` : ''}`
-  const icon = egg === 'mcnaught' ? '☄️' : egg === 'violin' ? '🎻' : '🎹'
-  const badgeTitle = egg === 'mcnaught'
+  const icon = egg === 'nightMountain' ? '🔭' : egg === 'mcnaught' ? '☄️' : egg === 'violin' ? '🎻' : '🎹'
+  const badgeTitle = egg === 'nightMountain'
+    ? 'Telescope Night Sky Easter Egg Discovered'
+    : egg === 'mcnaught'
     ? 'Comet McNaught Easter Egg Discovered'
     : egg === 'violin'
     ? 'Violin Easter Egg Discovered'

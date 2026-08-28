@@ -6,7 +6,7 @@ import { Canvas, useFrame } from '@react-three/fiber'
 import { PerspectiveCamera, OrbitControls } from '@react-three/drei'
 import * as THREE from 'three'
 import { Sofa, CenterTable, Newspaper, Binder, TvTable, Lockers, Terminal, FilingCabinet, OfficeAssets, RetroRoom, RetroFloorLamp, WASDFreecam, PrinterTable, Payphone, HubHelpGuideModal, OldCamera, FilmRollPile, RadarTablet, PrecinctDoor, WallKeychains, GrandfatherClock, AmbientDustParticles, PrecinctWallClock, DetectiveCoffeeMug, RetroDeskFan, TableLamp, ScatteredPages, Globe, WaterDispenser } from './components'
-import { Piano, Violin, TvRemote, McNaughtFrame, useEasterEgg } from './easterEgg'
+import { Piano, Violin, TvRemote, McNaughtFrame, WindowAndTelescope, useEasterEgg } from './easterEgg'
 
 
 
@@ -577,6 +577,12 @@ export default function Hub3DV2() {
               position={[0, 2.1, 6.44]}
               scale={[1, 1, 1]}
               rotation={[0, Math.PI, 0]}
+            />
+
+            <WindowAndTelescope
+              position={[-8.4, 2.3, -4.44]}
+              scale={[1, 1, 1]}
+              rotation={[0, Math.PI/2, 0]}
             />
 
             {/* Static Super Low-Poly Scattered Document Pages */}
