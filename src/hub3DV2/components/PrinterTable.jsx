@@ -4,13 +4,10 @@ import { useGLTF } from '@react-three/drei'
 import * as THREE from 'three'
 import TightSilhouetteOutline from '../utils/TightSilhouetteOutline'
 import useDragProtectedClick from '../utils/useDragProtectedClick'
-
 const TABLE_MODEL_PATH = '/hubModels/Table/office_table.glb'
 const PRINTER_MODEL_PATH = '/hubModels/3DPrinter/3d_printer.glb'
-
 useGLTF.preload(TABLE_MODEL_PATH)
 useGLTF.preload(PRINTER_MODEL_PATH)
-
 /**
  * PrinterTable Component
  *
@@ -33,7 +30,6 @@ export default function PrinterTable({
   const navigate = useNavigate()
   const tableGLTF = useGLTF(TABLE_MODEL_PATH)
   const printerGLTF = useGLTF(PRINTER_MODEL_PATH)
-
   const { handlePointerDown, handleClick } = useDragProtectedClick((e) => {
     if (onClick) {
       onClick(e)
@@ -41,18 +37,14 @@ export default function PrinterTable({
       navigate('/cad')
     }
   })
-
   const { tableGroup, printerGroup, printerOutlineScene } = useMemo(() => {
     if (!tableGLTF.scene || !printerGLTF.scene) {
       return { tableGroup: null, printerGroup: null, printerOutlineScene: null }
     }
-
     // 1. Process Table (Unchanged 0.75m height)
     const tableClone = tableGLTF.scene.clone(true)
     tableClone.traverse((child) => {
       if (child.isMesh) {
-        child.castShadow = true
-        child.receiveShadow = true
         if (child.material) {
           child.material.side = THREE.DoubleSide
           if (child.material.map) {
@@ -62,7 +54,6 @@ export default function PrinterTable({
         }
       }
     })
-
     tableClone.updateMatrixWorld(true)
     const tableBox = new THREE.Box3()
     tableClone.traverse((child) => {
@@ -73,28 +64,22 @@ export default function PrinterTable({
         tableBox.union(b)
       }
     })
-
     const tableCenter = new THREE.Vector3()
     const tableSize = new THREE.Vector3()
     tableBox.getCenter(tableCenter)
     tableBox.getSize(tableSize)
-
     const tableWrapper = new THREE.Group()
     tableWrapper.add(tableClone)
     tableClone.position.x = -tableCenter.x
     tableClone.position.z = -tableCenter.z
     tableClone.position.y = -tableBox.min.y
-
     const targetTableHeight = 0.75
     const tableScaleFactor = tableSize.y > 0 ? targetTableHeight / tableSize.y : 1.0
     tableWrapper.scale.setScalar(tableScaleFactor)
-
     const tableTopY = targetTableHeight
-
     // 2. Process 3D Printer (Scaled up to 0.65m height, pistol parts removed)
     const printerClone = printerGLTF.scene.clone(true)
     const outlineClone = printerGLTF.scene.clone(true)
-
     const processPrinterNode = (sceneObj, markInteractive = false) => {
       sceneObj.traverse((child) => {
         const name = (child.name || '').toLowerCase()
@@ -103,15 +88,11 @@ export default function PrinterTable({
           name.includes('suppressor') ||
           name.includes('gun') ||
           name.includes('slide')
-
         if (isPistolPart) {
           child.visible = false
           return
         }
-
         if (child.isMesh) {
-          child.castShadow = true
-          child.receiveShadow = true
           if (markInteractive) {
             child.userData.isPrinter = true
           }
@@ -125,10 +106,8 @@ export default function PrinterTable({
         }
       })
     }
-
     processPrinterNode(printerClone, true)
     processPrinterNode(outlineClone, false)
-
     printerClone.updateMatrixWorld(true)
     const printerBox = new THREE.Box3()
     printerClone.traverse((child) => {
@@ -139,25 +118,21 @@ export default function PrinterTable({
         printerBox.union(b)
       }
     })
-
     const printerCenter = new THREE.Vector3()
     const printerSize = new THREE.Vector3()
     printerBox.getCenter(printerCenter)
     printerBox.getSize(printerSize)
-
     // Wrap main printer clone
     const printerWrapper = new THREE.Group()
     printerWrapper.add(printerClone)
     printerClone.position.x = -printerCenter.x
     printerClone.position.z = -printerCenter.z
     printerClone.position.y = -printerBox.min.y
-
     // Target printer height: 0.65m (bigger than previous 0.50m)
     const targetPrinterHeight = 0.65
     const printerScaleFactor = printerSize.y > 0 ? targetPrinterHeight / printerSize.y : 1.0
     printerWrapper.scale.setScalar(printerScaleFactor)
     printerWrapper.position.y = tableTopY + 0.002
-
     // Wrap outline printer clone
     const outlineWrapper = new THREE.Group()
     outlineWrapper.add(outlineClone)
@@ -166,32 +141,26 @@ export default function PrinterTable({
     outlineClone.position.y = -printerBox.min.y
     outlineWrapper.scale.setScalar(printerScaleFactor)
     outlineWrapper.position.y = tableTopY + 0.002
-
     return {
       tableGroup: tableWrapper,
       printerGroup: printerWrapper,
       printerOutlineScene: outlineWrapper
     }
   }, [tableGLTF.scene, printerGLTF.scene])
-
   if (!tableGroup || !printerGroup) return null
-
   const handlePointerOver = (e) => {
     e.stopPropagation()
     setPrinterHovered(true)
     document.body.style.cursor = 'pointer'
   }
-
   const handlePointerOut = () => {
     setPrinterHovered(false)
     document.body.style.cursor = 'auto'
   }
-
   return (
     <group position={position} rotation={rotation} scale={scale}>
       {/* Office Table */}
       <primitive object={tableGroup} />
-
       {/* Interactive 3D Printer */}
       <primitive
         object={printerGroup}
@@ -200,7 +169,6 @@ export default function PrinterTable({
         onPointerDown={handlePointerDown}
         onClick={handleClick}
       />
-
       {/* Neon Yellow Silhouette Outline on Hover or Always Show */}
       {(printerHovered || alwaysShowOutline) && printerOutlineScene && (
         <TightSilhouetteOutline

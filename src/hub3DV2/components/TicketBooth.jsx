@@ -4,11 +4,8 @@ import { useGLTF } from '@react-three/drei'
 import * as THREE from 'three'
 import TightSilhouetteOutline from '../utils/TightSilhouetteOutline'
 import useDragProtectedClick from '../utils/useDragProtectedClick'
-
 const MODEL_PATH = '/hubModels/TicketBooth/ticket_booth/optimized_booth.gltf'
-
 useGLTF.preload(MODEL_PATH)
-
 /**
  * TicketBooth Component
  *
@@ -29,7 +26,6 @@ export default function TicketBooth({
   const [hovered, setHovered] = useState(false)
   const navigate = useNavigate()
   const { scene } = useGLTF(MODEL_PATH)
-
   const { handlePointerDown, handleClick } = useDragProtectedClick((e) => {
     if (onClick) {
       onClick(e)
@@ -37,18 +33,14 @@ export default function TicketBooth({
       navigate('/openfoam')
     }
   })
-
   const { boothScene, outlineScene } = useMemo(() => {
     if (!scene) return { boothScene: null, outlineScene: null }
-
     const fullClone = scene.clone(true)
     const outlineClone = scene.clone(true)
-
     const processScene = (rootObj) => {
       rootObj.traverse((child) => {
         const name = (child.name || '').toLowerCase()
         const matName = (child.material?.name || '').toLowerCase()
-
         // Exclude Ground Base, "Wood Stuff", bottom tickets/signs, pCylinder11 components, pCylinder30/31/32, and dropped coins
         const isGroundBase = name.includes('ground_base') || matName.includes('ground_base')
         const isWoodStuff = name.includes('wood_stuff') || matName.includes('wood_stuff')
@@ -61,15 +53,11 @@ export default function TicketBooth({
                        name.includes('pcylinder23') || name.includes('pcylinder24') ||
                        name.includes('pcylinder25') || name.includes('pcylinder26') ||
                        name.includes('pcylinder27') || name.includes('pcylinder28')
-
         if (isGroundBase || isWoodStuff || isTicketOrSign || isCylinder11 || isCylinder30_31_32 || isCoin) {
           child.visible = false
           return
         }
-
         if (child.isMesh) {
-          child.castShadow = true
-          child.receiveShadow = true
           if (child.material) {
             child.material.side = THREE.DoubleSide
             if (child.material.map) {
@@ -80,10 +68,8 @@ export default function TicketBooth({
         }
       })
     }
-
     processScene(fullClone)
     processScene(outlineClone)
-
     // Compute world matrix bounding box
     fullClone.updateMatrixWorld(true)
     const box = new THREE.Box3()
@@ -95,47 +81,36 @@ export default function TicketBooth({
         box.union(b)
       }
     })
-
     const rawHeight = box.max.y - box.min.y
     const targetHeight = 2.4 // 2.4 meters standing booth kiosk height
     const normScale = rawHeight > 0 ? targetHeight / rawHeight : 1.0
-
     const centerX = (box.min.x + box.max.x) / 2
     const centerZ = (box.min.z + box.max.z) / 2
-
     // Apply height normalization and align floor Y to 0
     fullClone.scale.setScalar(normScale)
     fullClone.position.x = -centerX * normScale
     fullClone.position.z = -centerZ * normScale
     fullClone.position.y = -box.min.y * normScale + 0.002
-
     outlineClone.scale.setScalar(normScale)
     outlineClone.position.x = -centerX * normScale
     outlineClone.position.z = -centerZ * normScale
     outlineClone.position.y = -box.min.y * normScale + 0.002
-
     const mainWrapper = new THREE.Group()
     mainWrapper.add(fullClone)
-
     const outlineWrapper = new THREE.Group()
     outlineWrapper.add(outlineClone)
-
     return { boothScene: mainWrapper, outlineScene: outlineWrapper }
   }, [scene])
-
   if (!boothScene) return null
-
   const handlePointerOver = (e) => {
     e.stopPropagation()
     setHovered(true)
     document.body.style.cursor = 'pointer'
   }
-
   const handlePointerOut = () => {
     setHovered(false)
     document.body.style.cursor = 'auto'
   }
-
   return (
     <group position={position} rotation={rotation} scale={scale}>
       <primitive

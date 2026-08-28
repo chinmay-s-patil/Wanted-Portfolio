@@ -1,6 +1,5 @@
 import React from 'react'
 import { useNavigate } from 'react-router-dom'
-
 /**
  * HubHelpGuideModal Component
  *
@@ -10,9 +9,7 @@ import { useNavigate } from 'react-router-dom'
  */
 export default function HubHelpGuideModal({ isOpen, onClose }) {
   const navigate = useNavigate()
-
   if (!isOpen) return null
-
   const sections = [
     {
       id: 'computer',
@@ -114,12 +111,10 @@ export default function HubHelpGuideModal({ isOpen, onClose }) {
       location: 'Mounted on the left precinct wall'
     }
   ]
-
   const handleVisit = (route) => {
     onClose()
     navigate(route)
   }
-
   return (
     <div
       style={{
@@ -204,6 +199,28 @@ export default function HubHelpGuideModal({ isOpen, onClose }) {
           </button>
         </div>
 
+        {/* Noticeable Secret Easter Egg Clue Banner */}
+        <div
+          style={{
+            margin: '16px 24px 0 24px',
+            background: 'linear-gradient(90deg, rgba(227, 179, 65, 0.18), rgba(227, 179, 65, 0.08))',
+            border: '1px solid #e3b341',
+            borderRadius: '8px',
+            padding: '12px 18px',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '12px',
+            color: '#ffea9f',
+            fontSize: '13px',
+            fontWeight: '600',
+            boxShadow: '0 4px 15px rgba(227, 179, 65, 0.15)'
+          }}
+        >
+          <span style={{ fontSize: '20px' }}>🔍</span>
+          <span>
+            <strong>Investigator's Clue:</strong> Not everything worth finding is highlighted. Try double-clicking.
+          </span>
+        </div>
         {/* Content Section List Grid */}
         <div
           style={{
@@ -255,7 +272,6 @@ export default function HubHelpGuideModal({ isOpen, onClose }) {
                   📍 3D Location: {sec.location}
                 </div>
               </div>
-
               <button
                 onClick={() => handleVisit(sec.route)}
                 style={{
@@ -283,7 +299,6 @@ export default function HubHelpGuideModal({ isOpen, onClose }) {
             </div>
           ))}
         </div>
-
         {/* Footer */}
         <div
           style={{
@@ -297,7 +312,7 @@ export default function HubHelpGuideModal({ isOpen, onClose }) {
             color: '#a0907c'
           }}
         >
-          <span>💡 Tip: You can also click any 3D prop inside the retro precinct room to navigate!</span>
+          <span>💡 Tip: Not everything worth finding is highlighted. Try double-clicking around the precinct!</span>
           <button
             onClick={onClose}
             style={{

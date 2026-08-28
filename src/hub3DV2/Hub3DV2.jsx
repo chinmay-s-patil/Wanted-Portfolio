@@ -3,9 +3,12 @@
 import React, { useState, useEffect, Suspense, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Canvas, useFrame } from '@react-three/fiber'
-import { PerspectiveCamera, OrbitControls, ContactShadows } from '@react-three/drei'
+import { PerspectiveCamera, OrbitControls } from '@react-three/drei'
 import * as THREE from 'three'
-import { Sofa, CenterTable, Newspaper, Binder, TvTable, Lockers, Terminal, FilingCabinet, OfficeAssets, RetroRoom, RetroFloorLamp, WASDFreecam, PrinterTable, Payphone, HubHelpGuideModal, OldCamera, FilmRollPile, RadarTablet, TicketBooth, AmbientDustParticles, PrecinctWallClock, DetectiveCoffeeMug, RetroDeskFan, TableLamp } from './components'
+import { Sofa, CenterTable, Newspaper, Binder, TvTable, Lockers, Terminal, FilingCabinet, OfficeAssets, RetroRoom, RetroFloorLamp, WASDFreecam, PrinterTable, Payphone, HubHelpGuideModal, OldCamera, FilmRollPile, RadarTablet, PrecinctDoor, WallKeychains, GrandfatherClock, AmbientDustParticles, PrecinctWallClock, DetectiveCoffeeMug, RetroDeskFan, TableLamp, ScatteredPages, Globe, WaterDispenser } from './components'
+import { Piano, Violin, TvRemote, McNaughtFrame, useEasterEgg } from './easterEgg'
+
+
 
 function LoadingSpinner() {
   const meshRef = useRef()
@@ -58,7 +61,11 @@ export default function Hub3DV2() {
   const [highlightAll, setHighlightAll] = useState(false)
   const [showHintBanner, setShowHintBanner] = useState(true)
   const [cameraHovered, setCameraHovered] = useState(false)
+  const [doorKeychainsHovered, setDoorKeychainsHovered] = useState(false)
+  const { activeEgg, setActiveEgg, isTvPaused, setIsTvPaused, triggerEgg } = useEasterEgg()
   const controlsRef = useRef()
+
+
   const navigate = useNavigate()
 
   useEffect(() => {
@@ -118,133 +125,135 @@ export default function Hub3DV2() {
           .hub-v2-btn {
             background: rgba(22, 27, 34, 0.85);
             color: #c9d1d9;
-            border: 1px solid #30363d;
-            padding: 0.5rem 1rem;
+            border: 1px solid rgba(48, 54, 61, 0.8);
+            padding: 0.6rem 1.1rem;
             border-radius: 8px;
             font-size: 0.85rem;
             font-weight: 600;
             cursor: pointer;
-            backdrop-filter: blur(8px);
-            transition: all 0.2s ease;
+            backdrop-filter: blur(12px);
+            transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
           }
 
           .hub-v2-btn:hover {
-            background: #21262d;
-            color: #58a6ff;
+            background: rgba(33, 38, 45, 0.95);
             border-color: #58a6ff;
+            color: #ffffff;
             transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
           }
 
           .hub-v2-action-btn {
-            background: rgba(22, 27, 34, 0.9);
-            color: #ffea9f;
-            border: 1px solid #c59b27;
-            padding: 0.6rem 1.2rem;
+            background: rgba(22, 27, 34, 0.85);
+            color: #c9d1d9;
+            border: 1px solid rgba(48, 54, 61, 0.8);
+            padding: 0.6rem 1.1rem;
             border-radius: 8px;
+            font-size: 0.85rem;
             font-weight: 600;
-            font-size: 0.88rem;
             cursor: pointer;
-            backdrop-filter: blur(8px);
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
-            transition: all 0.2s ease;
+            backdrop-filter: blur(12px);
+            transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
             display: flex;
             align-items: center;
-            gap: 0.4rem;
+            gap: 0.5rem;
           }
 
           .hub-v2-action-btn:hover {
-            background: #c59b27;
-            color: #120e0b;
-            transform: translateY(-2px);
-            box-shadow: 0 6px 16px rgba(197, 155, 39, 0.3);
+            background: rgba(33, 38, 45, 0.95);
+            border-color: #e3b341;
+            color: #ffffff;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(227, 179, 65, 0.2);
           }
 
           .hub-v2-action-btn.active {
-            background: #00ff66;
-            color: #0d1117;
-            border-color: #00ff66;
-            box-shadow: 0 0 15px rgba(0, 255, 102, 0.5);
-          }
-
-          .hub-v2-hint-banner-wrap {
-            position: absolute;
-            top: 4.5rem;
-            right: 10.5rem;
-            display: flex;
-            flex-direction: column-reverse;
-            align-items: center;
-            pointer-events: none;
-            z-index: 25;
-            animation: fadeIn 0.3s ease-out;
-          }
-
-          .hub-v2-hint-box {
-            background: rgba(20, 16, 12, 0.95);
-            border: 2px solid #ffea9f;
-            border-radius: 8px;
-            padding: 8px 14px;
+            background: rgba(227, 179, 65, 0.15);
+            border-color: #e3b341;
             color: #ffea9f;
-            font-family: monospace, sans-serif;
-            font-size: 0.85rem;
-            font-weight: bold;
-            box-shadow: 0 0 18px rgba(255, 234, 159, 0.4);
-            pointer-events: auto;
-            cursor: pointer;
-            user-select: none;
-            transition: transform 0.2s ease;
-          }
-
-          .hub-v2-hint-box:hover {
-            transform: scale(1.05);
-          }
-
-          .hub-v2-loopy-arrow-svg {
-            width: 110px;
-            height: 55px;
-            margin-bottom: -4px;
-          }
-
-          .hub-v2-title-badge {
-            position: absolute;
-            bottom: 2rem;
-            right: 2rem;
-            color: #8b949e;
-            font-size: 0.85rem;
-            pointer-events: none;
           }
 
           .hub-v2-subtitle-badge {
             position: absolute;
-            bottom: 2rem;
-            left: 2rem;
-            color: #ff9e3b;
-            font-size: 0.88rem;
-            font-weight: 600;
-            background: rgba(22, 27, 34, 0.85);
-            border: 1px solid #30363d;
+            bottom: 1.5rem;
+            left: 1.5rem;
+            background: rgba(13, 17, 23, 0.85);
+            border: 1px solid rgba(48, 54, 61, 0.8);
             padding: 0.5rem 1rem;
             border-radius: 20px;
-            backdrop-filter: blur(8px);
+            font-size: 0.8rem;
+            color: #8b949e;
+            backdrop-filter: blur(12px);
           }
 
-          @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(-5px); }
+          .hub-v2-title-badge {
+            position: absolute;
+            bottom: 1.5rem;
+            right: 1.5rem;
+            background: rgba(13, 17, 23, 0.85);
+            border: 1px solid rgba(48, 54, 61, 0.8);
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            color: #8b949e;
+            backdrop-filter: blur(12px);
+          }
+
+          .hub-v2-hint-banner-wrap {
+            position: absolute;
+            top: 3.6rem;
+            right: 12.0rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            pointer-events: none;
+            z-index: 30;
+            animation: fadeInHint 0.4s ease-out;
+          }
+
+          @keyframes fadeInHint {
+            from { opacity: 0; transform: translateY(6px); }
             to { opacity: 1; transform: translateY(0); }
+          }
+
+          .hub-v2-hint-box {
+            pointer-events: none;
+            background: rgba(22, 27, 34, 0.95);
+            color: #ffea9f;
+            border: 1px solid #e3b341;
+            font-weight: 600;
+            font-size: 0.82rem;
+            padding: 0.45rem 0.85rem;
+            border-radius: 8px;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(8px);
+            white-space: nowrap;
+            user-select: none;
+          }
+
+          .hub-v2-swirly-arrow-svg {
+            width: 120px;
+            height: 65px;
+            margin-bottom: -4px;
+            order: -1;
+            filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.6));
           }
         `}</style>
 
-        {/* UI Overlay */}
+        {/* Floating HTML UI Overlay */}
         <div className="hub-v2-ui">
           <div className="hub-v2-nav-bar">
             <button className="hub-v2-btn" onClick={() => navigate('/')}>
               ← Back to Landing
             </button>
-            <button className="hub-v2-btn" onClick={() => navigate('/hub3D')}>
+            <button className="hub-v2-btn" onClick={() => navigate('/hub')}>
               ← Procedural Hub3D (V1)
             </button>
           </div>
 
-          {/* Top Right Action Button Bar */}
           <div className="hub-v2-top-right-bar">
             <button
               className="hub-v2-action-btn"
@@ -260,28 +269,30 @@ export default function Hub3DV2() {
             </button>
           </div>
 
-          {/* Auto-Disappearing 10-Second Hint Banner with Hand-Drawn Wavy Arrow */}
+          {/* Auto-Disappearing 10-Second Non-Clickable Hint Banner with Swirly SVG Arrow Starting at Hint & Pointing directly into Help Guide */}
           {showHintBanner && (
             <div className="hub-v2-hint-banner-wrap">
-              <div className="hub-v2-hint-box" onClick={() => setShowHelpModal(true)}>
-                Need help? Click this!
-              </div>
-              <svg className="hub-v2-loopy-arrow-svg" viewBox="0 0 120 70" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <svg className="hub-v2-swirly-arrow-svg" viewBox="0 0 120 70" fill="none" xmlns="http://www.w3.org/2000/svg">
+                {/* Curve starts at top of hint box (60, 65), moves UP & AWAY, swirls in a loop, and shoots UP into Help Guide button */}
                 <path
-                  d="M 90 62 C 55 62, 25 50, 40 32 C 55 14, 80 25, 70 42 C 60 58, 22 45, 30 16"
+                  d="M 60 65 C 40 55, 20 45, 30 30 C 40 15, 80 20, 65 45 C 50 65, 25 35, 25 10"
                   stroke="#ffea9f"
-                  strokeWidth="4"
+                  strokeWidth="3.5"
                   strokeLinecap="round"
                   fill="none"
                 />
+                {/* Arrowhead pointing UP directly into Help Guide button */}
                 <path
-                  d="M 18 26 L 30 8 L 44 22 Z"
+                  d="M 15 18 L 25 2 L 35 18 Z"
                   fill="#ffea9f"
                   stroke="#ffea9f"
                   strokeWidth="1.5"
                   strokeLinejoin="round"
                 />
               </svg>
+              <div className="hub-v2-hint-box">
+                Need help?
+              </div>
             </div>
           )}
 
@@ -289,8 +300,10 @@ export default function Hub3DV2() {
           <div className="hub-v2-title-badge">3D Hub V2 — Custom Retro Scene</div>
         </div>
 
-        {/* Portfolio Investigation Directory Help Modal Overlay */}
+        {/* Portfolio Directory Help Modal Overlay */}
         <HubHelpGuideModal isOpen={showHelpModal} onClose={() => setShowHelpModal(false)} />
+
+
 
         {/* Three.js Canvas with High Performance & Moody Retro Lighting */}
         <Canvas dpr={[1, 1.5]} performance={{ min: 0.5 }} gl={{ antialias: true, powerPreference: 'high-performance' }}>
@@ -312,28 +325,19 @@ export default function Hub3DV2() {
           <WASDFreecam controlsRef={controlsRef} moveSpeed={5.0} />
 
           {/* Gritty Retro Precinct Ambient & Directional Scene Lighting */}
-          <ambientLight intensity={0.38} color="#ffdfb3" />
+          <ambientLight intensity={0.45} color="#ffdfb3" />
 
           {/* Main Key Light */}
           <directionalLight
             position={[5, 7, 4]}
-            intensity={1.6}
+            intensity={1.8}
             color="#ff9d42"
-            castShadow
-            shadow-mapSize-width={2048}
-            shadow-mapSize-height={2048}
-            shadow-camera-far={25}
-            shadow-camera-left={-8}
-            shadow-camera-right={8}
-            shadow-camera-top={8}
-            shadow-camera-bottom={-8}
-            shadow-bias={-0.0001}
           />
 
           {/* Copper Rim Light */}
           <directionalLight
             position={[-5, 4, -4]}
-            intensity={0.7}
+            intensity={0.8}
             color="#ff7733"
           />
 
@@ -342,18 +346,13 @@ export default function Hub3DV2() {
             position={[0, 4.5, 1.2]}
             angle={0.65}
             penumbra={0.8}
-            intensity={2.8}
+            intensity={3.0}
             color="#ffe3b3"
-            castShadow
-            shadow-bias={-0.0001}
           />
 
           {/* Retro Room Enclosure */}
           <RetroRoom />
           <RetroFloorLamp position={[2.6, -0.6, 0.5]} />
-
-          {/* Floor Shadow */}
-          <ContactShadows position={[0, -0.59, 0.7]} opacity={0.7} scale={9} blur={1.5} far={3} color="#000000" />
 
           {/* Render Modular 3D Components with React Suspense */}
           <Suspense fallback={<LoadingSpinner />}>
@@ -371,18 +370,24 @@ export default function Hub3DV2() {
               position={[0, -0.6, 4.2]}
               scale={[0.3, 0.3, 0.3]}
               rotation={[0, Math.PI, 0]}
+              activeEgg={activeEgg}
+              isPaused={isTvPaused}
+              onClose={() => {
+                setActiveEgg(null)
+                setIsTvPaused(false)
+              }}
             />
             <Newspaper
-              position={[0.42, 0.08, 2.25]}
+              position={[0.42, -0.01, 2.25]}
               scale={[0.045, 0.045, 0.045]}
               rotation={[0, 2.95, 0]}
               outlineColor="#38ef7d"
               outlineThickness={0.008}
               alwaysShowOutline={highlightAll}
-              onClick={() => navigate('/newspaper')}
+              onClick={() => navigate('/')}
             />
             <Binder
-              position={[-0.42, 0.08, 2.25]}
+              position={[-0.42, -0.02, 2.25]}
               scale={[2.5, 2.5, 2.5]}
               rotation={[0, 0.2, 0]}
               outlineColor="#ff0055"
@@ -418,7 +423,7 @@ export default function Hub3DV2() {
               onClick={() => navigate('/projects')}
             />
             <OfficeAssets
-              position={[0, -0.6, -5.]}
+              position={[0, -0.6, -5.2]}
               scale={[1.5, 1.5, 1.5]}
               rotation={[0, -Math.PI / 2, 0]}
               outlineColor="#00f5d4"
@@ -433,7 +438,7 @@ export default function Hub3DV2() {
               outlineColor="#00ff66"
               outlineThickness={0.008}
               alwaysShowOutline={highlightAll}
-              onClick={() => navigate('/solvers')}
+              onClick={() => navigate('/upcoming')}
             />
             <PrinterTable
               position={[-5.9, -0.6, 5.0]}
@@ -451,7 +456,7 @@ export default function Hub3DV2() {
               outlineColor="#ff007f"
               outlineThickness={0.008}
               alwaysShowOutline={highlightAll}
-              onClick={() => navigate('/contact')}
+              onClick={() => navigate('/contactme')}
             />
             <OldCamera
               position={[-3.5, -0.6, 5.4]}
@@ -475,21 +480,41 @@ export default function Hub3DV2() {
               onHoverChange={setCameraHovered}
               onClick={() => navigate('/events')}
             />
-            <TicketBooth
-              position={[-7.4, -0.6, -4.2]}
-              scale={[2, 2, 2]}
-              rotation={[0, Math.PI / 2, 0]}
+
+            {/* Precinct Security Door & Wall Keychains (Linked Hover Pair) */}
+            <PrecinctDoor
+              position={[-7.1, 0.6, -6.4]}
+              scale={[1.2, 1.2, 1.2]}
+              rotation={[0, 0 * Math.PI / 1, 0]}
               outlineColor="#ff3366"
               outlineThickness={0.008}
               alwaysShowOutline={highlightAll}
+              isHoveredGroup={doorKeychainsHovered}
+              onHoverChange={setDoorKeychainsHovered}
               onClick={() => navigate('/openfoam')}
+            />
+            <WallKeychains
+              position={[-5.6, 1.7, -6.4]}
+              scale={[1.2, 1.2, 1.2]}
+              rotation={[0, 0 * Math.PI / 1, 0]}
+              outlineColor="#ff3366"
+              outlineThickness={0.008}
+              alwaysShowOutline={highlightAll}
+              isHoveredGroup={doorKeychainsHovered}
+              onHoverChange={setDoorKeychainsHovered}
+              onClick={() => navigate('/openfoam')}
+            />
+            <GrandfatherClock
+              position={[-2, -0.6, 6.0]}
+              scale={[1.8, 1.8, 1.8]}
+              rotation={[0, - Math.PI / 1, 0]}
             />
 
             {/* Ambient Atmosphere & Environmental Props */}
             <AmbientDustParticles count={70} bounds={[10, 5, 10]} />
             <DetectiveCoffeeMug position={[0.1, 0.08, 2.55]} scale={[1.2, 1.2, 1.2]} rotation={[0, 0.4, 0]} />
 
-            {/* Retro Office Precinct Desk Props on 3D Printer Table */}
+            {/* Props */}
             <RetroDeskFan
               position={[-4.5, 0.9, 5.8]}
               scale={[1.2, 1.2, 1.2]}
@@ -497,11 +522,68 @@ export default function Hub3DV2() {
             />
 
             <TableLamp 
-              position={[-7.3, 0.9, 5.2]}
+              position={[-7.5, 0.9, 5.6]}
               scale={[1.2, 1.2, 1.2]}
               rotation={[0, 3*Math.PI / 4, 0]} 
             />
+
+            <Globe
+              position={[-6.9, 0.9, 5.4]}
+              scale={[2, 2, 2]}
+              rotation={[0, Math.PI, 0]}
+            />
+
+            <WaterDispenser
+              position={[-8.1, -0.6, 2.5]}
+              scale={[2, 2, 2]}
+              rotation={[0, 0*Math.PI / 2, 0]}
+              outlineColor="#00f5d4"
+              outlineThickness={0.008}
+              alwaysShowOutline={highlightAll}
+            />
+
+            {/* Easter Eggs */}
+            <Piano
+              position={[7.9, -0.6, -5.0]}
+              scale={[1.6, 1.6, 1.6]}
+              rotation={[0, -Math.PI/2, 0]}
+              outlineColor="#e3b341"
+              outlineThickness={0.008}
+              alwaysShowOutline={highlightAll}
+              onDoubleClick={() => triggerEgg('piano')}
+            />
+
+            <Violin
+              position={[-2.05, -0.6, -5.8]}
+              scale={[2, 2, 2]}
+              rotation={[-1*Math.PI/6, -Math.PI / 4, -Math.PI/6]}
+              onDoubleClick={() => triggerEgg('violin')}
+            />
+
+            <TvRemote
+              position={[-0.75, -0.01, 2.60]}
+              scale={[1, 1, 1]}
+              rotation={[0, Math.PI/6, 0]}
+              isActive={Boolean(activeEgg)}
+              isPaused={isTvPaused}
+              onClick={() => {
+                if (activeEgg) {
+                  setIsTvPaused((prev) => !prev)
+                }
+              }}
+            />
+
+            <McNaughtFrame
+              position={[0, 2.1, 6.44]}
+              scale={[1, 1, 1]}
+              rotation={[0, Math.PI, 0]}
+            />
+
+            {/* Static Super Low-Poly Scattered Document Pages */}
+            <ScatteredPages />
           </Suspense>
+
+
         </Canvas>
       </div>
     </HubV2ErrorBoundary>

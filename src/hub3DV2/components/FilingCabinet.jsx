@@ -4,11 +4,8 @@ import { useGLTF } from '@react-three/drei'
 import * as THREE from 'three'
 import TightSilhouetteOutline from '../utils/TightSilhouetteOutline'
 import useDragProtectedClick from '../utils/useDragProtectedClick'
-
 const MODEL_PATH = '/hubModels/Filing Cabinet/filing_cabinet_-_6mb/optimized_cabinet.gltf'
-
 useGLTF.preload(MODEL_PATH)
-
 /**
  * FilingCabinet Component
  *
@@ -28,7 +25,6 @@ export default function FilingCabinet({
   const [hovered, setHovered] = useState(false)
   const navigate = useNavigate()
   const { scene } = useGLTF(MODEL_PATH)
-
   const { handlePointerDown, handleClick } = useDragProtectedClick((e) => {
     if (onClick) {
       onClick(e)
@@ -36,14 +32,11 @@ export default function FilingCabinet({
       navigate('/projects')
     }
   })
-
   const joinedScene = useMemo(() => {
     if (!scene) return null
-
     // Create a clean root group for box_7 containing STRICTLY visible box_7 meshes (no ghost nodes)
     scene.updateMatrixWorld(true)
     const box7Group = new THREE.Group()
-
     scene.traverse((child) => {
       if (child.isMesh) {
         const name = child.name || ''
@@ -53,12 +46,9 @@ export default function FilingCabinet({
           name === '02__0' ||
           name === '03__0' ||
           name === '04__0'
-
         if (isBox7) {
           const meshClone = child.clone(true)
           meshClone.visible = true
-          meshClone.castShadow = true
-          meshClone.receiveShadow = true
           if (meshClone.material) {
             meshClone.material = meshClone.material.clone()
             meshClone.material.side = THREE.DoubleSide
@@ -73,50 +63,39 @@ export default function FilingCabinet({
         }
       }
     })
-
     // Compute exact bounding box over strictly box_7 meshes
     box7Group.updateMatrixWorld(true)
     const singleBox = new THREE.Box3().setFromObject(box7Group)
-
     const width = singleBox.max.x - singleBox.min.x
     const centerX = (singleBox.min.x + singleBox.max.x) / 2
     const centerZ = (singleBox.min.z + singleBox.max.z) / 2
-
     // Center single cabinet to local origin
     const singleCabinet = new THREE.Group()
     singleCabinet.add(box7Group)
     box7Group.position.x = -centerX
     box7Group.position.z = -centerZ
     box7Group.position.y = -singleBox.min.y + 0.002
-
     // Join TWO identical singleCabinet towers side-by-side
     const doubleGroup = new THREE.Group()
-
     const leftCabinet = singleCabinet
     leftCabinet.position.x = -width / 2
     doubleGroup.add(leftCabinet)
-
     const rightCabinet = singleCabinet.clone(true)
     rightCabinet.position.x = width / 2
     doubleGroup.add(rightCabinet)
-
     doubleGroup.updateMatrixWorld(true)
     return doubleGroup
   }, [scene])
-
   if (!joinedScene) return null
-
   const handlePointerOver = (e) => {
     e.stopPropagation()
     setHovered(true)
     document.body.style.cursor = 'pointer'
   }
-
   const handlePointerOut = () => {
     setHovered(false)
     document.body.style.cursor = 'auto'
   }
-
   return (
     <group position={position} rotation={rotation}>
       <group

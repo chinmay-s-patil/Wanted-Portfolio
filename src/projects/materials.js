@@ -1,45 +1,53 @@
-export const metalDark = {
-  color: '#2a2622',
-  metalness: 0.82,
-  roughness: 0.35,
-}
+// Ultra-Clean Police Precinct Metallic & Leather Materials
 
-export const metalMid = {
-  color: '#4a443c',
-  metalness: 0.78,
-  roughness: 0.32,
-}
-
-export const metalLight = {
-  color: '#6e655a',
-  metalness: 0.72,
-  roughness: 0.30,
-}
-
-export const brass = {
-  color: '#c4a574',
+export const metalCabinetBody = {
+  color: '#1a1d24',
   metalness: 0.88,
-  roughness: 0.22,
+  roughness: 0.28,
+}
+
+export const metalDrawerFront = {
+  color: '#282d37',
+  metalness: 0.85,
+  roughness: 0.25,
+}
+
+export const metalDrawerFrontHover = {
+  color: '#3a4252',
+  metalness: 0.90,
+  roughness: 0.20,
+}
+
+export const polishedChrome = {
+  color: '#e6e9ed',
+  metalness: 0.96,
+  roughness: 0.12,
+}
+
+export const policeBrass = {
+  color: '#d4af37',
+  metalness: 0.92,
+  roughness: 0.18,
 }
 
 export const labelPlateMat = {
-  color: '#f6efe2',
-  metalness: 0.05,
-  roughness: 0.85,
+  color: '#fdfbf7',
+  metalness: 0.02,
+  roughness: 0.90,
 }
 
 export const manilaBody = {
-  color: '#e8dcc8',
-  metalness: 0,
-  roughness: 0.88,
+  color: '#e6cfab',
+  metalness: 0.02,
+  roughness: 0.85,
 }
 
 export const manilaBodyLight = {
-  color: '#f5ebe0',
-  metalness: 0,
-  roughness: 0.82,
+  color: '#f7e7cf',
+  metalness: 0.02,
+  roughness: 0.78,
 }
 
 export function getFolderTabMaterial(hexColor) {
-  return { color: hexColor, metalness: 0.15, roughness: 0.7 }
+  return { color: hexColor || '#d4af37', metalness: 0.15, roughness: 0.6 }
 }

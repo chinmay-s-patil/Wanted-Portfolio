@@ -1,13 +1,21 @@
-import { useState } from 'react'
+import React, { useRef } from 'react'
 import { RoundedBox, Text } from '@react-three/drei'
 import { useCabinetStore } from './useCabinetStore'
 import { D } from './dimensions'
-import { metalLight, metalMid, brass, labelPlateMat } from './materials'
+import { metalDrawerFront, polishedChrome, policeBrass, labelPlateMat } from './materials'
 
+/**
+ * DrawerFront Component
+ *
+ * Clean, high-end 3D Police Precinct Filing Cabinet Drawer Front.
+ * Uses direct mesh material color lerps to guarantee 0 React re-render jitter on mouse hover.
+ */
 export default function DrawerFront({ data }) {
   const setOpenDrawer = useCabinetStore((s) => s.setOpenDrawer)
   const isOpen = useCabinetStore((s) => s.openDrawerId === data.id)
-  const [hovered, setHovered] = useState(false)
+
+  const frontMeshRef = useRef()
+  const handleMeshRef = useRef()
 
   return (
     <group
@@ -17,37 +25,40 @@ export default function DrawerFront({ data }) {
       }}
       onPointerOver={(e) => {
         e.stopPropagation()
-        setHovered(true)
         document.body.style.cursor = 'pointer'
+        if (frontMeshRef.current) {
+          frontMeshRef.current.material.color.set('#3a4354')
+        }
+        if (handleMeshRef.current) {
+          handleMeshRef.current.material.color.set('#ffffff')
+        }
       }}
       onPointerOut={() => {
-        setHovered(false)
         document.body.style.cursor = 'auto'
+        if (frontMeshRef.current) {
+          frontMeshRef.current.material.color.set(isOpen ? '#2a313d' : metalDrawerFront.color)
+        }
+        if (handleMeshRef.current) {
+          handleMeshRef.current.material.color.set(polishedChrome.color)
+        }
       }}
     >
-      {/* Main panel with hover highlight border effect */}
+      {/* Main Drawer Front Face */}
       <RoundedBox
+        ref={frontMeshRef}
         args={[D.drawerWidth, D.drawerHeight, 0.04]}
         radius={0.012}
         smoothness={4}
         castShadow
+        receiveShadow
       >
         <meshStandardMaterial
-          {...(isOpen ? metalMid : metalLight)}
-          color={hovered ? (isOpen ? '#5c544a' : '#7e7568') : (isOpen ? metalMid.color : metalLight.color)}
-          roughness={hovered ? 0.25 : (isOpen ? metalMid.roughness : metalLight.roughness)}
+          {...metalDrawerFront}
+          color={isOpen ? '#2a313d' : metalDrawerFront.color}
         />
       </RoundedBox>
 
-      {/* Hover outline glow when mouse over */}
-      {hovered && !isOpen && (
-        <mesh position={[0, 0, 0.021]}>
-          <planeGeometry args={[D.drawerWidth - 0.02, D.drawerHeight - 0.02]} />
-          <meshBasicMaterial color="#c4a574" opacity={0.12} transparent />
-        </mesh>
-      )}
-
-      {/* Rivets */}
+      {/* Chrome Corner Rivets */}
       {[
         [-D.drawerWidth / 2 + 0.06, D.drawerHeight / 2 - 0.06],
         [D.drawerWidth / 2 - 0.06, D.drawerHeight / 2 - 0.06],
@@ -56,70 +67,50 @@ export default function DrawerFront({ data }) {
       ].map(([x, y], i) => (
         <mesh key={i} position={[x, y, 0.025]}>
           <cylinderGeometry args={[0.012, 0.012, 0.008, 16]} />
-          <meshStandardMaterial {...brass} />
+          <meshStandardMaterial {...polishedChrome} />
         </mesh>
       ))}
 
       {/* Keyhole Lock Cylinder */}
       <group position={[-D.drawerWidth / 2 + 0.18, 0, 0.025]}>
         <RoundedBox args={[0.05, 0.07, 0.015]} radius={0.005}>
-          <meshStandardMaterial {...brass} />
+          <meshStandardMaterial {...policeBrass} />
         </RoundedBox>
-        <mesh position={[0, 0, 0.012]}>
+        <mesh position={[0, 0, 0.01]}>
           <boxGeometry args={[0.015, 0.025, 0.005]} />
-          <meshStandardMaterial color="#1a1410" />
+          <meshStandardMaterial color="#0f1115" />
         </mesh>
       </group>
 
-      {/* Label plate */}
+      {/* Label Plate Frame */}
       <group position={[0, 0.01, 0.025]}>
-        {/* Brass frame surround */}
         <RoundedBox args={[0.72, 0.16, 0.008]} radius={0.006} position={[0, 0, -0.002]}>
-          <meshStandardMaterial {...brass} />
+          <meshStandardMaterial {...policeBrass} />
         </RoundedBox>
         <RoundedBox args={[0.7, 0.14, 0.012]} radius={0.008}>
           <meshStandardMaterial {...labelPlateMat} />
         </RoundedBox>
-        {/* Label text */}
         <Text
-          position={[0, 0, 0.008]}
+          position={[0, 0, 0.01]}
           fontSize={0.052}
-          color="#2a2018"
+          color="#12151c"
           anchorX="center"
           anchorY="middle"
-          font="/fonts/special-elite.woff"
           letterSpacing={0.05}
         >
           {data.label}
         </Text>
       </group>
 
-      {/* Heavy Duty Brass Handle */}
+      {/* Polished Chrome Handle */}
       <group position={[D.drawerWidth / 2 - 0.22, 0, 0.025]}>
-        <RoundedBox args={[0.24, 0.07, 0.022]} radius={0.008}>
-          <meshStandardMaterial {...brass} color={hovered ? '#d6b885' : brass.color} />
+        <RoundedBox ref={handleMeshRef} args={[0.24, 0.07, 0.022]} radius={0.008}>
+          <meshStandardMaterial {...polishedChrome} />
         </RoundedBox>
-        <mesh position={[0, 0, 0.015]}>
-          <boxGeometry args={[0.15, 0.018, 0.008]} />
-          <meshStandardMaterial color="#181410" />
+        <mesh position={[0, 0, 0.02]} rotation={[Math.PI / 2, 0, 0]}>
+          <torusGeometry args={[0.07, 0.012, 12, 24, Math.PI]} />
+          <meshStandardMaterial {...polishedChrome} />
         </mesh>
-      </group>
-
-      {/* File count badge */}
-      <group position={[D.drawerWidth / 2 - 0.08, -D.drawerHeight / 2 + 0.06, 0.025]}>
-        <RoundedBox args={[0.13, 0.06, 0.01]} radius={0.005}>
-          <meshStandardMaterial color="#1a1816" />
-        </RoundedBox>
-        <Text
-          position={[0, 0, 0.006]}
-          fontSize={0.034}
-          color={data.color || '#c4a574'}
-          anchorX="center"
-          anchorY="middle"
-          font="/fonts/courier-prime.woff"
-        >
-          {data.folders.length} FILES
-        </Text>
       </group>
     </group>
   )

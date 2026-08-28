@@ -20,7 +20,7 @@ export default function Folder({ data, index, drawerColor, restTransform, onSele
   const tabPositions = [-D.folderWidth / 3.2, 0, D.folderWidth / 3.2]
   const tabX = tabPositions[index % 3]
 
-  const tabColor = drawerColor || '#c4a574'
+  const tabColor = drawerColor || '#d4af37'
 
   return (
     <animated.group
@@ -70,12 +70,11 @@ export default function Folder({ data, index, drawerColor, restTransform, onSele
         </mesh>
         {/* High contrast tab text */}
         <Text
-          position={[0, 0, 0.008]}
+          position={[0, 0, 0.01]}
           fontSize={0.03}
           color="#ffffff"
           anchorX="center"
           anchorY="middle"
-          font="/fonts/courier-prime.woff"
           letterSpacing={0.06}
         >
           {(data.category || 'CASE').substring(0, 9).toUpperCase()}
@@ -95,67 +94,46 @@ export default function Folder({ data, index, drawerColor, restTransform, onSele
       </mesh>
 
       {/* Metal Corner Clip */}
-      <mesh position={[-D.folderWidth / 2 + 0.02, D.folderHeight / 2 - 0.02, 0.009]}>
+      <mesh position={[-D.folderWidth / 2 + 0.02, D.folderHeight / 2 - 0.02, 0.015]}>
         <boxGeometry args={[0.02, 0.03, 0.004]} />
         <meshStandardMaterial color="#8a8884" metalness={0.8} roughness={0.3} />
       </mesh>
 
-      {/* Crisp, Uncluttered Stamps */}
+      {/* Crisp Confidential Stamp */}
       <Text
-        position={[-D.folderWidth / 2 + 0.04, D.folderHeight / 2 - 0.05, 0.009]}
+        position={[-D.folderWidth / 2 + 0.04, D.folderHeight / 2 - 0.05, 0.015]}
         fontSize={0.028}
-        color="rgba(180,30,30,0.7)"
+        color="rgba(180,30,30,0.85)"
         anchorX="left"
         anchorY="top"
-        font="/fonts/special-elite.woff"
         letterSpacing={0.12}
         rotation-z={-0.08}
       >
         [CLASSIFIED]
       </Text>
 
+      {/* Case File Number Stamp */}
       <Text
-        position={[D.folderWidth / 2 - 0.03, D.folderHeight / 2 - 0.05, 0.009]}
+        position={[D.folderWidth / 2 - 0.03, D.folderHeight / 2 - 0.05, 0.015]}
         fontSize={0.022}
-        color="rgba(90,70,40,0.6)"
+        color="rgba(90,70,40,0.8)"
         anchorX="right"
         anchorY="top"
-        font="/fonts/courier-prime.woff"
       >
         FILE #{data.id.substring(0, 6).toUpperCase()}
       </Text>
 
-      {/* Category Pill Tag on Folder Cover */}
-      <group position={[0, -D.folderHeight / 2 + 0.11, 0.009]}>
-        <mesh>
-          <planeGeometry args={[0.22, 0.04]} />
-          <meshBasicMaterial color={isActive ? '#3d2817' : 'rgba(61,40,23,0.75)'} />
-        </mesh>
-        <Text
-          position={[0, 0, 0.002]}
-          fontSize={0.022}
-          color={tabColor}
-          anchorX="center"
-          anchorY="middle"
-          font="/fonts/courier-prime.woff"
-          letterSpacing={0.08}
-        >
-          {data.category?.toUpperCase() || 'GENERAL'}
-        </Text>
-      </group>
-
-      {/* Main Title at bottom */}
+      {/* Main Title centered cleanly on Folder Cover */}
       <Text
-        position={[0, -D.folderHeight / 2 + 0.045, 0.009]}
-        fontSize={isActive ? 0.029 : 0.025}
-        color={isActive ? 'rgba(30,18,8,0.95)' : 'rgba(70,45,20,0.65)'}
+        position={[0, -0.02, 0.015]}
+        fontSize={isActive ? 0.03 : 0.026}
+        color={isActive ? 'rgba(30,18,8,0.98)' : 'rgba(70,45,20,0.8)'}
         anchorX="center"
         anchorY="middle"
-        font="/fonts/courier-prime.woff"
-        maxWidth={D.folderWidth - 0.05}
+        maxWidth={D.folderWidth - 0.06}
         textAlign="center"
       >
-        {data.title.length > 34 ? data.title.substring(0, 34) + '...' : data.title}
+        {data.title.length > 36 ? data.title.substring(0, 36) + '...' : data.title}
       </Text>
     </animated.group>
   )

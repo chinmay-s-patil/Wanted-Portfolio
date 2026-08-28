@@ -14,6 +14,7 @@ import RotaryPhoneContact from './ContactMe/RotaryPhoneContact'
 import Landing from './Landing-newspaper/Landing'
 import Hub3D from './hub3D/Hub3D'
 import Hub3DV2 from './hub3DV2/Hub3DV2'
+import { EasterEggProvider, DraggableMiniTvPlayer } from './hub3DV2/easterEgg'
 
 const ROUTE_PAGE_TITLES = {
   '/': 'Wanted Portfolio | Detective Dossier',
@@ -63,23 +64,26 @@ function PageTitleUpdater() {
 function App() {
   return (
     <BrowserRouter>
-      <PageTitleUpdater />
-      <Routes>
-        <Route path="/" element={<Landing />} />
-        <Route path="/hub" element={<Hub />} />
-        <Route path="/education" element={<EducationPage />} />
-        <Route path="/projects" element={<ProjectsPage />} />
-        <Route path="/professionaldiary" element={<ProfessionalDiary />} />
-        <Route path="/openfoam" element={<DriveInSection />} />
-        <Route path="/cad" element={<CADSection />} />
-        <Route path="/visualization" element={<VisualizationPage />} />
-        <Route path="/events" element={<EventsPage />} />
-        <Route path="/upcoming" element={<UpcomingPage />} />
-        <Route path="/solvers" element={<SolversSection />} />
-        <Route path="/contactme" element={<RotaryPhoneContact />} />
-        <Route path="/hub3D" element={<Hub3D />} />
-        <Route path="/hub3DV2" element={<Hub3DV2 />} />
-      </Routes>
+      <EasterEggProvider>
+        <PageTitleUpdater />
+        <DraggableMiniTvPlayer />
+        <Routes>
+          <Route path="/" element={<Landing />} />
+          <Route path="/hub" element={<Hub />} />
+          <Route path="/education" element={<EducationPage />} />
+          <Route path="/projects" element={<ProjectsPage />} />
+          <Route path="/professionaldiary" element={<ProfessionalDiary />} />
+          <Route path="/openfoam" element={<DriveInSection />} />
+          <Route path="/cad" element={<CADSection />} />
+          <Route path="/visualization" element={<VisualizationPage />} />
+          <Route path="/events" element={<EventsPage />} />
+          <Route path="/upcoming" element={<UpcomingPage />} />
+          <Route path="/solvers" element={<SolversSection />} />
+          <Route path="/contactme" element={<RotaryPhoneContact />} />
+          <Route path="/hub3D" element={<Hub3D />} />
+          <Route path="/hub3DV2" element={<Hub3DV2 />} />
+        </Routes>
+      </EasterEggProvider>
     </BrowserRouter>
   )
 }

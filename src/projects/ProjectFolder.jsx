@@ -102,14 +102,14 @@ export default function ProjectFolder({ project, onClose }) {
 
   return (
     <div className="project-folder-modal-root" onClick={onClose}>
-      {/* Darkened Backdrop */}
+      {/* Darkened Blur Backdrop */}
       <div className="project-folder-backdrop" />
 
       {/* Manila Folder Shell */}
       <div className="manila-folder-wrapper" onClick={(e) => e.stopPropagation()}>
         {/* Top Folder Tab */}
         <div className="manila-tab">
-          <span>CASE FILE #{project.id?.substring(0, 8).toUpperCase()}</span>
+          <span>CLASSIFIED CASE FILE #{project.id?.substring(0, 8).toUpperCase()}</span>
         </div>
 
         {/* Close Button */}
@@ -167,7 +167,7 @@ export default function ProjectFolder({ project, onClose }) {
 
           {/* PAGE 1: MEDIA & EXECUTIVE OVERVIEW */}
           {currentPage === 1 && (
-            <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '0.9rem' }}>
+            <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '0.9rem', overflowY: 'auto' }}>
               {/* Media Deck */}
               {project.media && project.media.length > 0 && (
                 <div className="evidence-media-deck">
@@ -180,69 +180,69 @@ export default function ProjectFolder({ project, onClose }) {
                       </div>
                     </div>
 
-                    {/* Media Items */}
-                    {project.media.map((item, idx) => (
-                      <div
-                        key={idx}
-                        style={{
-                          position: 'absolute',
-                          inset: 0,
-                          opacity: idx === currentMediaIndex ? 1 : 0,
-                          transition: 'opacity 0.35s ease',
-                          display: 'flex',
-                          alignItems: 'center',
-                          justifyContent: 'center',
-                          pointerEvents: idx === currentMediaIndex ? 'auto' : 'none'
-                        }}
-                      >
-                        {item.type === 'link' && (
-                          <iframe
-                            src={getYouTubeEmbedUrl(item.src)}
-                            title={item.caption || project.title}
-                            style={{ width: '100%', height: '100%', border: 'none' }}
-                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                            allowFullScreen
-                          />
-                        )}
-
-                        {item.type === 'video' && (
-                          <div style={{ position: 'relative', width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                            <video
-                              ref={(el) => (videoRefs.current[idx] = el)}
-                              src={item.src}
-                              loop
-                              muted
-                              playsInline
-                              onClick={togglePlayVideo}
-                              style={{ width: '100%', height: '100%', objectFit: 'contain', cursor: 'pointer' }}
+                    {/* Media Items - Strict display toggle eliminates layout clipping */}
+                    {project.media.map((item, idx) => {
+                      if (idx !== currentMediaIndex) return null
+                      return (
+                        <div
+                          key={idx}
+                          style={{
+                            width: '100%',
+                            height: '100%',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                          }}
+                        >
+                          {item.type === 'link' && (
+                            <iframe
+                              src={getYouTubeEmbedUrl(item.src)}
+                              title={item.caption || project.title}
+                              style={{ width: '100%', height: '100%', border: 'none' }}
+                              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                              allowFullScreen
                             />
-                            {!isPlaying && idx === currentMediaIndex && (
-                              <button
-                                type="button"
-                                className="media-play-overlay-btn"
-                                onClick={togglePlayVideo}
-                                aria-label="Play video"
-                              >
-                                &#9654;
-                              </button>
-                            )}
-                          </div>
-                        )}
+                          )}
 
-                        {item.type === 'image' && (
-                          <img
-                            src={item.src}
-                            alt={item.caption || project.title}
-                            style={{
-                              width: '100%',
-                              height: '100%',
-                              objectFit: 'contain',
-                              background: 'radial-gradient(circle, #1a1612 0%, #080706 100%)'
-                            }}
-                          />
-                        )}
-                      </div>
-                    ))}
+                          {item.type === 'video' && (
+                            <div style={{ position: 'relative', width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                              <video
+                                ref={(el) => (videoRefs.current[idx] = el)}
+                                src={item.src}
+                                loop
+                                muted
+                                playsInline
+                                onClick={togglePlayVideo}
+                                style={{ width: '100%', height: '100%', objectFit: 'contain', cursor: 'pointer' }}
+                              />
+                              {!isPlaying && (
+                                <button
+                                  type="button"
+                                  className="media-play-overlay-btn"
+                                  onClick={togglePlayVideo}
+                                  aria-label="Play video"
+                                >
+                                  &#9654;
+                                </button>
+                              )}
+                            </div>
+                          )}
+
+                          {item.type === 'image' && (
+                            <img
+                              src={item.src}
+                              alt={item.caption || project.title}
+                              style={{
+                                width: '100%',
+                                height: '100%',
+                                objectFit: 'contain',
+                                background: 'radial-gradient(circle, #1a1612 0%, #080706 100%)'
+                              }}
+                            />
+                          )}
+                        </div>
+                      )
+                    })}
 
                     {/* Prev/Next Overlay Buttons */}
                     {hasMultipleMedia && (
@@ -316,7 +316,7 @@ export default function ProjectFolder({ project, onClose }) {
 
           {/* PAGE 2: FINDINGS & HIGH-VISIBILITY TECH TAGS */}
           {currentPage === 2 && (
-            <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '1.1rem' }}>
+            <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '1.1rem', overflowY: 'auto' }}>
               {/* Findings Section */}
               {project.learnings && project.learnings.length > 0 && (
                 <div>
@@ -357,7 +357,6 @@ export default function ProjectFolder({ project, onClose }) {
           )}
 
           {/* DYNAMIC PAGE TURN CORNER CURLS */}
-          {/* On Page 1 -> Show Bottom-Right corner curl to flip to Page 2 */}
           {currentPage === 1 && (
             <div
               className="page-turn-curl curl-right"
@@ -369,7 +368,6 @@ export default function ProjectFolder({ project, onClose }) {
             </div>
           )}
 
-          {/* On Page 2 -> Show Bottom-Left corner curl to flip back to Page 1 */}
           {currentPage === 2 && (
             <div
               className="page-turn-curl curl-left"

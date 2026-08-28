@@ -18,9 +18,18 @@ export { default as OldCamera } from './OldCamera'
 export { default as FilmRollPile } from './FilmRollPile'
 export { default as RadarTablet } from './RadarTablet'
 export { default as TicketBooth } from './TicketBooth'
+export { default as PrecinctDoor } from './PrecinctDoor'
+export { default as WallKeychains } from './WallKeychains'
+export { default as GrandfatherClock } from './GrandfatherClock'
 export { default as AmbientDustParticles } from './AmbientDustParticles'
 export { default as PrecinctWallClock } from './PrecinctWallClock'
 export { default as DetectiveCoffeeMug } from './DetectiveCoffeeMug'
 export { default as RetroDeskFan } from './RetroDeskFan'
 export { default as BankerLamp } from './BankerLamp'
 export { default as TableLamp } from './TableLamp'
+export { default as ScatteredPages } from './ScatteredPages'
+export { default as Globe } from './Globe'
+export { default as WaterDispenser } from './WaterDispenser'
+
+
+

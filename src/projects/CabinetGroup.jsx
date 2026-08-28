@@ -1,7 +1,7 @@
 import { useMemo } from 'react'
 import { RoundedBox } from '@react-three/drei'
 import { D } from './dimensions'
-import { metalDark, metalMid, metalLight, brass, labelPlateMat } from './materials'
+import { metalCabinetBody, metalDrawerFront, policeBrass, labelPlateMat } from './materials'
 import projectsData from './projectsData'
 import Drawer from './Drawer'
 
@@ -13,18 +13,16 @@ function CabinetHeader() {
         radius={0.01}
         smoothness={4}
       >
-        <meshStandardMaterial {...metalMid} />
+        <meshStandardMaterial {...metalDrawerFront} />
       </RoundedBox>
-      {/* Label plate */}
-      <mesh position={[0, 0, 0.025]}>
+      <mesh position={[0, 0, 0.026]}>
         <planeGeometry args={[1.4, 0.1]} />
-        <meshStandardMaterial {...labelPlateMat} />
+        <meshStandardMaterial {...labelPlateMat} polygonOffset polygonOffsetFactor={-1} />
       </mesh>
-      {/* Rivets */}
       {[[-1, 0], [1, 0]].map(([x, y], i) => (
-        <mesh key={i} position={[x * 0.65, y * 0.04, 0.03]}>
+        <mesh key={i} position={[x * 0.65, y * 0.04, 0.032]}>
           <cylinderGeometry args={[0.015, 0.015, 0.01, 16]} />
-          <meshStandardMaterial {...brass} />
+          <meshStandardMaterial {...policeBrass} />
         </mesh>
       ))}
     </group>
@@ -47,7 +45,7 @@ function CabinetFeet() {
           radius={0.01}
           position={pos}
         >
-          <meshStandardMaterial {...metalDark} />
+          <meshStandardMaterial {...metalCabinetBody} />
         </RoundedBox>
       ))}
     </group>
@@ -100,54 +98,43 @@ export default function CabinetGroup({ onSelectProject }) {
   const drawerStartY = shellHeight - headerHeight - baseHeight - D.drawerHeight / 2 - 0.05
 
   return (
-    <group position={[0, 0.2, 0]}>
-      {/* Shell */}
+    <group>
+      {/* Cabinet Frame Shell */}
       {shellPanels.map((panel, i) => (
         <RoundedBox
           key={i}
           args={panel.size}
-          radius={0.005}
+          radius={0.01}
+          smoothness={4}
           position={panel.pos}
           castShadow
           receiveShadow
         >
-          <meshStandardMaterial {...metalDark} />
+          <meshStandardMaterial {...metalCabinetBody} />
         </RoundedBox>
       ))}
 
-      {/* Header */}
-      <group position={[0, shellHeight - baseHeight - 0.11, 0]}>
-        <RoundedBox
-          args={[D.shellWidth - 0.04, 0.22, D.shellDepth]}
-          radius={0.01}
-          position={[0, 0, 0]}
-        >
-          <meshStandardMaterial {...metalMid} />
-        </RoundedBox>
+      {/* Header Badge */}
+      <group position={[0, shellHeight - baseHeight - 0.14, 0]}>
         <CabinetHeader />
       </group>
 
-      {/* Base */}
-      <RoundedBox
-        args={[D.shellWidth - 0.04, 0.10, D.shellDepth]}
-        radius={0.01}
-        position={[0, -0.05, 0]}
-      >
-        <meshStandardMaterial {...metalMid} />
-      </RoundedBox>
-
-      {/* Drawers */}
-      {projectsData.drawers.map((drawer, index) => (
-        <Drawer
-          key={drawer.id}
-          data={drawer}
-          index={index}
-          baseY={drawerStartY - index * (D.drawerHeight + D.drawerGap)}
-          onSelectProject={onSelectProject}
-        />
-      ))}
-
+      {/* Rubber/Steel Base Feet */}
       <CabinetFeet />
+
+      {/* Drawers Stack */}
+      {projectsData.drawers.map((drawer, i) => {
+        const yPos = drawerStartY - i * (D.drawerHeight + D.drawerGap)
+        return (
+          <Drawer
+            key={drawer.id}
+            data={drawer}
+            index={i}
+            baseY={yPos}
+            onSelectProject={onSelectProject}
+          />
+        )
+      })}
     </group>
   )
 }

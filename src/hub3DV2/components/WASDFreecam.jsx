@@ -1,7 +1,6 @@
 import { useEffect, useRef } from 'react'
 import { useThree, useFrame } from '@react-three/fiber'
 import * as THREE from 'three'
-
 /**
  * WASDFreecam Component
  *
@@ -16,17 +15,14 @@ import * as THREE from 'three'
 export default function WASDFreecam({ moveSpeed = 5.0, controlsRef }) {
   const { camera } = useThree()
   const activeKeys = useRef(new Set())
-
   useEffect(() => {
     const handleKeyDown = (e) => {
       if (['input', 'textarea'].includes(document.activeElement?.tagName?.toLowerCase())) return
       activeKeys.current.add(e.code)
     }
-
     const handleKeyUp = (e) => {
       activeKeys.current.delete(e.code)
     }
-
     window.addEventListener('keydown', handleKeyDown)
     window.addEventListener('keyup', handleKeyUp)
     return () => {
@@ -34,23 +30,17 @@ export default function WASDFreecam({ moveSpeed = 5.0, controlsRef }) {
       window.removeEventListener('keyup', handleKeyUp)
     }
   }, [])
-
   useFrame((_, delta) => {
     if (activeKeys.current.size === 0) return
-
     const dist = moveSpeed * Math.min(delta, 0.1)
     const keys = activeKeys.current
-
     // Camera forward direction
     const forward = new THREE.Vector3()
     camera.getWorldDirection(forward)
-
     // Camera right direction
     const right = new THREE.Vector3()
     right.crossVectors(forward, camera.up).normalize()
-
     const movement = new THREE.Vector3()
-
     if (keys.has('KeyW') || keys.has('ArrowUp')) {
       movement.addScaledVector(forward, dist)
     }
@@ -69,16 +59,13 @@ export default function WASDFreecam({ moveSpeed = 5.0, controlsRef }) {
     if (keys.has('ShiftLeft') || keys.has('ShiftRight') || keys.has('KeyQ')) {
       movement.y -= dist
     }
-
     if (movement.lengthSq() > 0) {
       camera.position.add(movement)
-
       if (controlsRef && controlsRef.current) {
         controlsRef.current.target.add(movement)
         controlsRef.current.update()
       }
     }
   })
-
   return null
 }

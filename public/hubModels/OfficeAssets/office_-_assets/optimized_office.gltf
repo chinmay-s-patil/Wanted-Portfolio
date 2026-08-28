@@ -7075,6 +7075,58 @@
       "componentType": 5125,
       "count": 2340,
       "type": "SCALAR"
+    },
+    {
+      "bufferView": 4,
+      "byteOffset": 0,
+      "componentType": 5125,
+      "count": 4899,
+      "type": "SCALAR",
+      "min": [
+        0
+      ],
+      "max": [
+        1399
+      ]
+    },
+    {
+      "bufferView": 5,
+      "byteOffset": 0,
+      "componentType": 5125,
+      "count": 228,
+      "type": "SCALAR",
+      "min": [
+        137
+      ],
+      "max": [
+        1190
+      ]
+    },
+    {
+      "bufferView": 6,
+      "byteOffset": 0,
+      "componentType": 5125,
+      "count": 5073,
+      "type": "SCALAR",
+      "min": [
+        0
+      ],
+      "max": [
+        1399
+      ]
+    },
+    {
+      "bufferView": 7,
+      "byteOffset": 0,
+      "componentType": 5125,
+      "count": 54,
+      "type": "SCALAR",
+      "min": [
+        8
+      ],
+      "max": [
+        207
+      ]
     }
   ],
   "asset": {
@@ -7117,11 +7169,35 @@
       "byteStride": 16,
       "name": "floatBufferViews",
       "target": 34962
+    },
+    {
+      "buffer": 0,
+      "byteOffset": 2340816,
+      "byteLength": 19596,
+      "target": 34963
+    },
+    {
+      "buffer": 0,
+      "byteOffset": 2360412,
+      "byteLength": 912,
+      "target": 34963
+    },
+    {
+      "buffer": 0,
+      "byteOffset": 2361324,
+      "byteLength": 20292,
+      "target": 34963
+    },
+    {
+      "buffer": 0,
+      "byteOffset": 2381616,
+      "byteLength": 216,
+      "target": 34963
     }
   ],
   "buffers": [
     {
-      "byteLength": 2340816,
+      "byteLength": 2381832,
       "uri": "scene.bin"
     }
   ],
@@ -7466,6 +7542,25 @@
           "index": 40
         }
       }
+    },
+    {
+      "name": "M_Monitor_Screen",
+      "pbrMetallicRoughness": {
+        "baseColorFactor": [
+          0.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "metallicFactor": 0.1,
+        "roughnessFactor": 0.15
+      },
+      "emissiveFactor": [
+        0.0,
+        1.0,
+        1.0
+      ],
+      "doubleSided": true
     }
   ],
   "meshes": [
@@ -7596,9 +7691,21 @@
             "TEXCOORD_2": 53,
             "TEXCOORD_3": 54
           },
-          "indices": 55,
-          "material": 1,
-          "mode": 4
+          "indices": 474,
+          "material": 1
+        },
+        {
+          "attributes": {
+            "NORMAL": 49,
+            "POSITION": 48,
+            "TANGENT": 50,
+            "TEXCOORD_0": 51,
+            "TEXCOORD_1": 52,
+            "TEXCOORD_2": 53,
+            "TEXCOORD_3": 54
+          },
+          "indices": 475,
+          "material": 14
         }
       ]
     },

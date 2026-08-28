@@ -4,11 +4,8 @@ import { useGLTF } from '@react-three/drei'
 import * as THREE from 'three'
 import TightSilhouetteOutline from '../utils/TightSilhouetteOutline'
 import useDragProtectedClick from '../utils/useDragProtectedClick'
-
 const MODEL_PATH = '/hubModels/Binder/binder_notebook/scene.gltf'
-
 useGLTF.preload(MODEL_PATH)
-
 /**
  * Binder Component
  *
@@ -28,7 +25,6 @@ export default function Binder({
   const [hovered, setHovered] = useState(false)
   const navigate = useNavigate()
   const { scene } = useGLTF(MODEL_PATH)
-
   const { handlePointerDown, handleClick } = useDragProtectedClick((e) => {
     if (onClick) {
       onClick(e)
@@ -36,24 +32,18 @@ export default function Binder({
       navigate('/professionaldiary')
     }
   })
-
   const clonedScene = useMemo(() => {
     if (!scene) return null
     const cloned = scene.clone(true)
-
     cloned.traverse((child) => {
       if (child.isMesh) {
         const name = (child.name || '').toLowerCase()
         const parentName = (child.parent?.name || '').toLowerCase()
-
         // Hide opened binder mesh so only closed binder is rendered
         if (name.includes('opened') || parentName.includes('opened')) {
           child.visible = false
         } else {
           child.visible = true
-          child.castShadow = true
-          child.receiveShadow = true
-
           if (child.material) {
             child.material.side = THREE.DoubleSide
             if (child.material.map) {
@@ -64,7 +54,6 @@ export default function Binder({
         }
       }
     })
-
     // Force matrix update to compute bounding box of ONLY visible meshes
     cloned.updateMatrixWorld(true)
     const box = new THREE.Box3()
@@ -73,20 +62,15 @@ export default function Binder({
         box.expandByObject(child)
       }
     })
-
     // Center X & Z midpoints and align bottom flush to Y = 0
     const centerX = (box.min.x + box.max.x) / 2
     const centerZ = (box.min.z + box.max.z) / 2
-
     cloned.position.x = -centerX
     cloned.position.z = -centerZ
     cloned.position.y = -box.min.y + 0.002
-
     return cloned
   }, [scene])
-
   if (!clonedScene) return null
-
   return (
     <group
       position={position}

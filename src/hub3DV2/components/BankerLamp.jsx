@@ -1,6 +1,5 @@
 import React from 'react'
 import * as THREE from 'three'
-
 /**
  * BankerLamp Component
  *
@@ -15,26 +14,23 @@ export default function BankerLamp({
   return (
     <group position={position} rotation={rotation} scale={scale}>
       {/* Heavy Brass Stepped Base */}
-      <mesh castShadow receiveShadow position={[0, 0.015, 0]}>
+      <mesh   position={[0, 0.015, 0]}>
         <cylinderGeometry args={[0.07, 0.085, 0.03, 24]} />
         <meshStandardMaterial color="#c59b27" roughness={0.3} metalness={0.85} />
       </mesh>
-
       {/* Brass Gooseneck / Curved Arm */}
-      <mesh castShadow position={[0, 0.16, -0.02]} rotation={[0.25, 0, 0]}>
+      <mesh  position={[0, 0.16, -0.02]} rotation={[0.25, 0, 0]}>
         <cylinderGeometry args={[0.012, 0.014, 0.28, 16]} />
         <meshStandardMaterial color="#c59b27" roughness={0.3} metalness={0.85} />
       </mesh>
-
       {/* Swivel Brass Joints */}
       <mesh position={[0, 0.28, -0.05]}>
         <sphereGeometry args={[0.022, 16, 16]} />
         <meshStandardMaterial color="#c59b27" roughness={0.3} metalness={0.85} />
       </mesh>
-
       {/* Emerald Green Glass Shade */}
       <group position={[0, 0.29, 0.01]} rotation={[-0.2, 0, 0]}>
-        <mesh castShadow receiveShadow>
+        <mesh  >
           <boxGeometry args={[0.22, 0.08, 0.12]} />
           <meshPhysicalMaterial
             color="#006400"
@@ -45,13 +41,11 @@ export default function BankerLamp({
             thickness={0.02}
           />
         </mesh>
-
         {/* Inner Light Bulb & Warm Point Light */}
         <mesh position={[0, -0.02, 0]}>
           <sphereGeometry args={[0.02, 16, 16]} />
           <meshStandardMaterial color="#fff3b0" emissive="#ffea88" emissiveIntensity={3} />
         </mesh>
-
         <pointLight
           position={[0, -0.05, 0]}
           color="#ffea88"
@@ -60,7 +54,6 @@ export default function BankerLamp({
           decay={2}
         />
       </group>
-
       {/* Pull Chain Switch */}
       <mesh position={[0.07, 0.18, 0.01]}>
         <cylinderGeometry args={[0.002, 0.002, 0.12, 8]} />

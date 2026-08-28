@@ -1,11 +1,8 @@
 import React, { useMemo } from 'react'
 import { useGLTF } from '@react-three/drei'
 import * as THREE from 'three'
-
 const MODEL_PATH = '/hubModels/TableLamp/packed_table_lamp.glb'
-
 useGLTF.preload(MODEL_PATH)
-
 /**
  * TableLamp Component
  *
@@ -18,15 +15,11 @@ export default function TableLamp({
   rotation = [0, -Math.PI / 4, 0]
 }) {
   const { scene } = useGLTF(MODEL_PATH)
-
   const lampData = useMemo(() => {
     if (!scene) return null
     const cloned = scene.clone(true)
-
     cloned.traverse((child) => {
       if (child.isMesh) {
-        child.castShadow = true
-        child.receiveShadow = true
         if (child.material) {
           child.material.side = THREE.DoubleSide
           if (child.material.map) {
@@ -40,7 +33,6 @@ export default function TableLamp({
         }
       }
     })
-
     // Compute bounding box over model
     cloned.updateMatrixWorld(true)
     const box = new THREE.Box3()
@@ -49,36 +41,27 @@ export default function TableLamp({
         box.expandByObject(child)
       }
     })
-
     const rawHeight = box.max.y - box.min.y
     const targetHeight = 0.55 // 55cm standing table lamp height
     const normScale = rawHeight > 0 ? targetHeight / rawHeight : 1.0
-
     const centerX = (box.min.x + box.max.x) / 2
     const centerZ = (box.min.z + box.max.z) / 2
-
     cloned.scale.setScalar(normScale)
     cloned.position.x = -centerX * normScale
     cloned.position.z = -centerZ * normScale
     cloned.position.y = -box.min.y * normScale
-
     const wrapper = new THREE.Group()
     wrapper.add(cloned)
-
     // Raw Bulb position is [0.0, 44.442, 3.307] in model space
     const bulbLocalY = (44.442 - box.min.y) * normScale
     const bulbLocalZ = (3.307 - centerZ) * normScale
     const bulbLocalX = (0.0 - centerX) * normScale
-
     return { wrapper, bulbPos: [bulbLocalX, bulbLocalY, bulbLocalZ] }
   }, [scene])
-
   if (!lampData) return null
-
   return (
     <group position={position} rotation={rotation} scale={scale}>
       <primitive object={lampData.wrapper} />
-
       {/* Warm Ambient Point Light inside Bulb */}
       <pointLight
         position={lampData.bulbPos}
@@ -86,9 +69,7 @@ export default function TableLamp({
         intensity={3.8}
         distance={7.0}
         decay={2}
-        castShadow
       />
-
       {/* Focused Downward Desk Spotlight */}
       <spotLight
         position={lampData.bulbPos}
@@ -98,8 +79,6 @@ export default function TableLamp({
         penumbra={0.7}
         distance={8.0}
         decay={2}
-        castShadow
-        shadow-bias={-0.0001}
       />
     </group>
   )

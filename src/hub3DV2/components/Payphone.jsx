@@ -4,11 +4,8 @@ import { useGLTF } from '@react-three/drei'
 import * as THREE from 'three'
 import TightSilhouetteOutline from '../utils/TightSilhouetteOutline'
 import useDragProtectedClick from '../utils/useDragProtectedClick'
-
 const MODEL_PATH = '/hubModels/OldPayphone/packed_payphone.glb'
-
 useGLTF.preload(MODEL_PATH)
-
 /**
  * Payphone Component
  *
@@ -30,7 +27,6 @@ export default function Payphone({
   const [hovered, setHovered] = useState(false)
   const navigate = useNavigate()
   const { scene } = useGLTF(MODEL_PATH)
-
   const { handlePointerDown, handleClick } = useDragProtectedClick((e) => {
     if (onClick) {
       onClick(e)
@@ -38,18 +34,13 @@ export default function Payphone({
       navigate('/contact')
     }
   })
-
   const { payphoneScene, outlineScene } = useMemo(() => {
     if (!scene) return { payphoneScene: null, outlineScene: null }
-
     const fullClone = scene.clone(true)
     const outlineClone = scene.clone(true)
-
     const processScene = (rootObj) => {
       rootObj.traverse((child) => {
         if (child.isMesh) {
-          child.castShadow = true
-          child.receiveShadow = true
           if (child.material) {
             child.material.side = THREE.DoubleSide
             if (child.material.map) {
@@ -60,10 +51,8 @@ export default function Payphone({
         }
       })
     }
-
     processScene(fullClone)
     processScene(outlineClone)
-
     // Compute bounding box strictly over visible meshes
     fullClone.updateMatrixWorld(true)
     const box = new THREE.Box3()
@@ -75,40 +64,32 @@ export default function Payphone({
         box.union(b)
       }
     })
-
     const centerX = (box.min.x + box.max.x) / 2
     const centerY = (box.min.y + box.max.y) / 2
     const centerZ = (box.min.z + box.max.z) / 2
-
     // Center X & Y & Z in wrapper container
     const mainWrapper = new THREE.Group()
     mainWrapper.add(fullClone)
     fullClone.position.x = -centerX
     fullClone.position.y = -centerY
     fullClone.position.z = -centerZ
-
     const outlineWrapper = new THREE.Group()
     outlineWrapper.add(outlineClone)
     outlineClone.position.x = -centerX
     outlineClone.position.y = -centerY
     outlineClone.position.z = -centerZ
-
     return { payphoneScene: mainWrapper, outlineScene: outlineWrapper }
   }, [scene])
-
   if (!payphoneScene) return null
-
   const handlePointerOver = (e) => {
     e.stopPropagation()
     setHovered(true)
     document.body.style.cursor = 'pointer'
   }
-
   const handlePointerOut = () => {
     setHovered(false)
     document.body.style.cursor = 'auto'
   }
-
   return (
     <group position={position} rotation={rotation} scale={scale}>
       <primitive

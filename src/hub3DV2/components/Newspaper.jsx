@@ -4,11 +4,8 @@ import { useGLTF } from '@react-three/drei'
 import * as THREE from 'three'
 import TightSilhouetteOutline from '../utils/TightSilhouetteOutline'
 import useDragProtectedClick from '../utils/useDragProtectedClick'
-
 const MODEL_PATH = '/hubModels/Newspaper/newspaper/scene.gltf'
-
 useGLTF.preload(MODEL_PATH)
-
 /**
  * Newspaper Component
  *
@@ -28,7 +25,6 @@ export default function Newspaper({
   const [hovered, setHovered] = useState(false)
   const navigate = useNavigate()
   const { scene } = useGLTF(MODEL_PATH)
-
   const { handlePointerDown, handleClick } = useDragProtectedClick((e) => {
     if (onClick) {
       onClick(e)
@@ -36,16 +32,11 @@ export default function Newspaper({
       navigate('/newspaper')
     }
   })
-
   const clonedScene = useMemo(() => {
     if (!scene) return null
     const cloned = scene.clone(true)
-
     cloned.traverse((child) => {
       if (child.isMesh) {
-        child.castShadow = true
-        child.receiveShadow = true
-
         if (child.material) {
           child.material.side = THREE.DoubleSide
           if (child.material.map) {
@@ -55,24 +46,18 @@ export default function Newspaper({
         }
       }
     })
-
     // Force world matrix update for accurate 3D bounding box computation
     cloned.updateMatrixWorld(true)
     const box = new THREE.Box3().setFromObject(cloned)
-
     // Center X & Z and elevate bottom flush to local origin
     const centerX = (box.min.x + box.max.x) / 2
     const centerZ = (box.min.z + box.max.z) / 2
-
     cloned.position.x = -centerX
     cloned.position.z = -centerZ
     cloned.position.y = -box.min.y + 0.002
-
     return cloned
   }, [scene])
-
   if (!clonedScene) return null
-
   return (
     <group
       position={position}

@@ -1,0 +1,8 @@
+export { default as Piano } from './Piano'
+export { default as Violin } from './Violin'
+export { default as TvRemote } from './TvRemote'
+export { default as McNaughtFrame } from './McNaughtFrame'
+export { default as TvEasterEggScreen } from './TvEasterEggScreen'
+export { default as DraggableMiniTvPlayer } from './DraggableMiniTvPlayer'
+export * from './EasterEggContext'
+export * from './easterEggsData'
