@@ -644,25 +644,26 @@ export default function Hub3DV2() {
             {/* Evidence Boxes Stacked & Spread (Filing Cabinet Top & Floor, & Center Table) */}
             {/* 1. On top of Filing Cabinet (at [3.2, -0.6, -5.95]) */}
             <EvidenceBox
-              position={[2.8, 0.82, -5.95]}
+              position={[2.8, 3.02, -5.95]}
               rotation={[0, 0.15, 0]}
               labelType="CASE FILES"
               caseNumber="CASE #7821-A"
             />
             <EvidenceBox
-              position={[2.78, 1.12, -5.93]}
+              position={[2.78, 3.32, -5.93]}
               rotation={[0, -0.22, 0]}
               labelType="EVIDENCE"
               caseNumber="CASE #8492-B"
             />
             <EvidenceBox
-              position={[3.6, 0.82, -5.95]}
+              position={[3.6, 3.02, -5.95]}
               rotation={[0, -0.3, 0]}
               labelType="RESEARCH"
               caseNumber="CASE #5519-X"
             />
 
             {/* 2. On floor next to Filing Cabinet */}
+            {/* <EvidenceBox
             <EvidenceBox
               position={[1.9, -0.6, -5.8]}
               rotation={[0, 0.45, 0]}
@@ -674,7 +675,7 @@ export default function Hub3DV2() {
               rotation={[0, -0.12, 0]}
               labelType="CONFIDENTIAL"
               caseNumber="CASE #4902-D"
-            />
+            /> */}
             <EvidenceBox
               position={[2.3, -0.6, -5.3]}
               rotation={[0, 0.85, 0]}
@@ -682,7 +683,7 @@ export default function Hub3DV2() {
               caseNumber="CASE #1048-E"
             />
             <EvidenceBox
-              position={[4.4, -0.6, -5.8]}
+              position={[4.8, -0.6, -5.8]}
               rotation={[0, -0.4, 0]}
               labelType="EVIDENCE"
               caseNumber="CASE #2091-P"
