@@ -3,15 +3,11 @@ import { useFrame } from '@react-three/fiber'
 import { useGLTF } from '@react-three/drei'
 import * as THREE from 'three'
 
-const MODEL_PATH = '/hubModels/Props/Globe2/antique_globe (1)/scene.gltf'
+const MODEL_PATH = '/hubModels/Props/Globe2/antique_globe (1)/optimized_globe.glb'
 useGLTF.preload(MODEL_PATH)
 
 /**
  * Globe Component (Globe2)
- *
- * Vintage Antique Globe model from /public/hubModels/Props/Globe2/
- * - Entire model rotated 180 degrees.
- * - Rotates the globe surface texture continuously via UV map offset scrolling while model geometry stays still.
  */
 export default function Globe({
   position = [-6.9, 0.9, 5.4],
@@ -31,7 +27,6 @@ export default function Globe({
         const processMat = (mat) => {
           if (!mat || typeof mat.clone !== 'function') return mat
           const cm = mat.clone()
-          cm.side = THREE.DoubleSide
           if (cm.map && typeof cm.map.clone === 'function') {
             cm.map = cm.map.clone()
             cm.map.colorSpace = THREE.SRGBColorSpace
@@ -44,7 +39,6 @@ export default function Globe({
               foundTexture = cm.map
             }
           }
-          cm.needsUpdate = true
           return cm
         }
 

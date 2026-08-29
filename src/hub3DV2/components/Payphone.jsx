@@ -40,13 +40,9 @@ export default function Payphone({
     const outlineClone = scene.clone(true)
     const processScene = (rootObj) => {
       rootObj.traverse((child) => {
-        if (child.isMesh) {
-          if (child.material) {
-            child.material.side = THREE.DoubleSide
-            if (child.material.map) {
-              child.material.map.colorSpace = THREE.SRGBColorSpace
-            }
-            child.material.needsUpdate = true
+        if (child.isMesh && child.material) {
+          if (child.material.map) {
+            child.material.map.colorSpace = THREE.SRGBColorSpace
           }
         }
       })

@@ -4,17 +4,11 @@ import { useGLTF } from '@react-three/drei'
 import * as THREE from 'three'
 import TightSilhouetteOutline from '../utils/TightSilhouetteOutline'
 import useDragProtectedClick from '../utils/useDragProtectedClick'
-const MODEL_PATH = '/hubModels/OldCamera/antique_wet_plate_camera_on_tripod_-_game_model/optimized_camera.gltf'
+const MODEL_PATH = '/hubModels/OldCamera/antique_wet_plate_camera_on_tripod_-_game_model/optimized_camera.glb'
 useGLTF.preload(MODEL_PATH)
+
 /**
  * OldCamera Component
- *
- * Antique Wet Plate Camera on Tripod:
- * - Vintage photography / film camera standing on a wooden tripod.
- * - Internal height normalization to 1.5m standing tripod height.
- * - Interactive: Hover displays a warm amber silhouette outline + pointer cursor.
- * - Bi-directionally linked hover highlighting with FilmRollPile.
- * - Click: Navigates directly to /events (Events & Media Section).
  */
 export default function OldCamera({
   position = [-3.5, -0.6, 3.8],
@@ -44,13 +38,9 @@ export default function OldCamera({
     const outlineClone = scene.clone(true)
     const processScene = (rootObj) => {
       rootObj.traverse((child) => {
-        if (child.isMesh) {
-          if (child.material) {
-            child.material.side = THREE.DoubleSide
-            if (child.material.map) {
-              child.material.map.colorSpace = THREE.SRGBColorSpace
-            }
-            child.material.needsUpdate = true
+        if (child.isMesh && child.material) {
+          if (child.material.map) {
+            child.material.map.colorSpace = THREE.SRGBColorSpace
           }
         }
       })

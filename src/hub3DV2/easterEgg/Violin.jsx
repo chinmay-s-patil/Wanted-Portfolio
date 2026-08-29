@@ -2,14 +2,11 @@ import React, { useMemo, useState, useRef } from 'react'
 import { useGLTF } from '@react-three/drei'
 import * as THREE from 'three'
 
-const MODEL_PATH = '/hubModels/EasterEggs/ViolinStanding/violin/scene.gltf'
+const MODEL_PATH = '/hubModels/EasterEggs/ViolinStanding/violin/optimized_violin.glb'
 useGLTF.preload(MODEL_PATH)
 
 /**
  * Violin Component (Easter Egg)
- *
- * Standing vintage violin prop model placed in the room.
- * Unhighlighted secret prop — double-clicking triggers the Kreutzer Sonata Easter Egg on the TV.
  */
 export default function Violin({
   position = [-3.8, -0.6, 5.8],
@@ -26,13 +23,9 @@ export default function Violin({
     if (!scene) return null
     const cloned = scene.clone(true)
     cloned.traverse((child) => {
-      if (child.isMesh) {
-        if (child.material) {
-          child.material.side = THREE.DoubleSide
-          if (child.material.map) {
-            child.material.map.colorSpace = THREE.SRGBColorSpace
-          }
-          child.material.needsUpdate = true
+      if (child.isMesh && child.material) {
+        if (child.material.map) {
+          child.material.map.colorSpace = THREE.SRGBColorSpace
         }
       }
     })
@@ -55,6 +48,10 @@ export default function Violin({
     cloned.position.x = -centerX * normScale
     cloned.position.z = -centerZ * normScale
     cloned.position.y = -box.min.y * normScale
+    cloned.updateMatrixWorld(true)
+
+    cloned.traverse((child) => {
+    })
 
     const wrapper = new THREE.Group()
     wrapper.add(cloned)

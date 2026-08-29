@@ -3,14 +3,11 @@ import { useGLTF } from '@react-three/drei'
 import * as THREE from 'three'
 import TvEasterEggScreen from '../easterEgg/TvEasterEggScreen'
 
-const MODEL_PATH = '/hubModels/TvTable/childhood_-_a_diorama/optimized_tv.gltf'
+const MODEL_PATH = '/hubModels/TvTable/childhood_-_a_diorama/optimized_tv.glb'
 useGLTF.preload(MODEL_PATH)
 
 /**
  * TvTable Component
- *
- * Displays the isolated 3D TV Stand table and Vintage TV.
- * Clones materials to prevent shared material mutation across scene props.
  */
 export default function TvTable({
   position = [0, -0.6, 4.2],
@@ -39,7 +36,6 @@ export default function TvTable({
             const processMat = (mat) => {
               if (!mat || typeof mat.clone !== 'function') return mat
               const cm = mat.clone()
-              cm.side = THREE.DoubleSide
               if (cm.map) cm.map.colorSpace = THREE.SRGBColorSpace
               if (isScreenOn && (name.includes('screen') || cm.name?.includes('screen'))) {
                 cm.emissive = new THREE.Color('#38ef7d')
@@ -48,7 +44,6 @@ export default function TvTable({
                 cm.emissiveMap.colorSpace = THREE.SRGBColorSpace
                 cm.emissiveIntensity = isScreenOn ? 3.0 : 1.5
               }
-              cm.needsUpdate = true
               return cm
             }
 
@@ -74,9 +69,11 @@ export default function TvTable({
 
     const centerX = (box.min.x + box.max.x) / 2
     const centerZ = (box.min.z + box.max.z) / 2
-    cloned.position.x = -centerX
+    if (isFinite(centerX) && isFinite(centerZ)) {
+      cloned.position.x = -centerX
     cloned.position.z = -centerZ
     cloned.position.y = -box.min.y + 0.003
+    }
     return cloned
   }, [scene, isScreenOn])
 

@@ -4,20 +4,17 @@ import { useGLTF } from '@react-three/drei'
 import * as THREE from 'three'
 import TightSilhouetteOutline from '../utils/TightSilhouetteOutline'
 import useDragProtectedClick from '../utils/useDragProtectedClick'
-const MODEL_PATH = '/hubModels/Binder/binder_notebook/scene.gltf'
+const MODEL_PATH = '/hubModels/Binder/binder_notebook/optimized_binder.glb'
 useGLTF.preload(MODEL_PATH)
+
 /**
  * Binder Component
- *
- * Interactive 3D binder notebook model placed on the center table.
- * Clicking navigates to /professionaldiary with drag-protected click handling.
- * Supports hover state, cursor pointer change, and customizable silhouette outline.
  */
 export default function Binder({
   position = [-0.35, -0.25, 1.60],
   scale = [2.5, 2.5, 2.5],
   rotation = [0, 0.2, 0],
-  outlineColor = '#ffea00', // High contrast neon gold outline
+  outlineColor = '#ffea00',
   outlineThickness = 0.007,
   alwaysShowOutline = false,
   onClick
@@ -44,12 +41,8 @@ export default function Binder({
           child.visible = false
         } else {
           child.visible = true
-          if (child.material) {
-            child.material.side = THREE.DoubleSide
-            if (child.material.map) {
-              child.material.map.colorSpace = THREE.SRGBColorSpace
-            }
-            child.material.needsUpdate = true
+          if (child.material && child.material.map) {
+            child.material.map.colorSpace = THREE.SRGBColorSpace
           }
         }
       }
@@ -65,9 +58,11 @@ export default function Binder({
     // Center X & Z midpoints and align bottom flush to Y = 0
     const centerX = (box.min.x + box.max.x) / 2
     const centerZ = (box.min.z + box.max.z) / 2
-    cloned.position.x = -centerX
+    if (isFinite(centerX) && isFinite(centerZ)) {
+      cloned.position.x = -centerX
     cloned.position.z = -centerZ
     cloned.position.y = -box.min.y + 0.002
+    }
     return cloned
   }, [scene])
   if (!clonedScene) return null

@@ -19,17 +19,13 @@ export default function TableLamp({
     if (!scene) return null
     const cloned = scene.clone(true)
     cloned.traverse((child) => {
-      if (child.isMesh) {
-        if (child.material) {
-          child.material.side = THREE.DoubleSide
-          if (child.material.map) {
-            child.material.map.colorSpace = THREE.SRGBColorSpace
-          }
-          if (child.name.includes('bulb') || child.material.name?.includes('bulb')) {
-            child.material.emissive = new THREE.Color('#ffea88')
-            child.material.emissiveIntensity = 4.0
-          }
-          child.material.needsUpdate = true
+      if (child.isMesh && child.material) {
+        if (child.material.map) {
+          child.material.map.colorSpace = THREE.SRGBColorSpace
+        }
+        if (child.name.includes('bulb') || child.material.name?.includes('bulb')) {
+          child.material.emissive = new THREE.Color('#ffea88')
+          child.material.emissiveIntensity = 4.0
         }
       }
     })

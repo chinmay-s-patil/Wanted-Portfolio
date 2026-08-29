@@ -36,8 +36,7 @@ export default function Trophy({
           child.material = new THREE.MeshStandardMaterial({
             color: '#ffd700',
             metalness: 0.92,
-            roughness: 0.22,
-            side: THREE.DoubleSide
+            roughness: 0.22
           })
         }
       }

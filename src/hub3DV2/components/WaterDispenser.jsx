@@ -60,22 +60,11 @@ export default function WaterDispenser({
     cloned.traverse((child) => {
       if (child.isMesh && child.material) {
         if (Array.isArray(child.material)) {
-          child.material = child.material.map((m) => {
-            if (!m || typeof m.clone !== 'function') return m
-            const cm = m.clone()
-            cm.side = THREE.DoubleSide
-            if (cm.map) cm.map.colorSpace = THREE.SRGBColorSpace
-            cm.needsUpdate = true
-            return cm
+          child.material.forEach((m) => {
+            if (m && m.map) m.map.colorSpace = THREE.SRGBColorSpace
           })
-        } else {
-          if (typeof child.material.clone === 'function') {
-            const cm = child.material.clone()
-            cm.side = THREE.DoubleSide
-            if (cm.map) cm.map.colorSpace = THREE.SRGBColorSpace
-            cm.needsUpdate = true
-            child.material = cm
-          }
+        } else if (child.material.map) {
+          child.material.map.colorSpace = THREE.SRGBColorSpace
         }
       }
     })

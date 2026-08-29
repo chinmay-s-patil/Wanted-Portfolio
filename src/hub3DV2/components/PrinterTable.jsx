@@ -44,13 +44,9 @@ export default function PrinterTable({
     // 1. Process Table (Unchanged 0.75m height)
     const tableClone = tableGLTF.scene.clone(true)
     tableClone.traverse((child) => {
-      if (child.isMesh) {
-        if (child.material) {
-          child.material.side = THREE.DoubleSide
-          if (child.material.map) {
-            child.material.map.colorSpace = THREE.SRGBColorSpace
-          }
-          child.material.needsUpdate = true
+      if (child.isMesh && child.material) {
+        if (child.material.map) {
+          child.material.map.colorSpace = THREE.SRGBColorSpace
         }
       }
     })
@@ -98,12 +94,8 @@ export default function PrinterTable({
           if (markInteractive) {
             child.userData.isPrinter = true
           }
-          if (child.material) {
-            child.material.side = THREE.DoubleSide
-            if (child.material.map) {
-              child.material.map.colorSpace = THREE.SRGBColorSpace
-            }
-            child.material.needsUpdate = true
+          if (child.material && child.material.map) {
+            child.material.map.colorSpace = THREE.SRGBColorSpace
           }
         }
       })

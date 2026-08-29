@@ -4,15 +4,11 @@ import { useGLTF } from '@react-three/drei'
 import * as THREE from 'three'
 import TightSilhouetteOutline from '../utils/TightSilhouetteOutline'
 import useDragProtectedClick from '../utils/useDragProtectedClick'
-const MODEL_PATH = '/hubModels/TicketBooth/ticket_booth/optimized_booth.gltf'
+const MODEL_PATH = '/hubModels/TicketBooth/ticket_booth/optimized_booth.glb'
 useGLTF.preload(MODEL_PATH)
+
 /**
  * TicketBooth Component
- *
- * Vintage Drive-In Ticket Booth Kiosk:
- * - Placed in the back-left corner section of the precinct lounge.
- * - Interactive: Hover displays a high-contrast golden amber silhouette outline + pointer cursor.
- * - Click: Navigates directly to /openfoam (OpenFOAM CFD Drive-In Theater).
  */
 export default function TicketBooth({
   position = [-6.2, -0.6, -3.8],
@@ -57,13 +53,9 @@ export default function TicketBooth({
           child.visible = false
           return
         }
-        if (child.isMesh) {
-          if (child.material) {
-            child.material.side = THREE.DoubleSide
-            if (child.material.map) {
-              child.material.map.colorSpace = THREE.SRGBColorSpace
-            }
-            child.material.needsUpdate = true
+        if (child.isMesh && child.material) {
+          if (child.material.map) {
+            child.material.map.colorSpace = THREE.SRGBColorSpace
           }
         }
       })

@@ -76,4 +76,51 @@ const DetectiveCoffeeMug = React.memo(function DetectiveCoffeeMug({
   )
 })
 
+export const DetectiveCoffeeMugSet = React.memo(function DetectiveCoffeeMugSet({ mugs = [] }) {
+  const mugRef = React.useRef()
+  const liquidRef = React.useRef()
+  const handleRef = React.useRef()
+
+  React.useEffect(() => {
+    if (!mugs.length) return
+    const dummy = new THREE.Object3D()
+
+    mugs.forEach((m, i) => {
+      const pos = m.position || [0, 0, 0]
+      const rot = m.rotation || [0, 0, 0]
+      const sca = m.scale || [1, 1, 1]
+
+      // Mug body
+      dummy.position.set(pos[0], pos[1] + 0.06 * sca[1], pos[2])
+      dummy.rotation.set(rot[0], rot[1], rot[2])
+      dummy.scale.set(sca[0], sca[1], sca[2])
+      dummy.updateMatrix()
+      if (mugRef.current) mugRef.current.setMatrixAt(i, dummy.matrix)
+
+      // Liquid
+      dummy.position.set(pos[0], pos[1] + 0.1 * sca[1], pos[2])
+      dummy.updateMatrix()
+      if (liquidRef.current) liquidRef.current.setMatrixAt(i, dummy.matrix)
+
+      // Handle
+      dummy.position.set(pos[0] - 0.05 * sca[0], pos[1] + 0.06 * sca[1], pos[2])
+      dummy.rotation.set(rot[0], rot[1], rot[2] + Math.PI / 2)
+      dummy.updateMatrix()
+      if (handleRef.current) handleRef.current.setMatrixAt(i, dummy.matrix)
+    })
+
+    if (mugRef.current) mugRef.current.instanceMatrix.needsUpdate = true
+    if (liquidRef.current) liquidRef.current.instanceMatrix.needsUpdate = true
+    if (handleRef.current) handleRef.current.instanceMatrix.needsUpdate = true
+  }, [mugs])
+
+  return (
+    <group>
+      <instancedMesh ref={mugRef} args={[mugGeo, mugMat, mugs.length]} castShadow receiveShadow />
+      <instancedMesh ref={liquidRef} args={[liquidGeo, liquidMat, mugs.length]} />
+      <instancedMesh ref={handleRef} args={[handleGeo, mugMat, mugs.length]} castShadow />
+    </group>
+  )
+})
+
 export default DetectiveCoffeeMug

@@ -23,7 +23,7 @@ export { default as WallKeychains } from './WallKeychains'
 export { default as GrandfatherClock } from './GrandfatherClock'
 export { default as AmbientDustParticles } from './AmbientDustParticles'
 export { default as PrecinctWallClock } from './PrecinctWallClock'
-export { default as DetectiveCoffeeMug } from './DetectiveCoffeeMug'
+export { default as DetectiveCoffeeMug, DetectiveCoffeeMugSet } from './DetectiveCoffeeMug'
 export { default as RetroDeskFan } from './RetroDeskFan'
 export { default as BankerLamp } from './BankerLamp'
 export { default as TableLamp } from './TableLamp'
@@ -33,7 +33,7 @@ export { default as WaterDispenser } from './WaterDispenser'
 export { default as Fireplace } from './Fireplace'
 export { default as Trophy } from './Trophy'
 export { default as AttributionModal } from './AttributionModal'
-export { default as EvidenceBox } from './EvidenceBox'
+export { default as EvidenceBox, EvidenceBoxSet } from './EvidenceBox'
 
 
 

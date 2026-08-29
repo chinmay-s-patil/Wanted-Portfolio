@@ -173,4 +173,91 @@ const EvidenceBox = React.memo(function EvidenceBox({
   )
 })
 
+export const EvidenceBoxSet = React.memo(function EvidenceBoxSet({ boxes = [] }) {
+  const cardboardTexture = useMemo(() => getCardboardTexture(), [])
+  const mainRef = React.useRef()
+  const bandRef = React.useRef()
+  const lidRef = React.useRef()
+  const slotLeftRef = React.useRef()
+  const slotRightRef = React.useRef()
+
+  React.useEffect(() => {
+    if (!boxes.length) return
+    const dummy = new THREE.Object3D()
+
+    boxes.forEach((box, i) => {
+      const pos = box.position || [0, 0, 0]
+      const rot = box.rotation || [0, 0, 0]
+      const sca = box.scale || [1, 1, 1]
+
+      // Main box body
+      dummy.position.set(pos[0], pos[1] + boxHeight / 2 * sca[1], pos[2])
+      dummy.rotation.set(rot[0], rot[1], rot[2])
+      dummy.scale.set(sca[0], sca[1], sca[2])
+      dummy.updateMatrix()
+      if (mainRef.current) mainRef.current.setMatrixAt(i, dummy.matrix)
+
+      // Band
+      dummy.position.set(pos[0], pos[1] + 0.04 * sca[1], pos[2])
+      dummy.updateMatrix()
+      if (bandRef.current) bandRef.current.setMatrixAt(i, dummy.matrix)
+
+      // Lid
+      dummy.position.set(pos[0], pos[1] + (boxHeight + lidHeight / 2 - 0.01) * sca[1], pos[2])
+      dummy.updateMatrix()
+      if (lidRef.current) lidRef.current.setMatrixAt(i, dummy.matrix)
+
+      // Slot Left
+      dummy.position.set(pos[0] + (-boxWidth / 2 - 0.001) * sca[0], pos[1] + boxHeight * 0.68 * sca[1], pos[2])
+      dummy.rotation.set(rot[0], rot[1] - Math.PI / 2, rot[2])
+      dummy.updateMatrix()
+      if (slotLeftRef.current) slotLeftRef.current.setMatrixAt(i, dummy.matrix)
+
+      // Slot Right
+      dummy.position.set(pos[0] + (boxWidth / 2 + 0.001) * sca[0], pos[1] + boxHeight * 0.68 * sca[1], pos[2])
+      dummy.rotation.set(rot[0], rot[1] + Math.PI / 2, rot[2])
+      dummy.updateMatrix()
+      if (slotRightRef.current) slotRightRef.current.setMatrixAt(i, dummy.matrix)
+    })
+
+    if (mainRef.current) mainRef.current.instanceMatrix.needsUpdate = true
+    if (bandRef.current) bandRef.current.instanceMatrix.needsUpdate = true
+    if (lidRef.current) lidRef.current.instanceMatrix.needsUpdate = true
+    if (slotLeftRef.current) slotLeftRef.current.instanceMatrix.needsUpdate = true
+    if (slotRightRef.current) slotRightRef.current.instanceMatrix.needsUpdate = true
+  }, [boxes])
+
+  return (
+    <group>
+      <instancedMesh ref={mainRef} args={[mainBoxGeo, null, boxes.length]} castShadow receiveShadow>
+        <meshStandardMaterial map={cardboardTexture} color="#c29867" roughness={0.8} metalness={0.05} />
+      </instancedMesh>
+      <instancedMesh ref={bandRef} args={[bandGeo, null, boxes.length]} castShadow>
+        <meshStandardMaterial color="#1e3a5f" roughness={0.7} />
+      </instancedMesh>
+      <instancedMesh ref={lidRef} args={[lidGeo, null, boxes.length]} castShadow receiveShadow>
+        <meshStandardMaterial map={cardboardTexture} color="#ca9f6d" roughness={0.78} metalness={0.05} />
+      </instancedMesh>
+      <instancedMesh ref={slotLeftRef} args={[slotGeo, null, boxes.length]}>
+        <meshBasicMaterial color="#1f140a" />
+      </instancedMesh>
+      <instancedMesh ref={slotRightRef} args={[slotGeo, null, boxes.length]}>
+        <meshBasicMaterial color="#1f140a" />
+      </instancedMesh>
+
+      {/* Individual Sticker Labels */}
+      {boxes.map((box, i) => (
+        <group key={i} position={box.position} rotation={box.rotation} scale={box.scale || [1, 1, 1]}>
+          <mesh position={[0, boxHeight * 0.52, boxDepth / 2 + 0.002]} geometry={labelGeo}>
+            <meshBasicMaterial map={getLabelTexture(box.labelType, box.caseNumber)} transparent />
+          </mesh>
+          <mesh position={[0, boxHeight * 0.52, -boxDepth / 2 - 0.002]} rotation={[0, Math.PI, 0]} geometry={labelGeo}>
+            <meshBasicMaterial map={getLabelTexture(box.labelType, box.caseNumber)} transparent />
+          </mesh>
+        </group>
+      ))}
+    </group>
+  )
+})
+
 export default EvidenceBox

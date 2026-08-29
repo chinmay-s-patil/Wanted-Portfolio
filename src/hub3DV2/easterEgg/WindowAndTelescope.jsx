@@ -4,7 +4,7 @@ import * as THREE from 'three'
 import { useEasterEgg } from './EasterEggContext'
 import { nightMountainAttribution } from './easterEggsData'
 
-const TELESCOPE_MODEL_PATH = '/hubModels/EasterEggs/Telescope/telescope/scene.gltf'
+const TELESCOPE_MODEL_PATH = '/hubModels/EasterEggs/Telescope/telescope/optimized_telescope.glb'
 const SKY_IMAGE_PATH = '/manuel-will-gd3t5Dtbwkw-unsplash.jpg'
 
 useGLTF.preload(TELESCOPE_MODEL_PATH)
@@ -19,14 +19,9 @@ function TelescopeModel({ position, rotation, scale = [0.85, 0.85, 0.85] }) {
     if (!scene) return null
     const cloned = scene.clone(true)
     cloned.traverse((child) => {
-      if (child.isMesh) {
-        if (child.material) {
-          child.material = child.material.clone()
-          child.material.side = THREE.DoubleSide
-          if (child.material.map) {
-            child.material.map.colorSpace = THREE.SRGBColorSpace
-          }
-          child.material.needsUpdate = true
+      if (child.isMesh && child.material) {
+        if (child.material.map) {
+          child.material.map.colorSpace = THREE.SRGBColorSpace
         }
       }
     })

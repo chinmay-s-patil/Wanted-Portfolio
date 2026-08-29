@@ -2,14 +2,11 @@ import React, { useMemo, useState, useRef } from 'react'
 import { useGLTF } from '@react-three/drei'
 import * as THREE from 'three'
 
-const MODEL_PATH = '/hubModels/EasterEggs/Piano/old_piano/scene.gltf'
+const MODEL_PATH = '/hubModels/EasterEggs/Piano/old_piano/optimized_piano.glb'
 useGLTF.preload(MODEL_PATH)
 
 /**
  * Piano Component (Easter Egg)
- *
- * Vintage upright old piano model placed in the room.
- * Unhighlighted secret prop — double-clicking triggers the hidden Easter Egg on the TV screen.
  */
 export default function Piano({
   position = [7.9, -0.6, -5.0],
@@ -26,13 +23,9 @@ export default function Piano({
     if (!scene) return null
     const cloned = scene.clone(true)
     cloned.traverse((child) => {
-      if (child.isMesh) {
-        if (child.material) {
-          child.material.side = THREE.DoubleSide
-          if (child.material.map) {
-            child.material.map.colorSpace = THREE.SRGBColorSpace
-          }
-          child.material.needsUpdate = true
+      if (child.isMesh && child.material) {
+        if (child.material.map) {
+          child.material.map.colorSpace = THREE.SRGBColorSpace
         }
       }
     })
@@ -55,6 +48,10 @@ export default function Piano({
     cloned.position.x = -centerX * normScale
     cloned.position.z = -centerZ * normScale
     cloned.position.y = -box.min.y * normScale
+    cloned.updateMatrixWorld(true)
+
+    cloned.traverse((child) => {
+    })
 
     const wrapper = new THREE.Group()
     wrapper.add(cloned)

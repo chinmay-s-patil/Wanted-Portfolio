@@ -5,8 +5,9 @@ import { useFrame } from '@react-three/fiber'
 import * as THREE from 'three'
 import TightSilhouetteOutline from '../utils/TightSilhouetteOutline'
 import useDragProtectedClick from '../utils/useDragProtectedClick'
-const MODEL_PATH = '/hubModels/Terminal/display_terminal/optimized_terminal.gltf'
+const MODEL_PATH = '/hubModels/Terminal/display_terminal/optimized_terminal.glb'
 useGLTF.preload(MODEL_PATH)
+
 const RETRO_CODE_LINES = [
   'INITIALIZING SYSTEM CORE...',
   'CONNECTING PRECINCT_DB @ 192.168.1.104',
@@ -29,12 +30,9 @@ const RETRO_CODE_LINES = [
   'DECRYPTING SPECIMEN DATASETS...',
   'FOUND 14 SOLVER CASE FILES [READY]',
 ]
+
 /**
  * Terminal Component
- *
- * Interactive 3D Retro Display Terminal Workstation placed along the right wall.
- * Features an animated retro green CRT hacking screen with scrolling code lines moving up.
- * Clicking navigates directly to /solvers (Interactive Terminal Section).
  */
 export default function Terminal({
   position = [8.2, -0.6, 1.5],
@@ -124,7 +122,6 @@ export default function Terminal({
     cloned.traverse((child) => {
       if (child.isMesh) {
         if (child.material) {
-          child.material.side = THREE.DoubleSide
           // If this mesh is the screen (Material.011), apply the animated CanvasTexture
           if (child.material.name === 'Material.011' || child.name === 'Object_35') {
             const screenMat = new THREE.MeshStandardMaterial({
@@ -141,7 +138,6 @@ export default function Terminal({
               child.material.map.colorSpace = THREE.SRGBColorSpace
             }
           }
-          child.material.needsUpdate = true
         }
       }
     })
@@ -156,9 +152,11 @@ export default function Terminal({
     // Center X & Z midpoints and align bottom flush to local Y = 0
     const centerX = (box.min.x + box.max.x) / 2
     const centerZ = (box.min.z + box.max.z) / 2
-    cloned.position.x = -centerX
+    if (isFinite(centerX) && isFinite(centerZ)) {
+      cloned.position.x = -centerX
     cloned.position.z = -centerZ
     cloned.position.y = -box.min.y
+    }
     return cloned
   }, [scene, canvasTexture])
   if (!clonedScene) return null

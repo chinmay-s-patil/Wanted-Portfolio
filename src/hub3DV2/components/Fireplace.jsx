@@ -33,11 +33,6 @@ export default function Fireplace({
       if (child.isMesh) {
         child.castShadow = true
         child.receiveShadow = true
-        if (child.material) {
-          child.material.side = THREE.DoubleSide
-          child.material.depthWrite = true
-          child.material.needsUpdate = true
-        }
       }
     })
 

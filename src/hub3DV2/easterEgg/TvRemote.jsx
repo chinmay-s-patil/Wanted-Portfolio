@@ -3,15 +3,11 @@ import { useGLTF } from '@react-three/drei'
 import * as THREE from 'three'
 import TightSilhouetteOutline from '../utils/TightSilhouetteOutline'
 
-const MODEL_PATH = '/hubModels/EasterEggs/TVRemote/tv_remote/scene.gltf'
+const MODEL_PATH = '/hubModels/EasterEggs/TVRemote/tv_remote/optimized_tv_remote.glb'
 useGLTF.preload(MODEL_PATH)
 
 /**
  * TvRemote Component (Easter Egg TV Remote Pause Button)
- *
- * Vintage TV remote placed on the center coffee table.
- * Highlighted with bright neon yellow outline whenever an Easter egg video is playing.
- * Clicking the remote pauses or resumes TV video playback.
  */
 export default function TvRemote({
   position = [0.35, -0.24, 2.60],
@@ -29,26 +25,13 @@ export default function TvRemote({
     if (!scene) return null
     const cloned = scene.clone(true)
     cloned.traverse((child) => {
-      if (child.isMesh) {
-        if (child.material) {
-          if (Array.isArray(child.material)) {
-            child.material = child.material.map((m) => {
-              if (!m || typeof m.clone !== 'function') return m
-              const cm = m.clone()
-              cm.side = THREE.DoubleSide
-              if (cm.map) cm.map.colorSpace = THREE.SRGBColorSpace
-              cm.needsUpdate = true
-              return cm
-            })
-          } else {
-            if (typeof child.material.clone === 'function') {
-              const cm = child.material.clone()
-              cm.side = THREE.DoubleSide
-              if (cm.map) cm.map.colorSpace = THREE.SRGBColorSpace
-              cm.needsUpdate = true
-              child.material = cm
-            }
-          }
+      if (child.isMesh && child.material) {
+        if (Array.isArray(child.material)) {
+          child.material.forEach((m) => {
+            if (m && m.map) m.map.colorSpace = THREE.SRGBColorSpace
+          })
+        } else if (child.material.map) {
+          child.material.map.colorSpace = THREE.SRGBColorSpace
         }
       }
     })

@@ -231,7 +231,6 @@ export default function RadarTablet({
 
       const cloneMat = (mat) => {
         const clonedMat = mat.clone()
-        clonedMat.side = THREE.DoubleSide
         if (clonedMat.map) clonedMat.map.colorSpace = THREE.SRGBColorSpace
         if (clonedMat.emissiveMap) clonedMat.emissiveMap.colorSpace = THREE.SRGBColorSpace
         if (clonedMat.emissiveIntensity > 2) clonedMat.emissiveIntensity = 0.85
@@ -258,9 +257,11 @@ export default function RadarTablet({
 
     const centerX = (box.min.x + box.max.x) / 2
     const centerZ = (box.min.z + box.max.z) / 2
-    cloned.position.x = -centerX
+    if (isFinite(centerX) && isFinite(centerZ)) {
+      cloned.position.x = -centerX
     cloned.position.z = -centerZ
     cloned.position.y = -box.min.y + 0.001
+    }
 
     return cloned
   }, [scene, canvasTexture])

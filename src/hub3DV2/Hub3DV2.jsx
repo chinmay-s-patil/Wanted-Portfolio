@@ -5,8 +5,25 @@ import { useNavigate } from 'react-router-dom'
 import { Canvas, useFrame, useThree } from '@react-three/fiber'
 import { PerspectiveCamera, OrbitControls } from '@react-three/drei'
 import * as THREE from 'three'
-import { Sofa, CenterTable, Newspaper, Binder, TvTable, Lockers, Terminal, FilingCabinet, OfficeAssets, RetroRoom, RetroFloorLamp, WASDFreecam, PrinterTable, Payphone, HubHelpGuideModal, OldCamera, FilmRollPile, RadarTablet, PrecinctDoor, WallKeychains, GrandfatherClock, AmbientDustParticles, PrecinctWallClock, DetectiveCoffeeMug, RetroDeskFan, TableLamp, ScatteredPages, Globe, WaterDispenser, Fireplace, Trophy, AttributionModal, EvidenceBox } from './components'
+import { Sofa, CenterTable, Newspaper, Binder, TvTable, Lockers, Terminal, FilingCabinet, OfficeAssets, RetroRoom, RetroFloorLamp, WASDFreecam, PrinterTable, Payphone, HubHelpGuideModal, OldCamera, FilmRollPile, RadarTablet, PrecinctDoor, WallKeychains, GrandfatherClock, AmbientDustParticles, PrecinctWallClock, DetectiveCoffeeMug, DetectiveCoffeeMugSet, RetroDeskFan, TableLamp, ScatteredPages, Globe, WaterDispenser, Fireplace, Trophy, AttributionModal, EvidenceBox, EvidenceBoxSet } from './components'
 import { Piano, Violin, TvRemote, McNaughtFrame, WindowAndTelescope, useEasterEgg } from './easterEgg'
+
+const EVIDENCE_BOX_DATA = [
+  { position: [2.8, 3.02, -5.95], rotation: [0, 0.15, 0], labelType: 'CASE FILES', caseNumber: 'CASE #7821-A' },
+  { position: [2.78, 3.32, -5.93], rotation: [0, -0.22, 0], labelType: 'EVIDENCE', caseNumber: 'CASE #8492-B' },
+  { position: [3.6, 3.02, -5.95], rotation: [0, -0.3, 0], labelType: 'RESEARCH', caseNumber: 'CASE #5519-X' },
+  { position: [2.3, -0.6, -5.3], rotation: [0, 0.85, 0], labelType: 'CASE FILES', caseNumber: 'CASE #1048-E' },
+  { position: [4.8, -0.6, -5.8], rotation: [0, -0.4, 0], labelType: 'EVIDENCE', caseNumber: 'CASE #2091-P' },
+  { position: [1.1, -0.6, 1.9], rotation: [0, -0.35, 0], labelType: 'EVIDENCE', caseNumber: 'CASE #5820-F' },
+  { position: [1.08, -0.30, 1.88], rotation: [0, 0.25, 0], labelType: 'RESEARCH', caseNumber: 'CASE #9014-G' },
+  { position: [-0.6, -0.6, 2.9], rotation: [0, 0.65, 0], labelType: 'CONFIDENTIAL', caseNumber: 'CASE #6731-H' }
+]
+
+const COFFEE_MUG_DATA = [
+  { position: [0.15, 0.08, 2.55], scale: [1.2, 1.2, 1.2], rotation: [0, 0.4, 0] },
+  { position: [-5.4, 0.9, 4.6], scale: [1.2, 1.2, 1.2], rotation: [0, -0.4, 0] },
+  { position: [7.8, -0.2, 1.2], scale: [1.2, 1.2, 1.2], rotation: [0, 1.5, 0] }
+]
 
 function WebGLContextManager() {
   const { gl } = useThree()
@@ -632,22 +649,8 @@ export default function Hub3DV2() {
               count={130}
               bounds={[12, 6, 12]}
             />
-            {/* Detective Coffee Mugs */}
-            <DetectiveCoffeeMug
-              position={[0.15, 0.08, 2.55]}
-              scale={[1.2, 1.2, 1.2]}
-              rotation={[0, 0.4, 0]}
-            />
-            <DetectiveCoffeeMug
-              position={[-5.4, 0.9, 4.6]}
-              scale={[1.2, 1.2, 1.2]}
-              rotation={[0, -0.4, 0]}
-            />
-            <DetectiveCoffeeMug
-              position={[7.8, -0.2, 1.2]}
-              scale={[1.2, 1.2, 1.2]}
-              rotation={[0, 1.5, 0]}
-            />
+            {/* Detective Coffee Mugs (Instanced Mesh rendering - 1 draw call) */}
+            <DetectiveCoffeeMugSet mugs={COFFEE_MUG_DATA} />
 
             {/* Scattered Case Files & Evidence Pages */}
             <ScatteredPages
@@ -706,73 +709,16 @@ export default function Hub3DV2() {
               rotation={[0, Math.PI / 1, 0]}
             />
 
-            {/* Evidence Boxes Stacked & Spread (Filing Cabinet Top & Floor, & Center Table) */}
-            {/* 1. On top of Filing Cabinet (at [3.2, -0.6, -5.95]) */}
-            <EvidenceBox
-              position={[2.8, 3.02, -5.95]}
-              rotation={[0, 0.15, 0]}
-              labelType="CASE FILES"
-              caseNumber="CASE #7821-A"
-            />
-            <EvidenceBox
-              position={[2.78, 3.32, -5.93]}
-              rotation={[0, -0.22, 0]}
-              labelType="EVIDENCE"
-              caseNumber="CASE #8492-B"
-            />
-            <EvidenceBox
-              position={[3.6, 3.02, -5.95]}
-              rotation={[0, -0.3, 0]}
-              labelType="RESEARCH"
-              caseNumber="CASE #5519-X"
-            />
-
-            {/* 2. On floor next to Filing Cabinet */}
-            {/* <EvidenceBox
-            <EvidenceBox
-              position={[1.9, -0.6, -5.8]}
-              rotation={[0, 0.45, 0]}
-              labelType="EVIDENCE"
-              caseNumber="CASE #3319-C"
-            />
-            <EvidenceBox
-              position={[1.88, -0.30, -5.82]}
-              rotation={[0, -0.12, 0]}
-              labelType="CONFIDENTIAL"
-              caseNumber="CASE #4902-D"
-            /> */}
-            <EvidenceBox
-              position={[2.3, -0.6, -5.3]}
-              rotation={[0, 0.85, 0]}
-              labelType="CASE FILES"
-              caseNumber="CASE #1048-E"
-            />
-            <EvidenceBox
-              position={[4.8, -0.6, -5.8]}
-              rotation={[0, -0.4, 0]}
-              labelType="EVIDENCE"
-              caseNumber="CASE #2091-P"
-            />
-
-            {/* 3. On floor near Center Table & Lounge Sofa */}
-            <EvidenceBox
-              position={[1.1, -0.6, 1.9]}
-              rotation={[0, -0.35, 0]}
-              labelType="EVIDENCE"
-              caseNumber="CASE #5820-F"
-            />
-            <EvidenceBox
-              position={[1.08, -0.30, 1.88]}
-              rotation={[0, 0.25, 0]}
-              labelType="RESEARCH"
-              caseNumber="CASE #9014-G"
-            />
-            <EvidenceBox
-              position={[-0.6, -0.6, 2.9]}
-              rotation={[0, 0.65, 0]}
-              labelType="CONFIDENTIAL"
-              caseNumber="CASE #6731-H"
-            />
+            {/* Evidence Boxes Stacked & Spread */}
+            {EVIDENCE_BOX_DATA.map((box, i) => (
+              <EvidenceBox
+                key={i}
+                position={box.position}
+                rotation={box.rotation}
+                labelType={box.labelType}
+                caseNumber={box.caseNumber}
+              />
+            ))}
 
             {/* Easter Eggs */}
             <Piano

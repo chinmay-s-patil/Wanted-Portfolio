@@ -30,8 +30,7 @@ export default function CenterTable({
     const brassMaterial = new THREE.MeshStandardMaterial({
       color: new THREE.Color('#c5a059'),
       metalness: 0.85,
-      roughness: 0.25,
-      side: THREE.DoubleSide
+      roughness: 0.25
     })
     // Elegant translucent white frosted acrylic / glass material for tabletop surface
     const translucentWhiteMaterial = new THREE.MeshPhysicalMaterial({
@@ -44,15 +43,13 @@ export default function CenterTable({
       ior: 1.45,
       thickness: 0.5,
       clearcoat: 0.8,
-      clearcoatRoughness: 0.1,
-      side: THREE.DoubleSide
+      clearcoatRoughness: 0.1
     })
     // Dark matte accent material for feet pads & structural joints
     const darkAccentMaterial = new THREE.MeshStandardMaterial({
       color: new THREE.Color('#1a1a1a'),
       roughness: 0.8,
-      metalness: 0.2,
-      side: THREE.DoubleSide
+      metalness: 0.2
     })
     cloned.traverse((child) => {
       if (child.isMesh) {

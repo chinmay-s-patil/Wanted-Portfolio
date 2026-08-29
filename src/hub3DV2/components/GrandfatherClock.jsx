@@ -29,16 +29,13 @@ export default function GrandfatherClock({
     const cloned = scene.clone(true)
 
     cloned.traverse((child) => {
-      child.matrixAutoUpdate = true
       if (child.isMesh && child.material) {
         child.visible = true
         if (Array.isArray(child.material)) {
           child.material.forEach((mat) => {
-            mat.side = THREE.DoubleSide
             if (mat.map) mat.map.colorSpace = THREE.SRGBColorSpace
           })
         } else {
-          child.material.side = THREE.DoubleSide
           if (child.material.map) child.material.map.colorSpace = THREE.SRGBColorSpace
         }
       }
@@ -66,6 +63,11 @@ export default function GrandfatherClock({
       })
     }
 
+    // Enable matrixAutoUpdate ONLY on animated nodes
+    if (minuteHandRef.current) minuteHandRef.current.matrixAutoUpdate = true
+    if (hourHandRef.current) hourHandRef.current.matrixAutoUpdate = true
+    if (pendulumRef.current) pendulumRef.current.matrixAutoUpdate = true
+
     // Compute bounding box & center base
     cloned.updateMatrixWorld(true)
     const box = new THREE.Box3()
@@ -75,9 +77,11 @@ export default function GrandfatherClock({
 
     const centerX = (box.min.x + box.max.x) / 2
     const centerZ = (box.min.z + box.max.z) / 2
-    cloned.position.x = -centerX
+    if (isFinite(centerX) && isFinite(centerZ)) {
+      cloned.position.x = -centerX
     cloned.position.z = -centerZ
     cloned.position.y = -box.min.y + 0.001
+    }
 
     return cloned
   }, [scene])
