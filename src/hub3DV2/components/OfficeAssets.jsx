@@ -195,7 +195,7 @@ export default function OfficeAssets({
   const navigate = useNavigate()
   const { scene } = useGLTF(MODEL_PATH)
 
-  const { canvas, canvasTexture } = useMemo(() => {
+  const { canvas, canvasTexture, heatCanvas, heatCtx, heatImgData } = useMemo(() => {
     const cvs = document.createElement('canvas')
     cvs.width = SCREEN_W
     cvs.height = SCREEN_H
@@ -205,7 +205,13 @@ export default function OfficeAssets({
     tex.generateMipmaps = false
     tex.minFilter = THREE.LinearFilter
     tex.magFilter = THREE.LinearFilter
-    return { canvas: cvs, canvasTexture: tex }
+
+    const hCvs = document.createElement('canvas')
+    hCvs.width = 120
+    hCvs.height = 68
+    const hCtx = hCvs.getContext('2d')
+    const hImg = hCtx.createImageData(120, 68)
+    return { canvas: cvs, canvasTexture: tex, heatCanvas: hCvs, heatCtx: hCtx, heatImgData: hImg }
   }, [])
 
   const lastTimeRef = useRef(0)
@@ -249,12 +255,16 @@ export default function OfficeAssets({
     ctx.fillStyle = '#5dffb0'
     ctx.fillText('LIVE', W - 48, 26)
 
-    // Soft pressure / vorticity field behind the airfoil
-    for (let y = plotTop; y < plotBottom; y += 4) {
-      for (let x = plotLeft; x < plotRight; x += 4) {
+    // Soft pressure / vorticity field behind the airfoil (Hyper-optimized via ImageData pixel buffer)
+    const buf = heatImgData.data
+    let ptr = 0
+    for (let gy = 0; gy < 68; gy++) {
+      const y = plotTop + gy * 4
+      const ny = (y - cy) / 90
+      for (let gx = 0; gx < 120; gx++) {
+        const x = plotLeft + gx * 4
         const nx = (x - cx) / 140
-        const ny = (y - cy) / 90
-        // Dipole-ish potential flow around a cylinder + freestream
+
         const r2 = nx * nx + ny * ny + 0.08
         const u = 1 - (nx * nx - ny * ny) / r2
         const v = (-2 * nx * ny) / r2
@@ -263,14 +273,15 @@ export default function OfficeAssets({
         const pulse = 0.5 + 0.5 * Math.sin(elapsed * 2.2 + x * 0.02 + y * 0.015)
         const t = Math.max(0, Math.min(1, (pressure + 0.4) * 0.55 + pulse * 0.08))
 
-        // Cyan → teal → magenta pressure ramp
-        const r = Math.floor(20 + t * 180)
-        const g = Math.floor(40 + (1 - t) * 160)
-        const b = Math.floor(80 + t * 120)
-        ctx.fillStyle = `rgba(${r},${g},${b},${0.35 + t * 0.35})`
-        ctx.fillRect(x, y, 4, 4)
+        buf[ptr] = (20 + t * 180) | 0
+        buf[ptr + 1] = (40 + (1 - t) * 160) | 0
+        buf[ptr + 2] = (80 + t * 120) | 0
+        buf[ptr + 3] = ((0.35 + t * 0.35) * 255) | 0
+        ptr += 4
       }
     }
+    heatCtx.putImageData(heatImgData, 0, 0)
+    ctx.drawImage(heatCanvas, plotLeft, plotTop, plotRight - plotLeft, plotBottom - plotTop)
 
     // Grid overlay
     ctx.strokeStyle = 'rgba(0, 230, 255, 0.12)'

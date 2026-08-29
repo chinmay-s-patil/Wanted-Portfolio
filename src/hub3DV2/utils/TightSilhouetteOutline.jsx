@@ -60,6 +60,7 @@ export default function TightSilhouetteOutline({
   }, [target, color, thickness])
 
   useFrame(({ clock }) => {
+    if (!visible || !outlineScene) return
     if (uniformsRef.current && uniformsRef.current.uTime) {
       uniformsRef.current.uTime.value = clock.getElapsedTime()
     }

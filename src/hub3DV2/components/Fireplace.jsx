@@ -88,7 +88,7 @@ export default function Fireplace({
       const flicker =
         Math.sin(t * 14) * 0.35 +
         Math.cos(t * 27) * 0.25 +
-        (Math.random() - 0.5) * 0.3
+        Math.sin(t * 43) * 0.15
       lightRef.current.intensity = Math.max(1.5, 3.4 + flicker)
     }
 

@@ -305,9 +305,19 @@ function createLowPolyGeometries() {
  * Non-interactive, pure environmental scattered low-poly paper sheets lying flat on surfaces.
  * 100% grounded (no floating), high performance, 0 latency.
  */
-export default function ScatteredPages() {
+const ScatteredPages = React.memo(function ScatteredPages() {
   // Generate procedural textures once
   const textures = useMemo(() => createPageTextures(), [])
+
+  // Pre-created shared materials for the 8 texture variations
+  const materials = useMemo(() => {
+    return textures.map((tex) => new THREE.MeshStandardMaterial({
+      map: tex,
+      roughness: 0.8,
+      metalness: 0.02,
+      side: THREE.DoubleSide
+    }))
+  }, [textures])
 
   // Geometries
   const { flatGeo, curledGeo, stickyGeo } = useMemo(() => createLowPolyGeometries(), [])
@@ -339,10 +349,7 @@ export default function ScatteredPages() {
     { pos: [-6.6, -0.585, 4.4], rot: [-Math.PI / 2, 0, -0.5], scale: [1.05, 1.05, 1], texIdx: 7, geoType: 'curled' },
     { pos: [-4.9, -0.585, 6.1], rot: [-Math.PI / 2, 0, 1.9], scale: [1, 1, 1], texIdx: 0, geoType: 'flat' },
 
-    // --- FILING CABINET (Y = 0.65) & LOCKERS (Y = 0.85) & NEARBY FLOOR (Y = -0.585) ---
-    // { pos: [3.4, 0.65, 5.8], rot: [-Math.PI / 2, 0, -0.3], scale: [1.1, 1.1, 1], texIdx: 1, geoType: 'flat' },
-    // { pos: [2.9, 0.651, 6.1], rot: [-Math.PI / 2, 0, 0.7], scale: [0.9, 0.9, 1], texIdx: 4, geoType: 'curled' },
-    // { pos: [6.4, 0.85, 5.7], rot: [-Math.PI / 2, 0, 0.15], scale: [1, 1, 1], texIdx: 0, geoType: 'curled' },
+    // --- FILING CABINET & LOCKERS FLOOR (Y = -0.585) ---
     { pos: [4.2, -0.585, 5.5], rot: [-Math.PI / 2, 0, -1.2], scale: [1, 1, 1], texIdx: 6, geoType: 'flat' },
     { pos: [5.8, -0.585, 4.8], rot: [-Math.PI / 2, 0, 2.5], scale: [0.85, 0.85, 1], texIdx: 5, geoType: 'sticky' },
 
@@ -366,7 +373,6 @@ export default function ScatteredPages() {
   return (
     <group name="scattered-pages-group">
       {pageLocations.map((item, idx) => {
-        // Select low poly geometry
         let geo = flatGeo
         if (item.geoType === 'curled') geo = curledGeo
         if (item.geoType === 'sticky') geo = stickyGeo
@@ -375,19 +381,15 @@ export default function ScatteredPages() {
           <mesh
             key={idx}
             geometry={geo}
+            material={materials[item.texIdx]}
             position={item.pos}
             rotation={item.rot}
             scale={item.scale}
-          >
-            <meshStandardMaterial
-              map={textures[item.texIdx]}
-              roughness={0.8}
-              metalness={0.02}
-              side={THREE.DoubleSide}
-            />
-          </mesh>
+          />
         )
       })}
     </group>
   )
-}
+})
+
+export default ScatteredPages

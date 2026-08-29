@@ -29,6 +29,33 @@ function WebGLContextManager() {
   return null
 }
 
+function PerformanceStatsCollector({ visible, onUpdate }) {
+  const { gl } = useThree()
+  const frameCountRef = useRef(0)
+  const lastTimeRef = useRef(performance.now())
+
+  useFrame(() => {
+    if (!visible) return
+    frameCountRef.current++
+    const now = performance.now()
+    const delta = now - lastTimeRef.current
+
+    if (delta >= 400) {
+      const currentFps = Math.round((frameCountRef.current * 1000) / delta)
+      const currentMs = (delta / frameCountRef.current).toFixed(1)
+      const calls = gl.info.render.calls
+      const tris = gl.info.render.triangles
+      const mem = window.performance && window.performance.memory ? Math.round(window.performance.memory.usedJSHeapSize / (1024 * 1024)) : 0
+
+      onUpdate({ fps: currentFps, frameTime: currentMs, drawCalls: calls, triangles: tris, memory: mem })
+      frameCountRef.current = 0
+      lastTimeRef.current = now
+    }
+  })
+
+  return null
+}
+
 function LoadingSpinner() {
   const meshRef = useRef()
   useFrame(({ clock }) => {
@@ -89,6 +116,8 @@ export default function Hub3DV2() {
   const [highlightAll, setHighlightAll] = useState(false)
   const [showHintBanner, setShowHintBanner] = useState(true)
   const [isFreecamEnabled, setIsFreecamEnabled] = useState(false)
+  const [showFpsCounter, setShowFpsCounter] = useState(false)
+  const [fpsStats, setFpsStats] = useState({ fps: 60, frameTime: '16.6', drawCalls: 0, triangles: 0, memory: 0 })
   const [cameraHovered, setCameraHovered] = useState(false)
   const [doorKeychainsHovered, setDoorKeychainsHovered] = useState(false)
   const { activeEgg, setActiveEgg, isTvPaused, setIsTvPaused, triggerEgg } = useEasterEgg()
@@ -111,13 +140,17 @@ export default function Hub3DV2() {
     return () => clearTimeout(timer)
   }, [])
 
-  // Hotkey 'F' toggles Freecam mode ON / OFF
+  // Hotkeys: 'F' for Freecam, 'P' for Performance FPS & WebGL Counter
   useEffect(() => {
     const handleKeyDown = (e) => {
       if (['input', 'textarea'].includes(document.activeElement?.tagName?.toLowerCase())) return
-      if (e.code === 'KeyF') {
+      if (e.code === 'KeyF' && !e.ctrlKey && !e.shiftKey) {
         e.preventDefault()
         setIsFreecamEnabled((prev) => !prev)
+      }
+      if (e.code === 'KeyP' && !e.ctrlKey && !e.metaKey && !e.altKey) {
+        e.preventDefault()
+        setShowFpsCounter((prev) => !prev)
       }
     }
     window.addEventListener('keydown', handleKeyDown)
@@ -290,10 +323,41 @@ export default function Hub3DV2() {
             order: -1;
             filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.6));
           }
+
+          .hub-v2-fps-badge {
+            position: absolute;
+            top: 1.5rem;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(13, 17, 23, 0.92);
+            border: 1px solid #38bdf8;
+            border-radius: 20px;
+            padding: 0.45rem 1rem;
+            font-family: monospace;
+            font-size: 0.82rem;
+            color: #38bdf8;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(12px);
+            z-index: 100;
+            pointer-events: none;
+            user-select: none;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+          }
         `}</style>
 
         {/* Floating HTML UI Overlay */}
         <div className="hub-v2-ui">
+          {showFpsCounter && (
+            <div className="hub-v2-fps-badge">
+              <span>⚡ <strong style={{ color: fpsStats.fps < 30 ? '#ff5555' : fpsStats.fps < 50 ? '#ffea9f' : '#38ef7d' }}>{fpsStats.fps} FPS</strong> ({fpsStats.frameTime}ms)</span>
+              <span>🎨 Calls: <strong style={{ color: '#ffffff' }}>{fpsStats.drawCalls}</strong></span>
+              <span>📐 Tris: <strong style={{ color: '#ffffff' }}>{fpsStats.triangles.toLocaleString()}</strong></span>
+              {fpsStats.memory > 0 && <span>💾 Heap: <strong style={{ color: '#ffffff' }}>{fpsStats.memory}MB</strong></span>}
+            </div>
+          )}
+
           <div className="hub-v2-nav-bar">
             <button
               className="hub-v2-btn"
@@ -368,8 +432,9 @@ export default function Hub3DV2() {
         <AttributionModal isOpen={showAttributionModal} onClose={() => setShowAttributionModal(false)} />
 
         {/* Three.js Canvas with High Performance & Moody Retro Lighting */}
-        <Canvas dpr={[1, 1.5]} performance={{ min: 0.5 }} gl={{ antialias: true, powerPreference: 'high-performance' }}>
+        <Canvas dpr={[1, 1.5]} performance={{ min: 0.5 }} gl={{ antialias: true, alpha: false, powerPreference: 'high-performance' }}>
           <WebGLContextManager />
+          <PerformanceStatsCollector visible={showFpsCounter} onUpdate={setFpsStats} />
           <PerspectiveCamera makeDefault position={[0, 2.0, -4.8]} fov={50} near={0.1} far={100} />
           <OrbitControls
             ref={controlsRef}
@@ -751,9 +816,6 @@ export default function Hub3DV2() {
               scale={[1, 1, 1]}
               rotation={[0, Math.PI/2, 0]}
             />
-
-            {/* Static Super Low-Poly Scattered Document Pages */}
-            <ScatteredPages />
           </Suspense>
 
 

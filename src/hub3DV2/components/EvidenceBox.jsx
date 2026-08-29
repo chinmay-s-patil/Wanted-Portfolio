@@ -96,6 +96,17 @@ function getLabelTexture(labelType, caseNumber) {
   return texture
 }
 
+const boxWidth = 0.46
+const boxHeight = 0.30
+const boxDepth = 0.36
+const lidHeight = 0.07
+
+const mainBoxGeo = new THREE.BoxGeometry(boxWidth, boxHeight, boxDepth)
+const bandGeo = new THREE.BoxGeometry(boxWidth + 0.002, 0.08, boxDepth + 0.002)
+const lidGeo = new THREE.BoxGeometry(boxWidth + 0.016, lidHeight, boxDepth + 0.016)
+const labelGeo = new THREE.PlaneGeometry(0.26, 0.14)
+const slotGeo = new THREE.PlaneGeometry(0.09, 0.035)
+
 /**
  * EvidenceBox Component
  *
@@ -112,16 +123,10 @@ const EvidenceBox = React.memo(function EvidenceBox({
   const cardboardTexture = useMemo(() => getCardboardTexture(), [])
   const labelTexture = useMemo(() => getLabelTexture(labelType, caseNumber), [labelType, caseNumber])
 
-  const boxWidth = 0.46
-  const boxHeight = 0.30
-  const boxDepth = 0.36
-  const lidHeight = 0.07
-
   return (
     <group position={position} rotation={rotation} scale={scale}>
       {/* Lower Main Box Body */}
-      <mesh position={[0, boxHeight / 2, 0]} castShadow receiveShadow>
-        <boxGeometry args={[boxWidth, boxHeight, boxDepth]} />
+      <mesh position={[0, boxHeight / 2, 0]} geometry={mainBoxGeo} castShadow receiveShadow>
         <meshStandardMaterial
           map={cardboardTexture}
           color="#c29867"
@@ -131,14 +136,12 @@ const EvidenceBox = React.memo(function EvidenceBox({
       </mesh>
 
       {/* Bankers Box Dark Blue Bottom Accent Band */}
-      <mesh position={[0, 0.04, 0]} castShadow>
-        <boxGeometry args={[boxWidth + 0.002, 0.08, boxDepth + 0.002]} />
+      <mesh position={[0, 0.04, 0]} geometry={bandGeo} castShadow>
         <meshStandardMaterial color="#1e3a5f" roughness={0.7} />
       </mesh>
 
       {/* Top Cardboard Lid */}
-      <mesh position={[0, boxHeight + lidHeight / 2 - 0.01, 0]} castShadow receiveShadow>
-        <boxGeometry args={[boxWidth + 0.016, lidHeight, boxDepth + 0.016]} />
+      <mesh position={[0, boxHeight + lidHeight / 2 - 0.01, 0]} geometry={lidGeo} castShadow receiveShadow>
         <meshStandardMaterial
           map={cardboardTexture}
           color="#ca9f6d"
@@ -148,26 +151,22 @@ const EvidenceBox = React.memo(function EvidenceBox({
       </mesh>
 
       {/* Front Evidence Sticker Label */}
-      <mesh position={[0, boxHeight * 0.52, boxDepth / 2 + 0.002]}>
-        <planeGeometry args={[0.26, 0.14]} />
+      <mesh position={[0, boxHeight * 0.52, boxDepth / 2 + 0.002]} geometry={labelGeo}>
         <meshBasicMaterial map={labelTexture} transparent />
       </mesh>
 
       {/* Back Evidence Sticker Label */}
-      <mesh position={[0, boxHeight * 0.52, -boxDepth / 2 - 0.002]} rotation={[0, Math.PI, 0]}>
-        <planeGeometry args={[0.26, 0.14]} />
+      <mesh position={[0, boxHeight * 0.52, -boxDepth / 2 - 0.002]} rotation={[0, Math.PI, 0]} geometry={labelGeo}>
         <meshBasicMaterial map={labelTexture} transparent />
       </mesh>
 
       {/* Left Handle Cutout Slot */}
-      <mesh position={[-boxWidth / 2 - 0.001, boxHeight * 0.68, 0]} rotation={[0, -Math.PI / 2, 0]}>
-        <planeGeometry args={[0.09, 0.035]} />
+      <mesh position={[-boxWidth / 2 - 0.001, boxHeight * 0.68, 0]} rotation={[0, -Math.PI / 2, 0]} geometry={slotGeo}>
         <meshBasicMaterial color="#1f140a" />
       </mesh>
 
       {/* Right Handle Cutout Slot */}
-      <mesh position={[boxWidth / 2 + 0.001, boxHeight * 0.68, 0]} rotation={[0, Math.PI / 2, 0]}>
-        <planeGeometry args={[0.09, 0.035]} />
+      <mesh position={[boxWidth / 2 + 0.001, boxHeight * 0.68, 0]} rotation={[0, Math.PI / 2, 0]} geometry={slotGeo}>
         <meshBasicMaterial color="#1f140a" />
       </mesh>
     </group>

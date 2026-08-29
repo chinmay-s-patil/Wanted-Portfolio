@@ -2,6 +2,12 @@ import { useEffect, useRef } from 'react'
 import { useThree, useFrame } from '@react-three/fiber'
 import * as THREE from 'three'
 
+const _forward = new THREE.Vector3()
+const _right = new THREE.Vector3()
+const _movement = new THREE.Vector3()
+const _offset = new THREE.Vector3()
+const _spherical = new THREE.Spherical()
+
 /**
  * WASDFreecam Component
  *
@@ -63,36 +69,33 @@ export default function WASDFreecam({
     if (enabled) {
       // FREECAM MODE ON: 3D WASD Translation Movement (Unconstrained free motion)
       const dist = moveSpeed * dt
-      const forward = new THREE.Vector3()
-      camera.getWorldDirection(forward)
+      camera.getWorldDirection(_forward)
+      _right.crossVectors(_forward, camera.up).normalize()
 
-      const right = new THREE.Vector3()
-      right.crossVectors(forward, camera.up).normalize()
-
-      const movement = new THREE.Vector3()
+      _movement.set(0, 0, 0)
       if (keys.has('KeyW') || keys.has('ArrowUp')) {
-        movement.addScaledVector(forward, dist)
+        _movement.addScaledVector(_forward, dist)
       }
       if (keys.has('KeyS') || keys.has('ArrowDown')) {
-        movement.addScaledVector(forward, -dist)
+        _movement.addScaledVector(_forward, -dist)
       }
       if (keys.has('KeyA') || keys.has('ArrowLeft')) {
-        movement.addScaledVector(right, -dist)
+        _movement.addScaledVector(_right, -dist)
       }
       if (keys.has('KeyD') || keys.has('ArrowRight')) {
-        movement.addScaledVector(right, dist)
+        _movement.addScaledVector(_right, dist)
       }
       if (keys.has('Space') || keys.has('KeyE')) {
-        movement.y += dist
+        _movement.y += dist
       }
       if (keys.has('ShiftLeft') || keys.has('ShiftRight') || keys.has('KeyQ')) {
-        movement.y -= dist
+        _movement.y -= dist
       }
 
-      if (movement.lengthSq() > 0) {
-        camera.position.add(movement)
+      if (_movement.lengthSq() > 0) {
+        camera.position.add(_movement)
         if (controlsRef && controlsRef.current) {
-          controlsRef.current.target.add(movement)
+          controlsRef.current.target.add(_movement)
           controlsRef.current.update()
         }
       }
@@ -102,35 +105,35 @@ export default function WASDFreecam({
       const controls = controlsRef.current
       const target = controls.target
 
-      const offset = new THREE.Vector3().subVectors(camera.position, target)
-      const spherical = new THREE.Spherical().setFromVector3(offset)
+      _offset.subVectors(camera.position, target)
+      _spherical.setFromVector3(_offset)
 
       let updated = false
       const rotateAmount = turnSpeed * dt
 
       // A / D or Left / Right: Yaw (Horizontal Orbit)
       if (keys.has('KeyA') || keys.has('ArrowLeft')) {
-        spherical.theta += rotateAmount
+        _spherical.theta += rotateAmount
         updated = true
       }
       if (keys.has('KeyD') || keys.has('ArrowRight')) {
-        spherical.theta -= rotateAmount
+        _spherical.theta -= rotateAmount
         updated = true
       }
 
       // W / S or Up / Down: Pitch (Vertical Orbit Angle)
       if (keys.has('KeyW') || keys.has('ArrowUp')) {
-        spherical.phi = Math.max(0.1, spherical.phi - rotateAmount)
+        _spherical.phi = Math.max(0.1, _spherical.phi - rotateAmount)
         updated = true
       }
       if (keys.has('KeyS') || keys.has('ArrowDown')) {
-        spherical.phi = Math.min(Math.PI / 2.02, spherical.phi + rotateAmount)
+        _spherical.phi = Math.min(Math.PI / 2.02, _spherical.phi + rotateAmount)
         updated = true
       }
 
       if (updated) {
-        offset.setFromSpherical(spherical)
-        camera.position.addVectors(target, offset)
+        _offset.setFromSpherical(_spherical)
+        camera.position.addVectors(target, _offset)
         camera.lookAt(target)
         controls.update()
       }
