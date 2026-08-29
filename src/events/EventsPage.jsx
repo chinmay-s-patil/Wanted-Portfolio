@@ -7,6 +7,7 @@ import eventsData from './eventsData';
 import styles from './EventsPage.module.css';
 import FilmCanister from './FilmCanister';
 import FilmStripUnraveler from './FilmStripUnraveler';
+import ViewportScaleStage from '../common/ViewportScaleStage';
 
 export default function EventsPage() {
   const navigate = useNavigate();
@@ -32,7 +33,8 @@ export default function EventsPage() {
   }, []);
 
   return (
-    <div className={styles.screeningRoom}>
+    <ViewportScaleStage>
+      <div className={styles.screeningRoom}>
       {/* Navigation Header */}
       <header className={styles.topNav}>
         <button
@@ -84,6 +86,7 @@ export default function EventsPage() {
       {isOpen && selectedReel && (
         <FilmStripUnraveler reel={selectedReel} onClose={handleClose} />
       )}
-    </div>
+      </div>
+    </ViewportScaleStage>
   );
 }

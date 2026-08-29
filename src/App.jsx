@@ -1,6 +1,5 @@
 import React, { useEffect } from 'react'
 import { BrowserRouter, Routes, Route, useLocation, useNavigate } from 'react-router-dom'
-import Hub from './hub/Hub'
 import EducationPage from './education/EducationPage'
 import ProjectsPage from './projects/ProjectsPage'
 import ProfessionalDiary from './professionaldiary/ProfessionalDiary'
@@ -12,7 +11,6 @@ import UpcomingPage from './upcoming/UpcomingPage'
 import SolversSection from './solvers/SolversSection'
 import RotaryPhoneContact from './ContactMe/RotaryPhoneContact'
 import Landing from './Landing-newspaper/Landing'
-import Hub3D from './hub3D/Hub3D'
 import Hub3DV2 from './hub3DV2/Hub3DV2'
 import { EasterEggProvider, DraggableMiniTvPlayer } from './hub3DV2/easterEgg'
 
@@ -20,7 +18,7 @@ const ROUTE_PAGE_TITLES = {
   '/': 'Wanted Portfolio | Detective Dossier',
   '/hub': 'Precinct Lounge 3D | Wanted Portfolio',
   '/hub3D': 'Precinct Lounge 3D | Wanted Portfolio',
-  '/hub3DV2': '3D Precinct Lounge | Wanted Portfolio',
+  '/hub3DV2': 'Precinct Lounge 3D | Wanted Portfolio',
   '/education': 'Education & Credentials | Wanted Portfolio',
   '/projects': 'Project Archives | Wanted Portfolio',
   '/professionaldiary': 'Detective Journal | Wanted Portfolio',
@@ -69,7 +67,7 @@ function App() {
         <DraggableMiniTvPlayer />
         <Routes>
           <Route path="/" element={<Landing />} />
-          <Route path="/hub" element={<Hub />} />
+          <Route path="/hub" element={<Hub3DV2 />} />
           <Route path="/education" element={<EducationPage />} />
           <Route path="/projects" element={<ProjectsPage />} />
           <Route path="/professionaldiary" element={<ProfessionalDiary />} />
@@ -80,7 +78,7 @@ function App() {
           <Route path="/upcoming" element={<UpcomingPage />} />
           <Route path="/solvers" element={<SolversSection />} />
           <Route path="/contactme" element={<RotaryPhoneContact />} />
-          <Route path="/hub3D" element={<Hub3D />} />
+          <Route path="/hub3D" element={<Hub3DV2 />} />
           <Route path="/hub3DV2" element={<Hub3DV2 />} />
         </Routes>
       </EasterEggProvider>

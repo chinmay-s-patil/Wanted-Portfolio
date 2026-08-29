@@ -8,6 +8,7 @@ import SectionHeader from './SectionHeader'
 import LockerWall from './LockerWall'
 import LockerDoorPanel from './LockerDoorPanel'
 import ArtifactViewer from './ArtifactViewer'
+import ViewportScaleStage from '../common/ViewportScaleStage'
 
 /**
  * Education Section — The Locker Wall
@@ -126,13 +127,14 @@ export default function EducationPage() {
   }, [currentLocker])
 
   return (
-    <div
-      style={{
-        width: '100vw',
-        height: '100vh',
-        background: 'radial-gradient(ellipse at 50% 30%, #1a1815 0%, #0d0c0a 60%, #050403 100%)',
-        overflow: 'hidden',
-        position: 'relative',
+    <ViewportScaleStage>
+      <div
+        style={{
+          width: '100%',
+          height: '100%',
+          background: 'radial-gradient(ellipse at 50% 30%, #1a1815 0%, #0d0c0a 60%, #050403 100%)',
+          overflow: 'hidden',
+          position: 'relative',
         fontFamily: "'Special Elite', monospace",
         display: 'flex',
         flexDirection: 'column'
@@ -217,6 +219,7 @@ export default function EducationPage() {
         payload={viewerState?.payload}
         onClose={closeViewer}
       />
-    </div>
+      </div>
+    </ViewportScaleStage>
   )
 }

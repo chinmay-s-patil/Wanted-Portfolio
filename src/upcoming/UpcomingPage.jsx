@@ -4,6 +4,7 @@
 import { useState, useEffect, useMemo, useCallback, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 import upcomingProjects from './upcomingData'
+import ViewportScaleStage from '../common/ViewportScaleStage'
 
 // ─── CONFIG ──────────────────────────────────────────────────────────
 const BASE_SWEEP_DURATION_S = 8
@@ -206,14 +207,15 @@ export default function UpcomingPage() {
 	const sweepDurationCss = `${BASE_SWEEP_DURATION_S / (sweepSpeed || 1)}s`
 
 	return (
-		<div
-			className={reducedMotion ? 'reduced-motion' : ''}
-			style={{
-				width: '100vw',
-				height: '100vh',
-				background: 'radial-gradient(circle at 50% 50%, #12161f 0%, #0a0c12 60%, #050609 100%)',
-				overflow: 'hidden',
-				position: 'relative',
+		<ViewportScaleStage>
+			<div
+				className={reducedMotion ? 'reduced-motion' : ''}
+				style={{
+					width: '100%',
+					height: '100%',
+					background: 'radial-gradient(circle at 50% 50%, #12161f 0%, #0a0c12 60%, #050609 100%)',
+					overflow: 'hidden',
+					position: 'relative',
 				fontFamily: "'Orbitron', 'Inter', sans-serif",
 				color: '#fff',
 				userSelect: 'none',
@@ -1031,7 +1033,7 @@ export default function UpcomingPage() {
 
 			{/* BOTTOM STATUS BAR */}
 			<div style={{
-				position: 'fixed', bottom: 0, left: 0, right: 0, height: '30px',
+				position: 'absolute', bottom: 0, left: 0, right: 0, height: '30px',
 				background: 'rgba(8, 10, 14, 0.96)', borderTop: '1px solid rgba(0, 224, 255, 0.15)',
 				display: 'flex', alignItems: 'center', justifyContent: 'space-between',
 				padding: '0 1.5rem', fontFamily: "'JetBrains Mono', monospace",
@@ -1043,5 +1045,6 @@ export default function UpcomingPage() {
 				<span>{new Date().toISOString().slice(0, 19).replace('T', ' ')} UTC</span>
 			</div>
 		</div>
+		</ViewportScaleStage>
 	)
 }

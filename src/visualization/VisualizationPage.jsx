@@ -4,6 +4,7 @@
 import { useState, useCallback, lazy, Suspense, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import visualizationsList from './VisualizationList'
+import ViewportScaleStage from '../common/ViewportScaleStage'
 
 const WikiBrowser = lazy(() => import('./WikiBrowser'))
 
@@ -110,12 +111,13 @@ export default function VisualizationPage() {
   }, [powerState])
 
   return (
-    <div style={{
-      width: '100vw',
-      height: '100vh',
-      background: 'radial-gradient(ellipse at 50% 30%, #2e221b 0%, #17110e 60%, #0a0705 100%)',
-      overflow: 'hidden',
-      position: 'relative',
+    <ViewportScaleStage>
+      <div style={{
+        width: '100%',
+        height: '100%',
+        background: 'radial-gradient(ellipse at 50% 30%, #2e221b 0%, #17110e 60%, #0a0705 100%)',
+        overflow: 'hidden',
+        position: 'relative',
       fontFamily: "'Tahoma', 'MS Sans Serif', sans-serif",
       display: 'flex',
       alignItems: 'center',
@@ -907,6 +909,7 @@ export default function VisualizationPage() {
         </div>
 
       </div>
-    </div>
+      </div>
+    </ViewportScaleStage>
   )
 }

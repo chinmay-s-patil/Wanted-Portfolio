@@ -12,24 +12,7 @@ export default function PrecinctWallClock({
   scale = [1, 1, 1],
   rotation = [0, Math.PI, 0]
 }) {
-  const secondHandRef = useRef()
-  const minuteHandRef = useRef()
-  const hourHandRef = useRef()
-  useFrame(() => {
-    const now = new Date()
-    const sec = now.getSeconds() + now.getMilliseconds() / 1000
-    const min = now.getMinutes() + sec / 60
-    const hr = (now.getHours() % 12) + min / 60
-    if (secondHandRef.current) {
-      secondHandRef.current.rotation.z = -sec * ((Math.PI * 2) / 60)
-    }
-    if (minuteHandRef.current) {
-      minuteHandRef.current.rotation.z = -min * ((Math.PI * 2) / 60)
-    }
-    if (hourHandRef.current) {
-      hourHandRef.current.rotation.z = -hr * ((Math.PI * 2) / 12)
-    }
-  })
+
   return (
     <group position={position} rotation={rotation} scale={scale}>
       {/* Outer Chrome / Brass Rim */}

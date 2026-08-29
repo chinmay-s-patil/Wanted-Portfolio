@@ -3,16 +3,14 @@
 @import url('https://fonts.googleapis.com/css2?family=Special+Elite&family=Playfair+Display:ital,wght@0,600;0,700;1,400&family=JetBrains+Mono:wght@400;500;600;700&display=swap');
 
 .screeningRoom {
-	width: 100vw;
-	min-height: 100vh;
+	width: 100%;
+	height: 100%;
 	background: 
 		radial-gradient(circle at 50% 25%, rgba(217, 119, 6, 0.12) 0%, transparent 55%),
 		radial-gradient(circle at 50% 50%, #17110c 0%, #0d0906 60%, #050403 100%);
 	color: #e8dcc8;
 	position: relative;
-	left: 50%;
-	transform: translateX(-50%);
-	overflow-x: hidden;
+	overflow: hidden;
 	font-family: 'Crimson Text', Georgia, serif;
 	display: flex;
 	flex-direction: column;

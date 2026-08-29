@@ -2,13 +2,32 @@
 
 import React, { useState, useEffect, Suspense, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { Canvas, useFrame } from '@react-three/fiber'
+import { Canvas, useFrame, useThree } from '@react-three/fiber'
 import { PerspectiveCamera, OrbitControls } from '@react-three/drei'
 import * as THREE from 'three'
-import { Sofa, CenterTable, Newspaper, Binder, TvTable, Lockers, Terminal, FilingCabinet, OfficeAssets, RetroRoom, RetroFloorLamp, WASDFreecam, PrinterTable, Payphone, HubHelpGuideModal, OldCamera, FilmRollPile, RadarTablet, PrecinctDoor, WallKeychains, GrandfatherClock, AmbientDustParticles, PrecinctWallClock, DetectiveCoffeeMug, RetroDeskFan, TableLamp, ScatteredPages, Globe, WaterDispenser } from './components'
+import { Sofa, CenterTable, Newspaper, Binder, TvTable, Lockers, Terminal, FilingCabinet, OfficeAssets, RetroRoom, RetroFloorLamp, WASDFreecam, PrinterTable, Payphone, HubHelpGuideModal, OldCamera, FilmRollPile, RadarTablet, PrecinctDoor, WallKeychains, GrandfatherClock, AmbientDustParticles, PrecinctWallClock, DetectiveCoffeeMug, RetroDeskFan, TableLamp, ScatteredPages, Globe, WaterDispenser, Fireplace, Trophy, AttributionModal, EvidenceBox } from './components'
 import { Piano, Violin, TvRemote, McNaughtFrame, WindowAndTelescope, useEasterEgg } from './easterEgg'
 
-
+function WebGLContextManager() {
+  const { gl } = useThree()
+  useEffect(() => {
+    const canvas = gl.domElement
+    const handleContextLost = (e) => {
+      e.preventDefault()
+      console.warn('WebGL context lost. Attempting context restoration...')
+    }
+    const handleContextRestored = () => {
+      console.log('WebGL context successfully restored.')
+    }
+    canvas.addEventListener('webglcontextlost', handleContextLost, false)
+    canvas.addEventListener('webglcontextrestored', handleContextRestored, false)
+    return () => {
+      canvas.removeEventListener('webglcontextlost', handleContextLost)
+      canvas.removeEventListener('webglcontextrestored', handleContextRestored)
+    }
+  }, [gl])
+  return null
+}
 
 function LoadingSpinner() {
   const meshRef = useRef()
@@ -29,7 +48,7 @@ function LoadingSpinner() {
 class HubV2ErrorBoundary extends React.Component {
   constructor(props) {
     super(props)
-    this.state = { hasError: false, error: null }
+    this.state = { hasError: false, error: null, errorInfo: null }
   }
 
   static getDerivedStateFromError(error) {
@@ -38,15 +57,23 @@ class HubV2ErrorBoundary extends React.Component {
 
   componentDidCatch(error, errorInfo) {
     console.error('Hub3DV2 render error:', error, errorInfo)
+    this.setState({ errorInfo })
   }
 
   render() {
     if (this.state.hasError) {
       return (
-        <div style={{ color: '#ff5555', padding: '2rem', background: '#0d1117', height: '100vh', fontFamily: 'monospace' }}>
-          <h2>Hub3DV2 Loading Error</h2>
-          <pre>{this.state.error?.toString()}</pre>
-          <button onClick={() => window.location.reload()} style={{ marginTop: '1rem', padding: '0.5rem 1rem', background: '#21262d', color: '#fff', border: '1px solid #30363d', cursor: 'pointer' }}>
+        <div style={{ color: '#ff5555', padding: '2rem', background: '#0d1117', height: '100vh', fontFamily: 'monospace', overflowY: 'auto' }}>
+          <h2 style={{ color: '#ff6b6b' }}>Hub3DV2 Loading Error</h2>
+          <pre style={{ fontSize: '0.95rem', background: '#161b22', padding: '1rem', borderRadius: '6px', whiteSpace: 'pre-wrap', wordBreak: 'break-all' }}>
+            {this.state.error?.stack || this.state.error?.toString()}
+          </pre>
+          {this.state.errorInfo && (
+            <pre style={{ color: '#8b949e', fontSize: '0.85rem', background: '#090d13', padding: '1rem', borderRadius: '6px', marginTop: '1rem', whiteSpace: 'pre-wrap' }}>
+              {this.state.errorInfo.componentStack}
+            </pre>
+          )}
+          <button onClick={() => window.location.reload()} style={{ marginTop: '1rem', padding: '0.5rem 1rem', background: '#21262d', color: '#fff', border: '1px solid #30363d', cursor: 'pointer', borderRadius: '4px' }}>
             Reload Scene
           </button>
         </div>
@@ -58,13 +85,22 @@ class HubV2ErrorBoundary extends React.Component {
 
 export default function Hub3DV2() {
   const [showHelpModal, setShowHelpModal] = useState(false)
+  const [showAttributionModal, setShowAttributionModal] = useState(false)
   const [highlightAll, setHighlightAll] = useState(false)
   const [showHintBanner, setShowHintBanner] = useState(true)
+  const [isFreecamEnabled, setIsFreecamEnabled] = useState(false)
   const [cameraHovered, setCameraHovered] = useState(false)
   const [doorKeychainsHovered, setDoorKeychainsHovered] = useState(false)
   const { activeEgg, setActiveEgg, isTvPaused, setIsTvPaused, triggerEgg } = useEasterEgg()
   const controlsRef = useRef()
 
+  const handleResetCamera = () => {
+    if (controlsRef.current) {
+      controlsRef.current.object.position.set(0, 2.0, -4.8)
+      controlsRef.current.target.set(0, 0.4, 0.5)
+      controlsRef.current.update()
+    }
+  }
 
   const navigate = useNavigate()
 
@@ -73,6 +109,19 @@ export default function Hub3DV2() {
       setShowHintBanner(false)
     }, 10000)
     return () => clearTimeout(timer)
+  }, [])
+
+  // Hotkey 'F' toggles Freecam mode ON / OFF
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (['input', 'textarea'].includes(document.activeElement?.tagName?.toLowerCase())) return
+      if (e.code === 'KeyF') {
+        e.preventDefault()
+        setIsFreecamEnabled((prev) => !prev)
+      }
+    }
+    window.addEventListener('keydown', handleKeyDown)
+    return () => window.removeEventListener('keydown', handleKeyDown)
   }, [])
 
   return (
@@ -246,15 +295,23 @@ export default function Hub3DV2() {
         {/* Floating HTML UI Overlay */}
         <div className="hub-v2-ui">
           <div className="hub-v2-nav-bar">
-            <button className="hub-v2-btn" onClick={() => navigate('/')}>
-              ← Back to Landing
-            </button>
-            <button className="hub-v2-btn" onClick={() => navigate('/hub')}>
-              ← Procedural Hub3D (V1)
+            <button
+              className="hub-v2-btn"
+              onClick={handleResetCamera}
+              title="Reset camera position to default higher view"
+            >
+              🎥 Reset View
             </button>
           </div>
 
           <div className="hub-v2-top-right-bar">
+            <button
+              className={`hub-v2-action-btn ${isFreecamEnabled ? 'active' : ''}`}
+              onClick={() => setIsFreecamEnabled(!isFreecamEnabled)}
+              title={isFreecamEnabled ? 'Freecam active: Move in 3D with WASD / Space / Shift (Press F to toggle)' : 'Freecam locked: Drag to rotate, W/S Pitch, A/D Yaw (Press F to toggle)'}
+            >
+              {isFreecamEnabled ? '🚀 Freecam: ON [F]' : '🔒 Freecam: OFF [F]'}
+            </button>
             <button
               className="hub-v2-action-btn"
               onClick={() => setShowHelpModal(true)}
@@ -296,58 +353,50 @@ export default function Hub3DV2() {
             </div>
           )}
 
-          <div className="hub-v2-subtitle-badge">🕵️ Gritty Retro Precinct Lounge • 🎮 WASD / Space / Shift Freecam</div>
+          <div className="hub-v2-subtitle-badge">
+            {isFreecamEnabled
+              ? '🕵️ Gritty Retro Precinct Lounge • 🎮 Freecam ON: WASD / Space / Shift'
+              : '🕵️ Gritty Retro Precinct Lounge • 🖱️ Drag to rotate | W/S Pitch | A/D Yaw'}
+          </div>
           <div className="hub-v2-title-badge">3D Hub V2 — Custom Retro Scene</div>
         </div>
 
         {/* Portfolio Directory Help Modal Overlay */}
         <HubHelpGuideModal isOpen={showHelpModal} onClose={() => setShowHelpModal(false)} />
 
-
+        {/* Project Attributions & Credits Modal Overlay */}
+        <AttributionModal isOpen={showAttributionModal} onClose={() => setShowAttributionModal(false)} />
 
         {/* Three.js Canvas with High Performance & Moody Retro Lighting */}
         <Canvas dpr={[1, 1.5]} performance={{ min: 0.5 }} gl={{ antialias: true, powerPreference: 'high-performance' }}>
-          <PerspectiveCamera makeDefault position={[0, 0.7, -3.2]} fov={50} />
+          <WebGLContextManager />
+          <PerspectiveCamera makeDefault position={[0, 2.0, -4.8]} fov={50} near={0.1} far={100} />
           <OrbitControls
             ref={controlsRef}
-            target={[0, -0.2, 1.2]}
-            maxPolarAngle={Math.PI / 2.02}
-            minDistance={0.5}
-            maxDistance={25}
+            target={[0, 0.4, 0.5]}
+            minPolarAngle={isFreecamEnabled ? 0.001 : 0.3}
+            maxPolarAngle={isFreecamEnabled ? Math.PI - 0.001 : Math.PI / 2.08}
+            minDistance={isFreecamEnabled ? 0.1 : 1.2}
+            maxDistance={isFreecamEnabled ? 100 : 5.8}
             enableDamping
             dampingFactor={0.08}
+            enablePan={isFreecamEnabled}
             mouseButtons={{
               LEFT: THREE.MOUSE.ROTATE,
               MIDDLE: THREE.MOUSE.DOLLY,
-              RIGHT: THREE.MOUSE.PAN
+              RIGHT: isFreecamEnabled ? THREE.MOUSE.PAN : THREE.MOUSE.ROTATE
             }}
           />
-          <WASDFreecam controlsRef={controlsRef} moveSpeed={5.0} />
+          <WASDFreecam controlsRef={controlsRef} enabled={isFreecamEnabled} moveSpeed={5.0} turnSpeed={1.8} />
 
-          {/* Gritty Retro Precinct Ambient & Directional Scene Lighting */}
-          <ambientLight intensity={0.45} color="#ffdfb3" />
+          {/* Balanced Retro Precinct Ambient & Directional Scene Lighting */}
+          <ambientLight intensity={0.55} color="#ffe3c2" />
 
-          {/* Main Key Light */}
+          {/* Actual Left Window Moonlight Beam (Positioned at Window X=-8.5, Z=-4.4) */}
           <directionalLight
-            position={[5, 7, 4]}
+            position={[-8.5, 3.5, -4.4]}
             intensity={1.8}
-            color="#ff9d42"
-          />
-
-          {/* Copper Rim Light */}
-          <directionalLight
-            position={[-5, 4, -4]}
-            intensity={0.8}
-            color="#ff7733"
-          />
-
-          {/* Focused Overhead Lounge Spotlight */}
-          <spotLight
-            position={[0, 4.5, 1.2]}
-            angle={0.65}
-            penumbra={0.8}
-            intensity={3.0}
-            color="#ffe3b3"
+            color="#38bdf8"
           />
 
           {/* Retro Room Enclosure */}
@@ -367,9 +416,9 @@ export default function Hub3DV2() {
               rotation={[0, 0, 0]}
             />
             <TvTable
-              position={[0, -0.6, 4.2]}
+              position={[2, -0.6, 4.2]}
               scale={[0.3, 0.3, 0.3]}
-              rotation={[0, Math.PI, 0]}
+              rotation={[0, Math.PI + Math.PI/4, 0]}
               activeEgg={activeEgg}
               isPaused={isTvPaused}
               onClose={() => {
@@ -414,9 +463,9 @@ export default function Hub3DV2() {
               onClick={() => navigate('/solvers')}
             />
             <FilingCabinet
-              position={[3.2, -0.6, 5.95]}
+              position={[3.2, -0.6, -5.95]}
               scale={[3, 3, 2]}
-              rotation={[0, 0, 0]}
+              rotation={[0, Math.PI, 0]}
               outlineColor="#1e40af"
               outlineThickness={0.008}
               alwaysShowOutline={highlightAll}
@@ -504,17 +553,61 @@ export default function Hub3DV2() {
               onHoverChange={setDoorKeychainsHovered}
               onClick={() => navigate('/openfoam')}
             />
-            <GrandfatherClock
-              position={[-2, -0.6, 6.0]}
-              scale={[1.8, 1.8, 1.8]}
-              rotation={[0, - Math.PI / 1, 0]}
+
+            <Trophy
+              position={[-0.8, 1.3, 6.2]}
+              scale={[0.1, 0.1, 0.1]}
+              rotation={[0, 0, 0]}
+              alwaysShowOutline={highlightAll}
+              onClick={() => setShowAttributionModal(true)}
             />
 
             {/* Ambient Atmosphere & Environmental Props */}
-            <AmbientDustParticles count={70} bounds={[10, 5, 10]} />
-            <DetectiveCoffeeMug position={[0.1, 0.08, 2.55]} scale={[1.2, 1.2, 1.2]} rotation={[0, 0.4, 0]} />
+            <AmbientDustParticles 
+              count={130}
+              bounds={[12, 6, 12]}
+            />
+            {/* Detective Coffee Mugs */}
+            <DetectiveCoffeeMug
+              position={[0.15, 0.08, 2.55]}
+              scale={[1.2, 1.2, 1.2]}
+              rotation={[0, 0.4, 0]}
+            />
+            <DetectiveCoffeeMug
+              position={[-5.4, 0.9, 4.6]}
+              scale={[1.2, 1.2, 1.2]}
+              rotation={[0, -0.4, 0]}
+            />
+            <DetectiveCoffeeMug
+              position={[7.8, -0.2, 1.2]}
+              scale={[1.2, 1.2, 1.2]}
+              rotation={[0, 1.5, 0]}
+            />
+
+            {/* Scattered Case Files & Evidence Pages */}
+            <ScatteredPages
+              position={[0.65, -0.89, 2.75]}
+              scale={[1.2, 1.2, 1.2]}
+              rotation={[0, -0.7, 0]}
+            />
+            <ScatteredPages
+              position={[2.0, -0.59, -5.1]}
+              scale={[1.2, 1.2, 1.2]}
+              rotation={[0, 0.5, 0]}
+            />
+            <ScatteredPages
+              position={[-4.0, 0.9, 5.2]}
+              scale={[1.1, 1.1, 1.1]}
+              rotation={[0, 0.25, 0]}
+            />
 
             {/* Props */}
+            <GrandfatherClock
+              position={[-2, -0.6, 6.0]}
+              scale={[1.8, 1.8, 1.8]}
+              rotation={[0, -Math.PI / 1, 0]}
+            />
+
             <RetroDeskFan
               position={[-4.5, 0.9, 5.8]}
               scale={[1.2, 1.2, 1.2]}
@@ -540,6 +633,79 @@ export default function Hub3DV2() {
               outlineColor="#00f5d4"
               outlineThickness={0.008}
               alwaysShowOutline={highlightAll}
+            />
+
+            <Fireplace
+              position={[0, -0.6, 6.2]}
+              scale={[1.2, 1.2, 1.2]}
+              rotation={[0, Math.PI / 1, 0]}
+            />
+
+            {/* Evidence Boxes Stacked & Spread (Filing Cabinet Top & Floor, & Center Table) */}
+            {/* 1. On top of Filing Cabinet (at [3.2, -0.6, -5.95]) */}
+            <EvidenceBox
+              position={[2.8, 0.82, -5.95]}
+              rotation={[0, 0.15, 0]}
+              labelType="CASE FILES"
+              caseNumber="CASE #7821-A"
+            />
+            <EvidenceBox
+              position={[2.78, 1.12, -5.93]}
+              rotation={[0, -0.22, 0]}
+              labelType="EVIDENCE"
+              caseNumber="CASE #8492-B"
+            />
+            <EvidenceBox
+              position={[3.6, 0.82, -5.95]}
+              rotation={[0, -0.3, 0]}
+              labelType="RESEARCH"
+              caseNumber="CASE #5519-X"
+            />
+
+            {/* 2. On floor next to Filing Cabinet */}
+            <EvidenceBox
+              position={[1.9, -0.6, -5.8]}
+              rotation={[0, 0.45, 0]}
+              labelType="EVIDENCE"
+              caseNumber="CASE #3319-C"
+            />
+            <EvidenceBox
+              position={[1.88, -0.30, -5.82]}
+              rotation={[0, -0.12, 0]}
+              labelType="CONFIDENTIAL"
+              caseNumber="CASE #4902-D"
+            />
+            <EvidenceBox
+              position={[2.3, -0.6, -5.3]}
+              rotation={[0, 0.85, 0]}
+              labelType="CASE FILES"
+              caseNumber="CASE #1048-E"
+            />
+            <EvidenceBox
+              position={[4.4, -0.6, -5.8]}
+              rotation={[0, -0.4, 0]}
+              labelType="EVIDENCE"
+              caseNumber="CASE #2091-P"
+            />
+
+            {/* 3. On floor near Center Table & Lounge Sofa */}
+            <EvidenceBox
+              position={[1.1, -0.6, 1.9]}
+              rotation={[0, -0.35, 0]}
+              labelType="EVIDENCE"
+              caseNumber="CASE #5820-F"
+            />
+            <EvidenceBox
+              position={[1.08, -0.30, 1.88]}
+              rotation={[0, 0.25, 0]}
+              labelType="RESEARCH"
+              caseNumber="CASE #9014-G"
+            />
+            <EvidenceBox
+              position={[-0.6, -0.6, 2.9]}
+              rotation={[0, 0.65, 0]}
+              labelType="CONFIDENTIAL"
+              caseNumber="CASE #6731-H"
             />
 
             {/* Easter Eggs */}
@@ -574,7 +740,7 @@ export default function Hub3DV2() {
             />
 
             <McNaughtFrame
-              position={[0, 2.1, 6.44]}
+              position={[0, 2.7, 6.44]}
               scale={[1, 1, 1]}
               rotation={[0, Math.PI, 0]}
             />

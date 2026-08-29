@@ -465,8 +465,8 @@ export default function OfficeAssets({
     }
   })
 
-  const { decorativeScene, computerScene } = useMemo(() => {
-    if (!scene) return { decorativeScene: null, computerScene: null }
+  const { decorativeScene, computerScene, lampPos } = useMemo(() => {
+    if (!scene) return { decorativeScene: null, computerScene: null, lampPos: null }
     const fullClone = scene.clone(true)
     const compClone = scene.clone(true)
 
@@ -576,7 +576,30 @@ export default function OfficeAssets({
     compClone.position.z = -centerZ
     compClone.position.y = -box.min.y + 0.002
 
-    return { decorativeScene: fullClone, computerScene: compClone }
+    let detectedLampPos = null
+    fullClone.traverse((child) => {
+      if (child.isMesh) {
+        const n = (child.name || '').toLowerCase()
+        const m = (child.material?.name || '').toLowerCase()
+        if (n.includes('lamp') || m.includes('lamp') || n.includes('light') || m.includes('light') || n.includes('shade') || m.includes('shade')) {
+          child.updateMatrixWorld(true)
+          const lBox = new THREE.Box3().setFromObject(child)
+          const lCenter = new THREE.Vector3()
+          lBox.getCenter(lCenter)
+          detectedLampPos = [
+            lCenter.x - centerX,
+            lBox.max.y - box.min.y - 0.05,
+            lCenter.z - centerZ
+          ]
+        }
+      }
+    })
+
+    if (!detectedLampPos) {
+      detectedLampPos = [-0.65, 0.92, 0.45]
+    }
+
+    return { decorativeScene: fullClone, computerScene: compClone, lampPos: detectedLampPos }
   }, [scene, canvasTexture])
 
   if (!decorativeScene) return null
@@ -615,6 +638,27 @@ export default function OfficeAssets({
         onPointerDown={onDown}
         onClick={onClk}
       />
+      {/* Warm Emerald-Gold Banker's Lamp Light positioned directly on the lamp shade */}
+      {lampPos && (
+        <>
+          <pointLight
+            position={lampPos}
+            color="#a7f3d0"
+            intensity={6.0}
+            distance={8.0}
+            decay={1.8}
+          />
+          <spotLight
+            position={lampPos}
+            color="#fff5c0"
+            intensity={8.0}
+            angle={Math.PI / 2.2}
+            penumbra={0.6}
+            distance={8.5}
+            decay={1.8}
+          />
+        </>
+      )}
       {(computerHovered || alwaysShowOutline) && (
         <TightSilhouetteOutline
           scene={computerScene}

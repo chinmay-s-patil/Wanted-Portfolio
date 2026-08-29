@@ -18,11 +18,10 @@
 
 /* MAIN CONTAINER & ATMOSPHERE */
 .evidence-room {
-	width: 100vw;
-	height: 100vh;
+	width: 100%;
+	height: 100%;
 	overflow: hidden;
-	position: fixed;
-	inset: 0;
+	position: relative;
 	background:
 		radial-gradient(ellipse 65% 55% at 50% 25%, rgba(196, 165, 116, 0.12) 0%, rgba(0, 0, 0, 0.65) 70%),
 		linear-gradient(185deg, var(--ev-wall) 0%, #0a0908 40%, var(--ev-wall-deep) 100%);
@@ -57,7 +56,7 @@
 }
 
 .evidence-light-cone {
-	position: fixed;
+	position: absolute;
 	top: -120px;
 	left: 50%;
 	transform: translateX(-50%);
@@ -75,7 +74,7 @@
 
 /* BACK TO HUB BUTTON */
 .projects-back-btn {
-	position: fixed;
+	position: absolute;
 	top: 1.5rem;
 	left: 1.5rem;
 	display: inline-flex;
@@ -112,7 +111,7 @@
 /* HEADER & SCENE WRAPPER */
 .evidence-page-layout {
 	width: 100%;
-	height: 100vh;
+	height: 100%;
 	display: flex;
 	flex-direction: column;
 	align-items: center;
@@ -167,14 +166,14 @@
 	width: 100%;
 	max-width: 1100px;
 	margin: 0 auto;
-	height: calc(100vh - 220px);
+	height: calc(100% - 200px);
 	max-height: 700px;
 	z-index: 2;
 }
 
 /* VINTAGE DIRECTORY SIDEBAR (Left Screen Edge) */
 .directory-sidebar {
-	position: fixed;
+	position: absolute;
 	left: 1.5rem;
 	top: 5.5rem;
 	z-index: 30;
@@ -325,7 +324,7 @@
 }
 
 .drawer-controls-container {
-	position: fixed;
+	position: absolute;
 	bottom: 1.5rem;
 	left: 50%;
 	transform: translateX(-50%);
@@ -514,7 +513,7 @@
 }
 
 .drawer-panel-backdrop {
-	position: fixed;
+	position: absolute;
 	inset: 0;
 	z-index: 50;
 	background: rgba(0, 0, 0, 0.65);
@@ -523,11 +522,11 @@
 }
 
 .drawer-panel {
-	position: fixed;
+	position: absolute;
 	top: 0;
 	right: 0;
 	width: min(480px, 90vw);
-	height: 100vh;
+	height: 100%;
 	z-index: 51;
 	background:
 		linear-gradient(180deg,

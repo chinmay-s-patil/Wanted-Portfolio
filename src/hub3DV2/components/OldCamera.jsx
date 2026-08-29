@@ -61,11 +61,13 @@ export default function OldCamera({
     fullClone.updateMatrixWorld(true)
     const box = new THREE.Box3()
     fullClone.traverse((child) => {
-      if (child.isMesh && child.visible) {
+      if (child.isMesh && child.visible && child.geometry) {
         child.geometry.computeBoundingBox()
-        const b = child.geometry.boundingBox.clone()
-        b.applyMatrix4(child.matrixWorld)
-        box.union(b)
+        if (child.geometry.boundingBox) {
+          const b = child.geometry.boundingBox.clone()
+          b.applyMatrix4(child.matrixWorld)
+          box.union(b)
+        }
       }
     })
     const rawHeight = box.max.y - box.min.y

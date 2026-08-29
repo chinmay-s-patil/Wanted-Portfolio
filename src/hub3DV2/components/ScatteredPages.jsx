@@ -340,9 +340,9 @@ export default function ScatteredPages() {
     { pos: [-4.9, -0.585, 6.1], rot: [-Math.PI / 2, 0, 1.9], scale: [1, 1, 1], texIdx: 0, geoType: 'flat' },
 
     // --- FILING CABINET (Y = 0.65) & LOCKERS (Y = 0.85) & NEARBY FLOOR (Y = -0.585) ---
-    { pos: [3.4, 0.65, 5.8], rot: [-Math.PI / 2, 0, -0.3], scale: [1.1, 1.1, 1], texIdx: 1, geoType: 'flat' },
-    { pos: [2.9, 0.651, 6.1], rot: [-Math.PI / 2, 0, 0.7], scale: [0.9, 0.9, 1], texIdx: 4, geoType: 'curled' },
-    { pos: [6.4, 0.85, 5.7], rot: [-Math.PI / 2, 0, 0.15], scale: [1, 1, 1], texIdx: 0, geoType: 'curled' },
+    // { pos: [3.4, 0.65, 5.8], rot: [-Math.PI / 2, 0, -0.3], scale: [1.1, 1.1, 1], texIdx: 1, geoType: 'flat' },
+    // { pos: [2.9, 0.651, 6.1], rot: [-Math.PI / 2, 0, 0.7], scale: [0.9, 0.9, 1], texIdx: 4, geoType: 'curled' },
+    // { pos: [6.4, 0.85, 5.7], rot: [-Math.PI / 2, 0, 0.15], scale: [1, 1, 1], texIdx: 0, geoType: 'curled' },
     { pos: [4.2, -0.585, 5.5], rot: [-Math.PI / 2, 0, -1.2], scale: [1, 1, 1], texIdx: 6, geoType: 'flat' },
     { pos: [5.8, -0.585, 4.8], rot: [-Math.PI / 2, 0, 2.5], scale: [0.85, 0.85, 1], texIdx: 5, geoType: 'sticky' },
 

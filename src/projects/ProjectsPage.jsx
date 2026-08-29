@@ -5,6 +5,7 @@ import DrawerControls from './DrawerControls'
 import DrawerPanel from './DrawerPanel'
 import { useCabinetStore } from './useCabinetStore'
 import projectsData from './projectsData'
+import ViewportScaleStage from '../common/ViewportScaleStage'
 import './Projects.css'
 
 const ProjectFolder = lazy(() => import('./ProjectFolder'))
@@ -115,7 +116,8 @@ export default function ProjectsPage() {
   const totalProjectCount = projectsData.drawers.reduce((acc, d) => acc + d.folders.length, 0)
 
   return (
-    <div className="evidence-room" aria-label="Police Precinct Evidence Archive">
+    <ViewportScaleStage>
+      <div className="evidence-room" aria-label="Police Precinct Evidence Archive">
       {/* Clean Ambient Studio Spotlight */}
       <div className="evidence-spotlight" aria-hidden="true" />
 
@@ -239,6 +241,7 @@ export default function ProjectsPage() {
           <ProjectFolder project={selectedProject} onClose={handleCloseProject} />
         </Suspense>
       )}
-    </div>
+      </div>
+    </ViewportScaleStage>
   )
 }

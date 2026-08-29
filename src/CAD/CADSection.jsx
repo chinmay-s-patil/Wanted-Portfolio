@@ -1,8 +1,7 @@
-'use client'
-
 import React, { useState, useCallback, useEffect, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 import CADGLTFList from './CADGLTFList'
+import ViewportScaleStage from '../common/ViewportScaleStage'
 
 export default function CADSection() {
   const [selectedSpool, setSelectedSpool] = useState(null)
@@ -130,106 +129,106 @@ export default function CADSection() {
   }
 
   return (
-    <div className="cad-root">
-      <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Orbitron:wght@400;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap');
+    <ViewportScaleStage>
+      <div className="cad-root">
+        <style>{`
+          @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Orbitron:wght@400;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap');
 
-        .cad-root {
-          width: 100vw;
-          height: 100vh;
-          background: 
-            radial-gradient(circle at 50% 25%, rgba(56, 189, 248, 0.12) 0%, transparent 60%),
-            radial-gradient(circle at 50% 50%, #0b1320 0%, #060b14 60%, #03060c 100%);
-          overflow: hidden;
-          position: fixed;
-          top: 0; left: 0;
-          font-family: 'Share Tech Mono', 'JetBrains Mono', monospace;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          padding: 1.5rem;
-          box-sizing: border-box;
-        }
+          .cad-root {
+            width: 100%;
+            height: 100%;
+            background: 
+              radial-gradient(circle at 50% 25%, rgba(56, 189, 248, 0.12) 0%, transparent 60%),
+              radial-gradient(circle at 50% 50%, #0b1320 0%, #060b14 60%, #03060c 100%);
+            overflow: hidden;
+            position: relative;
+            font-family: 'Share Tech Mono', 'JetBrains Mono', monospace;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1.5rem;
+            box-sizing: border-box;
+          }
 
-        /* Layer 1: Technical Drafting Blueprint Grid (Griddy aesthetic) */
-        .cad-root::before {
-          content: '';
-          position: absolute; inset: 0;
-          background-image: 
-            linear-gradient(rgba(56, 189, 248, 0.07) 1px, transparent 1px),
-            linear-gradient(90deg, rgba(56, 189, 248, 0.07) 1px, transparent 1px),
-            linear-gradient(rgba(99, 102, 241, 0.04) 2px, transparent 2px),
-            linear-gradient(90deg, rgba(99, 102, 241, 0.04) 2px, transparent 2px);
-          background-size: 32px 32px, 32px 32px, 160px 160px, 160px 160px;
-          pointer-events: none;
-          opacity: 0.85;
-          z-index: 0;
-        }
+          /* Layer 1: Technical Drafting Blueprint Grid (Griddy aesthetic) */
+          .cad-root::before {
+            content: '';
+            position: absolute; inset: 0;
+            background-image: 
+              linear-gradient(rgba(56, 189, 248, 0.07) 1px, transparent 1px),
+              linear-gradient(90deg, rgba(56, 189, 248, 0.07) 1px, transparent 1px),
+              linear-gradient(rgba(99, 102, 241, 0.04) 2px, transparent 2px),
+              linear-gradient(90deg, rgba(99, 102, 241, 0.04) 2px, transparent 2px);
+            background-size: 32px 32px, 32px 32px, 160px 160px, 160px 160px;
+            pointer-events: none;
+            opacity: 0.85;
+            z-index: 0;
+          }
 
-        /* Layer 2: CRT Vintage Scanlines & Dust Vignette */
-        .cad-root::after {
-          content: '';
-          position: absolute; inset: 0;
-          background: 
-            repeating-linear-gradient(
-              0deg,
-              rgba(0, 0, 0, 0.12) 0px,
-              rgba(0, 0, 0, 0.12) 1px,
-              transparent 1px,
-              transparent 3px
-            ),
-            radial-gradient(ellipse at center, transparent 40%, rgba(0, 0, 0, 0.85) 100%);
-          pointer-events: none;
-          z-index: 1;
-        }
+          /* Layer 2: CRT Vintage Scanlines & Dust Vignette */
+          .cad-root::after {
+            content: '';
+            position: absolute; inset: 0;
+            background: 
+              repeating-linear-gradient(
+                0deg,
+                rgba(0, 0, 0, 0.12) 0px,
+                rgba(0, 0, 0, 0.12) 1px,
+                transparent 1px,
+                transparent 3px
+              ),
+              radial-gradient(ellipse at center, transparent 40%, rgba(0, 0, 0, 0.85) 100%);
+            pointer-events: none;
+            z-index: 1;
+          }
 
-        .cad-back-btn {
-          position: fixed;
-          top: 1.5rem; left: 1.5rem;
-          background: rgba(11, 19, 32, 0.92);
-          border: 1.5px solid rgba(56, 189, 248, 0.35);
-          color: #e2e8f0;
-          padding: 0.6rem 1.25rem;
-          border-radius: 4px;
-          font-size: 0.82rem;
-          cursor: pointer;
-          z-index: 1000;
-          font-family: 'Share Tech Mono', monospace;
-          box-shadow: 0 4px 15px rgba(0,0,0,0.8), inset 0 1px 0 rgba(255,255,255,0.06);
-          transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
-          text-decoration: none;
-          display: inline-flex;
-          align-items: center;
-          gap: 0.4rem;
-          letter-spacing: 0.1em;
-        }
-        .cad-back-btn:hover {
-          border-color: #38bdf8;
-          color: #fff;
-          background: rgba(56, 189, 248, 0.18);
-          box-shadow: 0 0 20px rgba(56, 189, 248, 0.35);
-          transform: translateX(-3px);
-        }
+          .cad-back-btn {
+            position: absolute;
+            top: 1.5rem; left: 1.5rem;
+            background: rgba(11, 19, 32, 0.92);
+            border: 1.5px solid rgba(56, 189, 248, 0.35);
+            color: #e2e8f0;
+            padding: 0.6rem 1.25rem;
+            border-radius: 4px;
+            font-size: 0.82rem;
+            cursor: pointer;
+            z-index: 1000;
+            font-family: 'Share Tech Mono', monospace;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.8), inset 0 1px 0 rgba(255,255,255,0.06);
+            transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            letter-spacing: 0.1em;
+          }
+          .cad-back-btn:hover {
+            border-color: #38bdf8;
+            color: #fff;
+            background: rgba(56, 189, 248, 0.18);
+            box-shadow: 0 0 20px rgba(56, 189, 248, 0.35);
+            transform: translateX(-3px);
+          }
 
-        .cad-main {
-          display: flex;
-          gap: 4.5rem;
-          align-items: center;
-          justify-content: center;
-          width: 100%;
-          max-width: 2200px;
-          position: relative;
-          z-index: 2;
-        }
+          .cad-main {
+            display: flex;
+            gap: clamp(1.5rem, 3vw, 4.5rem);
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            max-width: 2200px;
+            position: relative;
+            z-index: 2;
+          }
 
-        /* LEFT PANEL - SPEC SHEET */
-        .left-panel {
-          width: 310px;
-          display: flex;
-          flex-direction: column;
-          gap: 1rem;
-          flex-shrink: 0;
-        }
+          /* LEFT PANEL - SPEC SHEET */
+          .left-panel {
+            width: clamp(260px, 18vw, 310px);
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            flex-shrink: 0;
+          }
         .info-card {
           background: rgba(11, 19, 32, 0.94);
           backdrop-filter: blur(12px);
@@ -1149,6 +1148,7 @@ export default function CADSection() {
         )}
       </div>
     </div>
+  </ViewportScaleStage>
   )
 }
 

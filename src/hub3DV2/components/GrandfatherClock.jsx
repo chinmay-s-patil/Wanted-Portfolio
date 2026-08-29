@@ -82,23 +82,9 @@ export default function GrandfatherClock({
     return cloned
   }, [scene])
 
-  // Animate clock hands at 5 minutes per second & swinging pendulum in 60 FPS useFrame loop
+  // Swinging pendulum in 60 FPS useFrame loop
   useFrame(({ clock }) => {
     const elapsed = clock.getElapsedTime()
-
-    // 5 minutes per second = (5 / 60) full revolutions per second
-    const minuteRot = - (elapsed * (5 / 60)) * Math.PI * 2
-    const hourRot = minuteRot / 12
-
-    // Rotate Minute Hand around dial center pin (5 mins / sec)
-    if (minuteHandRef.current) {
-      minuteHandRef.current.rotation.z = minuteRot
-    }
-
-    // Rotate Hour Hand around dial center pin (proportional to minute hand)
-    if (hourHandRef.current) {
-      hourHandRef.current.rotation.z = hourRot
-    }
 
     // Swing Pendulum smoothly side-to-side around top anchor
     if (pendulumRef.current) {

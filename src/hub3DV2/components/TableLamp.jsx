@@ -64,21 +64,21 @@ export default function TableLamp({
       <primitive object={lampData.wrapper} />
       {/* Warm Ambient Point Light inside Bulb */}
       <pointLight
-        position={lampData.bulbPos}
+        position={[0, 0.45, 0]}
         color="#ffe28a"
-        intensity={3.8}
-        distance={7.0}
-        decay={2}
+        intensity={6.5}
+        distance={9.0}
+        decay={1.8}
       />
       {/* Focused Downward Desk Spotlight */}
       <spotLight
-        position={lampData.bulbPos}
+        position={[0, 0.45, 0]}
         color="#fff1b5"
-        intensity={6.0}
-        angle={Math.PI / 2.5}
-        penumbra={0.7}
-        distance={8.0}
-        decay={2}
+        intensity={8.0}
+        angle={Math.PI / 2.2}
+        penumbra={0.6}
+        distance={9.0}
+        decay={1.8}
       />
     </group>
   )

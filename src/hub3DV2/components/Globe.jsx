@@ -27,28 +27,31 @@ export default function Globe({
     let foundTexture = null
 
     cloned.traverse((child) => {
-      if (child.isMesh) {
-        if (child.material) {
-          // Clone material and texture to allow independent UV animation
-          child.material = child.material.clone()
-          child.material.side = THREE.DoubleSide
-          if (child.material.map) {
-            child.material.map = child.material.map.clone()
-            child.material.map.colorSpace = THREE.SRGBColorSpace
-            child.material.map.wrapS = THREE.RepeatWrapping
-            child.material.map.needsUpdate = true
+      if (child.isMesh && child.material) {
+        const processMat = (mat) => {
+          if (!mat || typeof mat.clone !== 'function') return mat
+          const cm = mat.clone()
+          cm.side = THREE.DoubleSide
+          if (cm.map && typeof cm.map.clone === 'function') {
+            cm.map = cm.map.clone()
+            cm.map.colorSpace = THREE.SRGBColorSpace
+            cm.map.wrapS = THREE.RepeatWrapping
+            cm.map.needsUpdate = true
 
             const name = (child.name || '').toLowerCase()
-            const matName = (child.material.name || '').toLowerCase()
-            if (
-              matName.includes('globe_texture') ||
-              name.includes('globe') ||
-              name.includes('globe_globe_texture')
-            ) {
-              foundTexture = child.material.map
+            const matName = (cm.name || '').toLowerCase()
+            if (matName.includes('globe') || name.includes('globe')) {
+              foundTexture = cm.map
             }
           }
-          child.material.needsUpdate = true
+          cm.needsUpdate = true
+          return cm
+        }
+
+        if (Array.isArray(child.material)) {
+          child.material = child.material.map(processMat)
+        } else {
+          child.material = processMat(child.material)
         }
       }
     })

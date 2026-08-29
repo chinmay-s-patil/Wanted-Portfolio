@@ -30,6 +30,10 @@ export { default as TableLamp } from './TableLamp'
 export { default as ScatteredPages } from './ScatteredPages'
 export { default as Globe } from './Globe'
 export { default as WaterDispenser } from './WaterDispenser'
+export { default as Fireplace } from './Fireplace'
+export { default as Trophy } from './Trophy'
+export { default as AttributionModal } from './AttributionModal'
+export { default as EvidenceBox } from './EvidenceBox'
 
 
 

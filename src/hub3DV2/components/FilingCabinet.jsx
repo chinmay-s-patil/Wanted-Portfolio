@@ -50,12 +50,24 @@ export default function FilingCabinet({
           const meshClone = child.clone(true)
           meshClone.visible = true
           if (meshClone.material) {
-            meshClone.material = meshClone.material.clone()
-            meshClone.material.side = THREE.DoubleSide
-            if (meshClone.material.map) {
-              meshClone.material.map.colorSpace = THREE.SRGBColorSpace
+            if (Array.isArray(meshClone.material)) {
+              meshClone.material = meshClone.material.map((m) => {
+                if (!m || typeof m.clone !== 'function') return m
+                const cm = m.clone()
+                cm.side = THREE.DoubleSide
+                if (cm.map) cm.map.colorSpace = THREE.SRGBColorSpace
+                cm.needsUpdate = true
+                return cm
+              })
+            } else {
+              if (typeof meshClone.material.clone === 'function') {
+                const cm = meshClone.material.clone()
+                cm.side = THREE.DoubleSide
+                if (cm.map) cm.map.colorSpace = THREE.SRGBColorSpace
+                cm.needsUpdate = true
+                meshClone.material = cm
+              }
             }
-            meshClone.material.needsUpdate = true
           }
           // Apply world matrix transform to lock local position cleanly
           meshClone.applyMatrix4(child.matrixWorld)

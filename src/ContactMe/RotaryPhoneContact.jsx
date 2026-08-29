@@ -1,5 +1,6 @@
 import React, { useCallback, useEffect, useId, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import ViewportScaleStage from "../common/ViewportScaleStage";
 import "./RotaryPhoneContact.css";
 
 const CONTACTS = [
@@ -283,7 +284,8 @@ export default function RotaryPhoneContact() {
   };
 
   return (
-    <section className="rotary-section" aria-label="Contact">
+    <ViewportScaleStage>
+      <section className="rotary-section" aria-label="Contact">
       {/* Back to Hub Button */}
       <button
         type="button"
@@ -547,6 +549,7 @@ export default function RotaryPhoneContact() {
           </div>
         </div>
       </div>
-    </section>
+      </section>
+    </ViewportScaleStage>
   );
 }

@@ -36,20 +36,27 @@ export default function TvTable({
         if (isTV || isTVStand) {
           child.visible = true
           if (child.material) {
-            // Clone material so mutations never affect shared cached materials in scene
-            child.material = child.material.clone()
-            child.material.side = THREE.DoubleSide
-            if (child.material.map) {
-              child.material.map.colorSpace = THREE.SRGBColorSpace
+            const processMat = (mat) => {
+              if (!mat || typeof mat.clone !== 'function') return mat
+              const cm = mat.clone()
+              cm.side = THREE.DoubleSide
+              if (cm.map) cm.map.colorSpace = THREE.SRGBColorSpace
+              if (isScreenOn && (name.includes('screen') || cm.name?.includes('screen'))) {
+                cm.emissive = new THREE.Color('#38ef7d')
+                cm.emissiveIntensity = 2.5
+              } else if (cm.emissiveMap) {
+                cm.emissiveMap.colorSpace = THREE.SRGBColorSpace
+                cm.emissiveIntensity = isScreenOn ? 3.0 : 1.5
+              }
+              cm.needsUpdate = true
+              return cm
             }
-            if (isScreenOn && (name.includes('screen') || child.material.name?.includes('screen'))) {
-              child.material.emissive = new THREE.Color('#38ef7d')
-              child.material.emissiveIntensity = 2.5
-            } else if (child.material.emissiveMap) {
-              child.material.emissiveMap.colorSpace = THREE.SRGBColorSpace
-              child.material.emissiveIntensity = isScreenOn ? 3.0 : 1.5
+
+            if (Array.isArray(child.material)) {
+              child.material = child.material.map(processMat)
+            } else {
+              child.material = processMat(child.material)
             }
-            child.material.needsUpdate = true
           }
         } else {
           child.visible = false

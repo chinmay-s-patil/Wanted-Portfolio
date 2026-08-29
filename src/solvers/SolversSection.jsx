@@ -5,6 +5,7 @@ import { processCommand } from './commandProcessor';
 import { tabComplete } from './tabCompleter';
 import { renderBanner } from './openfoamBannerTemplate';
 import { solverData } from './solverData';
+import ViewportScaleStage from '../common/ViewportScaleStage';
 import './SolversSection.css';
 
 /* ═════════════════════════════════════════════════════════════════
@@ -383,18 +384,20 @@ export default function SolversSection() {
   }, []);
 
   return (
-    <div className="solvers-page">
-      <CenteredHeader onBack={() => navigate('/hub')} />
+    <ViewportScaleStage>
+      <div className="solvers-page">
+        <CenteredHeader onBack={() => navigate('/hub')} />
 
-      <main className="solvers-main">
-        <div className="terminal-layout">
-          <TerminalPanel
-            externalCommand={pendingCommand}
-            onExternalCommandHandled={handleCommandHandled}
-          />
-          <AccessibleSolverIndex onCommandClick={handleAccessibleCommand} />
-        </div>
-      </main>
-    </div>
+        <main className="solvers-main">
+          <div className="terminal-layout">
+            <TerminalPanel
+              externalCommand={pendingCommand}
+              onExternalCommandHandled={handleCommandHandled}
+            />
+            <AccessibleSolverIndex onCommandClick={handleAccessibleCommand} />
+          </div>
+        </main>
+      </div>
+    </ViewportScaleStage>
   );
 }

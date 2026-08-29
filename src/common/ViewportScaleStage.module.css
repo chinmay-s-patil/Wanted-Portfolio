@@ -1,0 +1,24 @@
+/* src/common/ViewportScaleStage.module.css */
+
+.scaleViewport {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  box-sizing: border-box;
+}
+
+.scaleCanvas {
+  position: relative;
+  flex-shrink: 0;
+  transform-origin: center center;
+  overflow: hidden;
+  box-sizing: border-box;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}

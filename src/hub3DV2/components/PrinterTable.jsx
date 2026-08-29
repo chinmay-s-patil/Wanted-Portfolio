@@ -57,11 +57,13 @@ export default function PrinterTable({
     tableClone.updateMatrixWorld(true)
     const tableBox = new THREE.Box3()
     tableClone.traverse((child) => {
-      if (child.isMesh && child.visible) {
+      if (child.isMesh && child.visible && child.geometry) {
         child.geometry.computeBoundingBox()
-        const b = child.geometry.boundingBox.clone()
-        b.applyMatrix4(child.matrixWorld)
-        tableBox.union(b)
+        if (child.geometry.boundingBox) {
+          const b = child.geometry.boundingBox.clone()
+          b.applyMatrix4(child.matrixWorld)
+          tableBox.union(b)
+        }
       }
     })
     const tableCenter = new THREE.Vector3()
@@ -111,11 +113,13 @@ export default function PrinterTable({
     printerClone.updateMatrixWorld(true)
     const printerBox = new THREE.Box3()
     printerClone.traverse((child) => {
-      if (child.isMesh && child.visible) {
+      if (child.isMesh && child.visible && child.geometry) {
         child.geometry.computeBoundingBox()
-        const b = child.geometry.boundingBox.clone()
-        b.applyMatrix4(child.matrixWorld)
-        printerBox.union(b)
+        if (child.geometry.boundingBox) {
+          const b = child.geometry.boundingBox.clone()
+          b.applyMatrix4(child.matrixWorld)
+          printerBox.union(b)
+        }
       }
     })
     const printerCenter = new THREE.Vector3()

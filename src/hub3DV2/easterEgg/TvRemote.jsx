@@ -31,12 +31,24 @@ export default function TvRemote({
     cloned.traverse((child) => {
       if (child.isMesh) {
         if (child.material) {
-          child.material = child.material.clone()
-          child.material.side = THREE.DoubleSide
-          if (child.material.map) {
-            child.material.map.colorSpace = THREE.SRGBColorSpace
+          if (Array.isArray(child.material)) {
+            child.material = child.material.map((m) => {
+              if (!m || typeof m.clone !== 'function') return m
+              const cm = m.clone()
+              cm.side = THREE.DoubleSide
+              if (cm.map) cm.map.colorSpace = THREE.SRGBColorSpace
+              cm.needsUpdate = true
+              return cm
+            })
+          } else {
+            if (typeof child.material.clone === 'function') {
+              const cm = child.material.clone()
+              cm.side = THREE.DoubleSide
+              if (cm.map) cm.map.colorSpace = THREE.SRGBColorSpace
+              cm.needsUpdate = true
+              child.material = cm
+            }
           }
-          child.material.needsUpdate = true
         }
       }
     })

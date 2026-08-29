@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import diaryEntries from './diaryList';
+import ViewportScaleStage from '../common/ViewportScaleStage';
 
 export default function ProfessionalDiary() {
   const [currentEntryIndex, setCurrentEntryIndex] = useState(0);
@@ -181,37 +182,38 @@ export default function ProfessionalDiary() {
   };
 
   return (
-    <div className="diary-container">
-      <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Caveat:wght@400;500;600;700&display=swap');
-        @import url('https://fonts.googleapis.com/css2?family=Crimson+Text:ital,wght@0,400;0,600;0,700;1,400&display=swap');
-        @import url('https://fonts.googleapis.com/css2?family=Courier+Prime:wght@400;700&display=swap');
+    <ViewportScaleStage>
+      <div className="diary-container">
+        <style>{`
+          @import url('https://fonts.googleapis.com/css2?family=Caveat:wght@400;500;600;700&display=swap');
+          @import url('https://fonts.googleapis.com/css2?family=Crimson+Text:ital,wght@0,400;0,600;0,700;1,400&display=swap');
+          @import url('https://fonts.googleapis.com/css2?family=Courier+Prime:wght@400;700&display=swap');
 
-        :root {
-          --leather-dark: #1a0f08;
-          --leather-mid: #2a1a10;
-          --leather-light: #3d2817;
-          --paper-base: #f4e8d0;
-          --paper-light: #f9f3e9;
-          --paper-aged: #e8d9bc;
-          --ink-dark: #2a1a10;
-          --ink-mid: #5d4a2a;
-          --ink-light: #7a6a55;
-          --accent-gold: #c4a574;
-          --accent-warm: #8b7355;
-        }
+          :root {
+            --leather-dark: #1a0f08;
+            --leather-mid: #2a1a10;
+            --leather-light: #3d2817;
+            --paper-base: #f4e8d0;
+            --paper-light: #f9f3e9;
+            --paper-aged: #e8d9bc;
+            --ink-dark: #2a1a10;
+            --ink-mid: #5d4a2a;
+            --ink-light: #7a6a55;
+            --accent-gold: #c4a574;
+            --accent-warm: #8b7355;
+          }
 
-        .diary-container {
-          width: 100vw;
-          height: 100vh;
-          background: linear-gradient(135deg, #0d0906 0%, #1a0f08 40%, #0d0906 100%);
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          position: relative;
-          overflow: hidden;
-          font-family: 'Crimson Text', serif;
-        }
+          .diary-container {
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #0d0906 0%, #1a0f08 40%, #0d0906 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+            font-family: 'Crimson Text', serif;
+          }
 
         .diary-container::before {
           content: '';
@@ -1455,6 +1457,7 @@ export default function ProfessionalDiary() {
           </div>
         </div>
       )}
-    </div>
+      </div>
+    </ViewportScaleStage>
   );
 }

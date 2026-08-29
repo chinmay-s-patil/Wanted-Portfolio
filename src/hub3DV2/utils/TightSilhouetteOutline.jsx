@@ -9,11 +9,19 @@ import * as THREE from 'three'
  * to render a crisp, tight, shape-following contour outline around any 3D GLTF model
  * regardless of the model's local scaling factor.
  */
-export default function TightSilhouetteOutline({ scene, color = '#00f0ff', thickness = 0.007 }) {
+export default function TightSilhouetteOutline({
+  scene,
+  targetMesh,
+  color = '#00f0ff',
+  thickness = 0.007,
+  visible = true,
+}) {
   const uniformsRef = useRef(null)
+  const target = scene || targetMesh
 
   const outlineScene = useMemo(() => {
-    const cloned = scene.clone(true)
+    if (!target || typeof target.clone !== 'function') return null
+    const cloned = target.clone(true)
 
     const outlineMaterial = new THREE.MeshBasicMaterial({
       color: new THREE.Color(color),
@@ -49,13 +57,15 @@ export default function TightSilhouetteOutline({ scene, color = '#00f0ff', thick
     })
 
     return cloned
-  }, [scene, color, thickness])
+  }, [target, color, thickness])
 
   useFrame(({ clock }) => {
     if (uniformsRef.current && uniformsRef.current.uTime) {
       uniformsRef.current.uTime.value = clock.getElapsedTime()
     }
   })
+
+  if (!visible || !outlineScene) return null
 
   return <primitive object={outlineScene} />
 }
