@@ -177,21 +177,7 @@ export default function LockerDoorPanel({
                 </div>
               )}
 
-              {/* Locker Bottom Floor Items (Backpack, Water Bottle, Pencil Pouch - Photos 1 & 2) */}
-              <div className={styles.lockerBottomFloor}>
-                <div className={styles.floorBackpack}>
-                  <span className={styles.itemIcon}>🎒</span>
-                  <span className={styles.itemLabel}>Campus Pack</span>
-                </div>
-                <div className={styles.floorWaterBottle}>
-                  <span className={styles.itemIcon}>🍾</span>
-                  <span className={styles.itemLabel}>Hydro Flask</span>
-                </div>
-                <div className={styles.floorPencilCase}>
-                  <span className={styles.itemIcon}>✏️</span>
-                  <span className={styles.itemLabel}>Lab Kit</span>
-                </div>
-              </div>
+
 
             </div>
           </div>
@@ -214,34 +200,9 @@ export default function LockerDoorPanel({
                 ))}
               </div>
 
-              {/* 📋 White Magnetic Memo Whiteboard (Photo 1) */}
-              <div className={styles.magneticMemoBoard}>
-                {/* Round Colored Magnets */}
-                <div className={`${styles.magnetDot} ${styles.magnetRed}`} />
-                <div className={`${styles.magnetDot} ${styles.magnetYellow}`} />
-                <div className={`${styles.magnetDot} ${styles.magnetBlue}`} />
 
-                <span className={styles.memoBoardHeader}>SCHEDULE / CHECKLIST</span>
-                <ul className={styles.memoList}>
-                  <li>1. Binders & Labs</li>
-                  <li>2. Notebook / Folder</li>
-                  <li>3. Thesis Dossier</li>
-                  <li>4. Study Hall</li>
-                </ul>
-              </div>
 
-              {/* ✏️ Magnetic Pencil Holder Cup (Photos 1 & 3) */}
-              <div className={styles.magneticPencilCup}>
-                <div className={styles.cupMagnetPin} />
-                <div className={styles.pencilCupBody}>
-                  <div className={styles.pensCluster}>
-                    <span className={styles.penItem}>✏️</span>
-                    <span className={styles.penItem}>🖋️</span>
-                    <span className={styles.penItem}>🖍️</span>
-                  </div>
-                  <span className={styles.cupLabel}>Stationery Cup</span>
-                </div>
-              </div>
+
 
               {/* Taped Photo Polaroid Gallery */}
               {locker.images?.length > 0 && (

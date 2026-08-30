@@ -5,6 +5,7 @@ export default function ProjectFolder({ project, onClose }) {
   const [currentMediaIndex, setCurrentMediaIndex] = useState(0)
   const [isPlaying, setIsPlaying] = useState(true)
   const [isFlipping, setIsFlipping] = useState(false)
+  const [flipDirection, setFlipDirection] = useState('forward')
   const videoRefs = useRef([])
 
   useEffect(() => {
@@ -15,7 +16,7 @@ export default function ProjectFolder({ project, onClose }) {
   }, [])
 
   useEffect(() => {
-    if (!project.media || project.media.length === 0) return
+    if (!project?.media || project.media.length === 0) return
 
     const currentMedia = project.media[currentMediaIndex]
 
@@ -35,7 +36,7 @@ export default function ProjectFolder({ project, onClose }) {
           setIsPlaying(false)
         })
     }
-  }, [currentMediaIndex, project.media])
+  }, [currentMediaIndex, project?.media])
 
   useEffect(() => {
     return () => {
@@ -52,10 +53,12 @@ export default function ProjectFolder({ project, onClose }) {
   const hasMultipleMedia = project.media && project.media.length > 1
 
   const nextMedia = () => {
+    if (!project.media) return
     setCurrentMediaIndex((prev) => (prev + 1) % project.media.length)
   }
 
   const prevMedia = () => {
+    if (!project.media) return
     setCurrentMediaIndex((prev) => (prev - 1 + project.media.length) % project.media.length)
   }
 
@@ -74,11 +77,15 @@ export default function ProjectFolder({ project, onClose }) {
 
   const handlePageTurn = (targetPage) => {
     if (isFlipping || targetPage === currentPage) return
+    const direction = targetPage > currentPage ? 'forward' : 'backward'
+    setFlipDirection(direction)
     setIsFlipping(true)
     setTimeout(() => {
       setCurrentPage(targetPage)
+    }, 210)
+    setTimeout(() => {
       setIsFlipping(false)
-    }, 280)
+    }, 420)
   }
 
   const getYouTubeEmbedUrl = (url) => {
@@ -126,7 +133,7 @@ export default function ProjectFolder({ project, onClose }) {
         </button>
 
         {/* Paper Document Page */}
-        <div className={`paper-document ${isFlipping ? 'flipping' : ''}`} key={currentPage}>
+        <div className={`paper-document ${isFlipping ? `flipping-${flipDirection}` : ''}`}>
           {/* Metallic Paperclip Clipping the Top-Left Edge */}
           <div className="paperclip-container">
             <svg viewBox="0 0 24 52" fill="none" style={{ width: '100%', height: '100%' }}>

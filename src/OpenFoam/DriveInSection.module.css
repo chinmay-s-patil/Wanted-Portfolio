@@ -54,10 +54,10 @@
 
 /* PROMINENT FLOATING GO BACK BUTTON (GAME UI STYLED) */
 .prominentBackBtn {
-  position: absolute;
+  position: fixed;
   top: 20px;
   left: 24px;
-  z-index: 150;
+  z-index: 1000;
   display: flex;
   align-items: center;
   gap: 10px;
@@ -213,11 +213,22 @@
   z-index: 2;
 }
 
+.boothRoofSignKicker {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.82rem;
+  font-weight: 800;
+  letter-spacing: 0.22em;
+  color: #0284c7;
+  text-transform: uppercase;
+  margin-bottom: 0.2rem;
+  text-shadow: 0 0 6px rgba(56, 189, 248, 0.3);
+}
+
 .boothRoofSignLine {
   font-family: 'Oswald', 'Arial Narrow', sans-serif;
-  font-size: 1.85rem;
+  font-size: 1.75rem;
   font-weight: 700;
-  letter-spacing: 0.14em;
+  letter-spacing: 0.12em;
   color: #c41e1e;
   text-transform: uppercase;
   line-height: 1.05;

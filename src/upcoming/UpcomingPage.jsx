@@ -207,12 +207,12 @@ export default function UpcomingPage() {
 	const sweepDurationCss = `${BASE_SWEEP_DURATION_S / (sweepSpeed || 1)}s`
 
 	return (
-		<ViewportScaleStage>
-			<div
-				className={reducedMotion ? 'reduced-motion' : ''}
-				style={{
-					width: '100%',
-					height: '100%',
+		<div
+			className={reducedMotion ? 'reduced-motion' : ''}
+			style={{
+				width: '100vw',
+				height: '100vh',
+				minHeight: '100vh',
 					background: 'radial-gradient(circle at 50% 50%, #12161f 0%, #0a0c12 60%, #050609 100%)',
 					overflow: 'hidden',
 					position: 'relative',
@@ -489,7 +489,7 @@ export default function UpcomingPage() {
 					e.currentTarget.style.borderColor = 'rgba(0, 224, 255, 0.35)'
 				}}
 			>
-				← BACK TO HQ
+				← BACK TO OFFICE
 			</button>
 
 			{/* Header Title */}
@@ -1045,6 +1045,5 @@ export default function UpcomingPage() {
 				<span>{new Date().toISOString().slice(0, 19).replace('T', ' ')} UTC</span>
 			</div>
 		</div>
-		</ViewportScaleStage>
 	)
 }

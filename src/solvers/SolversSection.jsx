@@ -16,7 +16,7 @@ function CenteredHeader({ onBack }) {
     <header className="centered-header">
       <button className="header-back" onClick={onBack}>
         <span className="header-back-arrow">←</span>
-        <span>Back to Hub</span>
+        <span>Back to Office</span>
       </button>
       <div className="header-content">
         <span className="header-kicker">OpenFOAM Toolkit</span>
@@ -384,20 +384,18 @@ export default function SolversSection() {
   }, []);
 
   return (
-    <ViewportScaleStage>
-      <div className="solvers-page">
-        <CenteredHeader onBack={() => navigate('/hub')} />
+    <div className="solvers-page">
+      <CenteredHeader onBack={() => navigate('/hub')} />
 
-        <main className="solvers-main">
-          <div className="terminal-layout">
-            <TerminalPanel
-              externalCommand={pendingCommand}
-              onExternalCommandHandled={handleCommandHandled}
-            />
-            <AccessibleSolverIndex onCommandClick={handleAccessibleCommand} />
-          </div>
-        </main>
-      </div>
-    </ViewportScaleStage>
+      <main className="solvers-main">
+        <div className="terminal-layout">
+          <TerminalPanel
+            externalCommand={pendingCommand}
+            onExternalCommandHandled={handleCommandHandled}
+          />
+          <AccessibleSolverIndex onCommandClick={handleAccessibleCommand} />
+        </div>
+      </main>
+    </div>
   );
 }

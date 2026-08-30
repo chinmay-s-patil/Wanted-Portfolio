@@ -127,14 +127,14 @@ export default function EducationPage() {
   }, [currentLocker])
 
   return (
-    <ViewportScaleStage>
-      <div
-        style={{
-          width: '100%',
-          height: '100%',
-          background: 'radial-gradient(ellipse at 50% 30%, #1a1815 0%, #0d0c0a 60%, #050403 100%)',
-          overflow: 'hidden',
-          position: 'relative',
+    <div
+      style={{
+        width: '100vw',
+        height: '100vh',
+        minHeight: '100vh',
+        background: 'radial-gradient(ellipse at 50% 30%, #1a1815 0%, #0d0c0a 60%, #050403 100%)',
+        overflow: 'hidden',
+        position: 'relative',
         fontFamily: "'Special Elite', monospace",
         display: 'flex',
         flexDirection: 'column'
@@ -220,6 +220,5 @@ export default function EducationPage() {
         onClose={closeViewer}
       />
       </div>
-    </ViewportScaleStage>
   )
 }

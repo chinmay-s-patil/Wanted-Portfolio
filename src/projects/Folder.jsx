@@ -9,11 +9,11 @@ export default function Folder({ data, index, drawerColor, restTransform, onSele
   const setActiveFolderIndex = useCabinetStore((s) => s.setActiveFolderIndex)
   const isActive = activeFolderIndex === index
 
-  // Smooth vertical lift when active
+  // Smooth vertical lift when active (Pops up much higher out of drawer)
   const { y, rotX } = useSpring({
-    y: isActive ? restTransform.y + 0.11 : restTransform.y,
-    rotX: isActive ? -0.10 : 0,
-    config: { tension: 260, friction: 22 },
+    y: isActive ? restTransform.y + 0.34 : restTransform.y,
+    rotX: isActive ? -0.06 : 0,
+    config: { tension: 280, friction: 20 },
   })
 
   // Stagger tab positions (Left, Center, Right) across columns

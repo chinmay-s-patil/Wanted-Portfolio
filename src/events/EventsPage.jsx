@@ -33,21 +33,23 @@ export default function EventsPage() {
   }, []);
 
   return (
-    <ViewportScaleStage>
-      <div className={styles.screeningRoom}>
+    <div className={styles.screeningRoom}>
       {/* Navigation Header */}
       <header className={styles.topNav}>
         <button
           className={styles.backBtn}
           onClick={() => navigate('/hub')}
-          aria-label="Back to Office Hub"
+          aria-label="Back to Office"
         >
-          ← Back to Hub
+          ← Back to Office
         </button>
 
         <div className={styles.headerTitleGroup}>
           <span className={styles.topBadge}>35MM FILM ROLLS</span>
           <h1 className={styles.mainHeading}>Event Projection Archive</h1>
+          <p className={styles.headerDesc}>
+            Event projection reels & engineering showcase milestones &bull; Select any canister
+          </p>
         </div>
 
         <div style={{ width: '120px' }} aria-hidden="true" />
@@ -87,6 +89,5 @@ export default function EventsPage() {
         <FilmStripUnraveler reel={selectedReel} onClose={handleClose} />
       )}
       </div>
-    </ViewportScaleStage>
   );
 }

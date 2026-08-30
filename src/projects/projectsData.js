@@ -6,6 +6,64 @@ const projectsData = {
       color: '#2a5d84',
       folders: [
         {
+          id: 'effective-heat-capacity',
+          title: 'Effective Heat Capacity Phase Change Solver',
+          category: 'CFD',
+          period: 'Jun 2026 - Present',
+          description: 'Developing OpenFOAM-based phase change solvers using the Effective Heat Capacity method to model latent heat effects during melting and solidification. Extending single-region and conjugate heat transfer solvers for PCM-assisted battery thermal management applications involving coupled solid, fluid, and cooling domains.',
+          learnings: [
+            'Implemented Effective Heat Capacity method in OpenFOAM',
+            'Extended single-region and CHT solvers for PCM battery cooling',
+            'Modeled latent heat dissipation during melting & solidification'
+          ],
+          tags: ['OpenFOAM', 'Phase Change', 'PCM', 'Thermal Management', 'CFD']
+        },
+        {
+          id: 'free-fall-foam',
+          title: 'Free-Fall CFD Solver Development',
+          category: 'CFD',
+          period: 'May 2026 - Present',
+          description: 'Developing modified OpenFOAM solvers for free-fall simulations by incorporating non-inertial frame acceleration into incompressible and compressible flow formulations. Enabling transient aerodynamic analyses of freely accelerating bodies while accounting for gravity, drag, and fluid-structure motion coupling effects.',
+          learnings: [
+            'Incorporated non-inertial frame acceleration in OpenFOAM formulations',
+            'Simulated transient dynamics of freely accelerating bodies',
+            'Coupled gravity, aerodynamic drag, and body motion dynamics'
+          ],
+          tags: ['OpenFOAM', 'Free-Fall', 'Non-Inertial', 'Aerodynamics', 'CFD'],
+          media: [
+            { type: 'link', src: 'https://github.com/chinmay-s-patil/freeFallingFoam' }
+          ]
+        },
+        {
+          id: 'cfd-caa-fwh',
+          title: 'CFD-CAA Solver Development using FW-H Method',
+          category: 'CFD',
+          period: 'May 2026 - Present',
+          description: 'Building an OpenFOAM-based utility to post-process transient CFD data for aeroacoustic prediction using the Ffowcs Williams–Hawkings formulation. Adding surface sampling, retarded-time source reconstruction, and output generation for acoustic pressure signals, FFT spectra, and SPL at observer points.',
+          learnings: [
+            'Built OpenFOAM post-processing utility for aeroacoustic prediction',
+            'Implemented Ffowcs Williams–Hawkings (FW-H) analogy surface sampling',
+            'Generated acoustic pressure signals, FFT spectra, and SPL curves'
+          ],
+          tags: ['Aeroacoustics', 'FW-H', 'OpenFOAM', 'CAA', 'Noise Prediction'],
+          media: [
+            { type: 'link', src: 'https://github.com/chinmay-s-patil/CFD_CAA_Solvers' }
+          ]
+        },
+        {
+          id: 'drone-downwash',
+          title: 'Drone Propeller Downwash Simulation',
+          category: 'CFD',
+          period: 'Jan 2025 - Feb 2025',
+          description: 'Simulated the aerodynamic performance of a drone propeller, focusing on downwash effects. Evaluated how downwash influences stability and the lift coefficient, helping to improve drone design.',
+          learnings: [
+            'Simulated propeller downwash dynamics in OpenFOAM',
+            'Quantified downwash impact on lift coefficient and stability',
+            'Provided aerodynamic optimization guidelines for drone frames'
+          ],
+          tags: ['CFD', 'Aerodynamics', 'OpenFOAM', 'Propeller', 'Drones']
+        },
+        {
           id: 'pyrolysis',
           title: 'Optimization of Pyrolysis-Based Plastic Oil Yield',
           category: 'Experimentation',
@@ -252,6 +310,19 @@ const projectsData = {
       label: 'FEA & Machine Learning',
       color: '#4a2a5d',
       folders: [
+        {
+          id: 'polymer-postmortem',
+          title: 'Tensile-Test Post-Processing GUI (Polymer Postmortem)',
+          category: 'AIML',
+          period: 'Aug 2025 - Sep 2025',
+          description: 'Developed a dual-mode GUI (manual + automatic) to process ~1.1 M tensile-failure data points. Added quality-of-life tools like previewing, file cleaning, and manual overrides. Implemented ML-based strain interpolation from extensometer data, exponentially accelerating analysis time.',
+          learnings: [
+            'Processed 1.1M+ tensile failure experimental data points',
+            'Built dual-mode GUI for automated data cleaning & overrides',
+            'Implemented ML-based strain interpolation from extensometer data'
+          ],
+          tags: ['Python', 'GUI', 'Machine Learning', 'Data Science', 'Tensile Test']
+        },
         {
           id: 'bullet-impact',
           title: 'Bullet Impact Simulations',

@@ -55,45 +55,44 @@ export default function DriveInSection() {
     <div className={`${styles.container} openfoamDriveIn`}>
       <div className={styles.starrySky} />
 
-      <ViewportScaleStage>
-        {/* Prominent Floating "Go Back" Button (Visible only in Ticket Booth view) */}
-        {viewMode === 'dispenser' && (
-          <button
-            type="button"
-            className={styles.prominentBackBtn}
-            onClick={() => navigate('/hub')}
-            title="Return to Main Hub"
-            aria-label="Go Back to Hub"
-          >
-            <span className={styles.backBtnArrow}>&larr;</span>
-            <span className={styles.backBtnText}>GO BACK</span>
-          </button>
-        )}
+      {/* Prominent Floating "Back to Office" Button (Visible only in Ticket Booth view) */}
+      {viewMode === 'dispenser' && (
+        <button
+          type="button"
+          className={styles.prominentBackBtn}
+          onClick={() => navigate('/hub')}
+          title="Return to Main Office"
+          aria-label="Back to Office"
+        >
+          <span className={styles.backBtnArrow}>&larr;</span>
+          <span className={styles.backBtnText}>BACK TO OFFICE</span>
+        </button>
+      )}
 
-        <main className={styles.mainStage}>
-          {viewMode === 'dispenser' ? (
-            <div className={isZooming ? styles.zoomOutStage : ''}>
-              <TicketDispenser
-                specimen={currentSpecimen}
-                index={currentIndex}
-                total={totalSpecimens}
-                onEnterDriveIn={handleEnterDriveIn}
-                onPrev={handlePrev}
-                onNext={handleNext}
-              />
-            </div>
-          ) : (
-            <DriveInScreen
-              specimens={specimens}
-              currentIndex={currentIndex}
-              onPrevIndex={handlePrev}
-              onNextIndex={handleNext}
-              onReturnToBooth={() => setViewMode('dispenser')}
+
+
+      <main className={styles.mainStage}>
+        {viewMode === 'dispenser' ? (
+          <div className={isZooming ? styles.zoomOutStage : ''}>
+            <TicketDispenser
+              specimen={currentSpecimen}
+              index={currentIndex}
+              total={totalSpecimens}
+              onEnterDriveIn={handleEnterDriveIn}
+              onPrev={handlePrev}
+              onNext={handleNext}
             />
-          )}
-        </main>
-      </ViewportScaleStage>
+          </div>
+        ) : (
+          <DriveInScreen
+            specimens={specimens}
+            currentIndex={currentIndex}
+            onPrevIndex={handlePrev}
+            onNextIndex={handleNext}
+            onReturnToBooth={() => setViewMode('dispenser')}
+          />
+        )}
+      </main>
     </div>
   );
 }
-

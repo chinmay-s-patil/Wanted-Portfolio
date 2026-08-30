@@ -53,9 +53,9 @@
 /* Container */
 .lockerContainer {
 	width: 100%;
-	max-width: 1000px;
-	height: calc(100vh - 4rem);
-	max-height: 720px;
+	max-width: 1200px;
+	height: calc(100vh - 3.5rem);
+	max-height: 840px;
 	display: flex;
 	flex-direction: column;
 	align-items: center;
@@ -64,13 +64,14 @@
 	position: relative;
 }
 
-/* Centered Single 3D Locker Stage */
+/* Centered Single 3D Locker Stage — Hinge line centered in middle of viewport */
 .singleLockerUnit {
-	width: min(540px, 90vw);
-	height: min(640px, 78vh);
+	width: min(540px, 46vw);
+	height: min(720px, 83vh);
 	position: relative;
 	perspective: 1400px;
 	margin: 0 auto;
+	transform: translateX(min(250px, 22vw));
 	box-shadow: 0 35px 85px rgba(0, 0, 0, 0.98), 0 0 40px rgba(0,0,0,0.9);
 	border-radius: 6px;
 	transform-style: preserve-3d;
@@ -155,18 +156,19 @@
 	z-index: 2;
 }
 
-/* Top Storage Shelf — Slanted Colorful Textbooks & Binders (Photos 1 & 3) */
+/* Top Storage Shelf — Slanted Colorful Textbooks & Binders (No Clipping) */
 .topShelf {
-	height: 68px;
+	height: 78px;
 	background: linear-gradient(180deg, #221c16 0%, #3d3126 70%, #1a1510 100%);
 	border-bottom: 4px solid #0f0c09;
 	box-shadow: 0 10px 24px rgba(0, 0, 0, 0.9), inset 0 1px 2px rgba(255, 255, 255, 0.2);
-	padding: 0 1.25rem;
+	padding: 10px 1.25rem 0;
 	display: flex;
 	align-items: flex-end;
 	flex-shrink: 0;
 	position: relative;
 	z-index: 5;
+	overflow: visible;
 }
 
 .shelfSurface {
@@ -174,7 +176,7 @@
 	display: flex;
 	justify-content: space-between;
 	align-items: flex-end;
-	padding-bottom: 4px;
+	padding-bottom: 6px;
 }
 
 .slantedBooksRack {
@@ -185,24 +187,24 @@
 
 .slantedBook {
 	font-family: 'JetBrains Mono', monospace;
-	font-size: 0.55rem;
+	font-size: 0.58rem;
 	font-weight: 800;
 	color: #ffffff;
-	padding: 6px 8px;
+	padding: 4px 8px;
 	border-radius: 3px 3px 0 0;
 	box-shadow: inset 0 1px 2px rgba(255, 255, 255, 0.4), -3px 4px 8px rgba(0,0,0,0.8);
 	border: 1px solid rgba(0,0,0,0.6);
 	transform-origin: bottom left;
-	height: 48px;
+	height: 38px;
 	display: flex;
 	align-items: center;
 	justify-content: center;
 }
 
-.book1 { background: linear-gradient(180deg, #ec4899 0%, #be185d 100%); transform: rotate(-14deg); }
-.book2 { background: linear-gradient(180deg, #f97316 0%, #c2410c 100%); transform: rotate(-10deg); }
-.book3 { background: linear-gradient(180deg, #3b82f6 0%, #1d4ed8 100%); transform: rotate(-6deg); }
-.book4 { background: linear-gradient(180deg, #a855f7 0%, #6b21a8 100%); transform: rotate(-2deg); }
+.book1 { background: linear-gradient(180deg, #ec4899 0%, #be185d 100%); transform: rotate(-10deg); }
+.book2 { background: linear-gradient(180deg, #f97316 0%, #c2410c 100%); transform: rotate(-7deg); }
+.book3 { background: linear-gradient(180deg, #3b82f6 0%, #1d4ed8 100%); transform: rotate(-4deg); }
+.book4 { background: linear-gradient(180deg, #a855f7 0%, #6b21a8 100%); transform: rotate(-1deg); }
 
 .campusLanyard {
 	font-family: 'JetBrains Mono', monospace;
@@ -215,7 +217,7 @@
 	box-shadow: 0 3px 8px rgba(0, 0, 0, 0.7);
 }
 
-/* Main Compartment Interior */
+/* Main Compartment Interior & Custom Scrollbars */
 .mainCompartment {
 	flex: 1;
 	padding: 1.25rem 1.5rem;
@@ -225,6 +227,32 @@
 	overflow-y: auto;
 	position: relative;
 	z-index: 5;
+	scrollbar-width: thin;
+	scrollbar-color: #854d0e rgba(8, 10, 14, 0.6);
+}
+
+.mainCompartment::-webkit-scrollbar,
+.innerDoorFace::-webkit-scrollbar {
+	width: 6px;
+}
+
+.mainCompartment::-webkit-scrollbar-track,
+.innerDoorFace::-webkit-scrollbar-track {
+	background: rgba(8, 10, 14, 0.6);
+	border-radius: 3px;
+}
+
+.mainCompartment::-webkit-scrollbar-thumb,
+.innerDoorFace::-webkit-scrollbar-thumb {
+	background: #854d0e;
+	border-radius: 3px;
+	border: 1px solid rgba(234, 179, 8, 0.3);
+}
+
+.mainCompartment::-webkit-scrollbar-thumb:hover,
+.innerDoorFace::-webkit-scrollbar-thumb:hover {
+	background: #eab308;
+	box-shadow: 0 0 10px rgba(234, 179, 8, 0.6);
 }
 
 /* Pinned Diploma Poster */
@@ -639,52 +667,60 @@
 	color: #475569;
 }
 
-/* Taped Polaroid Photo Gallery */
+/* Taped Polaroid Photo Gallery — Large Showcase */
 .doorPhotoPolaroid {
 	background: #fdfbf7;
-	padding: 8px 8px 12px 8px;
+	padding: 10px 10px 14px 10px;
 	border-radius: 3px;
 	border: 1px solid #e7e0d3;
-	box-shadow: 0 12px 30px rgba(0, 0, 0, 0.8);
+	box-shadow: 0 16px 36px rgba(0, 0, 0, 0.85);
 	position: relative;
-	transform: rotate(-2deg);
+	transform: rotate(-1.5deg);
+	margin-top: 0.5rem;
 }
 
 .tapeStripTop {
 	position: absolute;
-	top: -9px;
-	left: 30%;
-	width: 55px;
-	height: 18px;
-	background: rgba(245, 230, 180, 0.75);
-	border: 1px solid rgba(210, 190, 140, 0.4);
-	transform: rotate(-4deg);
-	box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+	top: -10px;
+	left: 35%;
+	width: 65px;
+	height: 20px;
+	background: rgba(245, 230, 180, 0.85);
+	border: 1px solid rgba(210, 190, 140, 0.5);
+	transform: rotate(-3deg);
+	box-shadow: 0 2px 5px rgba(0,0,0,0.3);
 }
 
 .polaroidFrame {
 	width: 100%;
-	height: 140px;
+	height: min(290px, 38vh);
 	background: #0d0c0a;
 	border-radius: 2px;
 	overflow: hidden;
 	cursor: pointer;
 	position: relative;
+	box-shadow: inset 0 0 10px rgba(0,0,0,0.4);
 }
 
 .polaroidImg {
 	width: 100%;
 	height: 100%;
 	object-fit: cover;
-	filter: sepia(0.25) contrast(1.05);
+	filter: sepia(0.15) contrast(1.05);
+	transition: transform 0.3s ease;
+}
+
+.polaroidFrame:hover .polaroidImg {
+	transform: scale(1.03);
 }
 
 .polaroidCaption {
-	padding-top: 6px;
+	padding-top: 8px;
 	font-family: 'Special Elite', monospace;
-	font-size: 0.7rem;
+	font-size: 0.8rem;
 	color: #292524;
 	text-align: center;
+	font-weight: 600;
 }
 
 .photoNavMini {

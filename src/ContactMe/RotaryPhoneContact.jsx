@@ -284,16 +284,15 @@ export default function RotaryPhoneContact() {
   };
 
   return (
-    <ViewportScaleStage>
-      <section className="rotary-section" aria-label="Contact">
+    <section className="rotary-section" aria-label="Contact">
       {/* Back to Hub Button */}
       <button
         type="button"
         className="rotary-back-btn"
         onClick={() => navigate("/hub")}
-        aria-label="Back to Hub"
+        aria-label="Back to Office"
       >
-        ← Back to Hub
+        ← Back to Office
       </button>
 
       {/* SVG Grain Overlay */}
@@ -549,7 +548,6 @@ export default function RotaryPhoneContact() {
           </div>
         </div>
       </div>
-      </section>
-    </ViewportScaleStage>
+    </section>
   );
 }

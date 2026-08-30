@@ -12,15 +12,19 @@ export default function SectionHeader({ kicker = 'ACADEMIC DOSSIER', title = 'In
         padding: '1.75rem 2.5rem',
         borderBottom: '1px solid rgba(212, 175, 55, 0.15)',
         background: 'linear-gradient(180deg, rgba(10, 9, 8, 0.85) 0%, rgba(18, 16, 14, 0.4) 100%)',
-        boxShadow: '0 4px 20px rgba(0, 0, 0, 0.6)'
+        boxShadow: '0 4px 20px rgba(0, 0, 0, 0.6)',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center'
       }}
     >
       <button
         onClick={() => navigate('/hub')}
         style={{
           position: 'absolute',
-          top: '1.75rem',
-          right: '2.5rem',
+          top: '50%',
+          transform: 'translateY(-50%)',
+          left: '2.5rem',
           background: 'linear-gradient(135deg, #1f1b14 0%, #0f0d0a 100%)',
           border: '1.5px solid #854d0e',
           color: '#d4c8b0',
@@ -30,7 +34,8 @@ export default function SectionHeader({ kicker = 'ACADEMIC DOSSIER', title = 'In
           cursor: 'pointer',
           fontFamily: "'Special Elite', monospace",
           transition: 'all 0.25s ease',
-          boxShadow: '0 4px 14px rgba(0,0,0,0.8), inset 0 1px 1px rgba(255,255,255,0.1)'
+          boxShadow: '0 4px 14px rgba(0,0,0,0.8), inset 0 1px 1px rgba(255,255,255,0.1)',
+          zIndex: 10
         }}
         onMouseEnter={(e) => {
           e.currentTarget.style.borderColor = '#eab308'
@@ -46,7 +51,7 @@ export default function SectionHeader({ kicker = 'ACADEMIC DOSSIER', title = 'In
         ← BACK TO OFFICE
       </button>
 
-      <div style={{ maxWidth: '800px' }}>
+      <div style={{ maxWidth: '800px', textAlign: 'center', margin: '0 auto' }}>
         <div
           style={{
             fontSize: '0.8rem',
@@ -57,8 +62,9 @@ export default function SectionHeader({ kicker = 'ACADEMIC DOSSIER', title = 'In
             textShadow: '0 0 8px rgba(234, 179, 8, 0.4)',
             fontFamily: "'JetBrains Mono', 'Special Elite', monospace",
             textTransform: 'uppercase',
-            display: 'flex',
+            display: 'inline-flex',
             alignItems: 'center',
+            justifyContent: 'center',
             gap: '8px'
           }}
         >
@@ -74,7 +80,8 @@ export default function SectionHeader({ kicker = 'ACADEMIC DOSSIER', title = 'In
             fontFamily: "'Special Elite', monospace",
             letterSpacing: '2px',
             fontWeight: '400',
-            lineHeight: 1.2
+            lineHeight: 1.2,
+            textAlign: 'center'
           }}
         >
           {title}
@@ -86,7 +93,8 @@ export default function SectionHeader({ kicker = 'ACADEMIC DOSSIER', title = 'In
             margin: 0,
             fontFamily: "'Special Elite', monospace",
             letterSpacing: '0.04em',
-            lineHeight: 1.4
+            lineHeight: 1.4,
+            textAlign: 'center'
           }}
         >
           {description}

@@ -40,7 +40,7 @@ export default function ProjectsPage() {
     }
   }, [openDrawerId])
 
-  // Keyboard Navigation Matrix
+  // Keyboard Navigation Matrix (Arrow keys + WASD + Enter + Space + Escape)
   useEffect(() => {
     const handleKeyDown = (e) => {
       if (selectedProject) {
@@ -65,44 +65,75 @@ export default function ProjectsPage() {
       const activeFolderIndex = useCabinetStore.getState().activeFolderIndex
       const setActiveFolderIndex = useCabinetStore.getState().setActiveFolderIndex
 
-      const currentDrawerIndex = currentDrawerId ? drawerIds.indexOf(currentDrawerId) : -1
-      const currentDrawer = currentDrawerId ? projectsData.drawers.find((d) => d.id === currentDrawerId) : null
+      const currentDrawerIndex = currentDrawerId ? drawerIds.indexOf(currentDrawerId) : 0
+      const currentDrawer = currentDrawerId ? projectsData.drawers.find((d) => d.id === currentDrawerId) : projectsData.drawers[0]
       const totalFolders = currentDrawer?.folders?.length || 0
 
-      if (currentDrawerId) {
-        if (e.key === 'ArrowUp') {
-          e.preventDefault()
-          const prevIndex = (currentDrawerIndex - 1 + drawerIds.length) % drawerIds.length
-          setDrawer(drawerIds[prevIndex])
-        } else if (e.key === 'ArrowDown') {
-          e.preventDefault()
-          const nextIndex = (currentDrawerIndex + 1) % drawerIds.length
-          setDrawer(drawerIds[nextIndex])
-        } else if (e.key === 'ArrowLeft') {
-          e.preventDefault()
-          if (totalFolders > 1) {
-            setActiveFolderIndex((activeFolderIndex - 1 + totalFolders) % totalFolders)
-          }
-        } else if (e.key === 'ArrowRight') {
-          e.preventDefault()
-          if (totalFolders > 1) {
-            setActiveFolderIndex((activeFolderIndex + 1) % totalFolders)
-          }
-        } else if (e.key === 'Enter' || e.key === ' ') {
-          e.preventDefault()
-          if (currentDrawer && currentDrawer.folders[activeFolderIndex]) {
-            handleProjectClick(currentDrawer.folders[activeFolderIndex])
-          }
-        } else if (e.key === 'Escape') {
-          e.preventDefault()
-          setDrawer(null)
+      const key = e.key.toLowerCase()
+
+      if (key === 'arrowup' || key === 'w') {
+        e.preventDefault()
+        const prevIndex = (currentDrawerIndex - 1 + drawerIds.length) % drawerIds.length
+        setDrawer(drawerIds[prevIndex])
+      } else if (key === 'arrowdown' || key === 's') {
+        e.preventDefault()
+        const nextIndex = (currentDrawerIndex + 1) % drawerIds.length
+        setDrawer(drawerIds[nextIndex])
+      } else if (key === 'arrowleft' || key === 'a') {
+        e.preventDefault()
+        if (totalFolders > 1) {
+          setActiveFolderIndex((activeFolderIndex - 1 + totalFolders) % totalFolders)
         }
+      } else if (key === 'arrowright' || key === 'd') {
+        e.preventDefault()
+        if (totalFolders > 1) {
+          setActiveFolderIndex((activeFolderIndex + 1) % totalFolders)
+        }
+      } else if (key === 'enter' || key === ' ') {
+        e.preventDefault()
+        if (!currentDrawerId) {
+          setDrawer(drawerIds[0])
+        } else if (currentDrawer && currentDrawer.folders[activeFolderIndex]) {
+          handleProjectClick(currentDrawer.folders[activeFolderIndex])
+        }
+      } else if (key === 'escape') {
+        e.preventDefault()
+        setDrawer(null)
       }
     }
 
     window.addEventListener('keydown', handleKeyDown)
     return () => window.removeEventListener('keydown', handleKeyDown)
   }, [selectedProject, showDrawerList, handleCloseProject, handleProjectClick])
+
+  // Mouse Wheel Scroll Navigation (Scroll Up/Down changes drawers)
+  useEffect(() => {
+    let lastScrollTime = 0
+
+    const handleWheel = (e) => {
+      if (selectedProject || showDrawerList) return
+
+      const now = Date.now()
+      if (now - lastScrollTime < 180) return
+      lastScrollTime = now
+
+      const drawerIds = projectsData.drawers.map((d) => d.id)
+      const currentDrawerId = useCabinetStore.getState().openDrawerId
+      const setDrawer = useCabinetStore.getState().setOpenDrawer
+      const currentDrawerIndex = currentDrawerId ? drawerIds.indexOf(currentDrawerId) : 0
+
+      if (e.deltaY > 15) {
+        const nextIndex = (currentDrawerIndex + 1) % drawerIds.length
+        setDrawer(drawerIds[nextIndex])
+      } else if (e.deltaY < -15) {
+        const prevIndex = (currentDrawerIndex - 1 + drawerIds.length) % drawerIds.length
+        setDrawer(drawerIds[prevIndex])
+      }
+    }
+
+    window.addEventListener('wheel', handleWheel, { passive: true })
+    return () => window.removeEventListener('wheel', handleWheel)
+  }, [selectedProject, showDrawerList])
 
   useEffect(() => {
     if (selectedProject) {
@@ -116,8 +147,7 @@ export default function ProjectsPage() {
   const totalProjectCount = projectsData.drawers.reduce((acc, d) => acc + d.folders.length, 0)
 
   return (
-    <ViewportScaleStage>
-      <div className="evidence-room" aria-label="Police Precinct Evidence Archive">
+    <div className="evidence-room" aria-label="Police Precinct Evidence Archive">
       {/* Clean Ambient Studio Spotlight */}
       <div className="evidence-spotlight" aria-hidden="true" />
 
@@ -126,9 +156,9 @@ export default function ProjectsPage() {
         type="button"
         className="projects-back-btn"
         onClick={() => navigate('/hub')}
-        aria-label="Back to Hub"
+        aria-label="Back to Office"
       >
-        ← Back to Hub
+        ← Back to Office
       </button>
 
       {/* Vintage Directory Sidebar */}
@@ -185,7 +215,7 @@ export default function ProjectsPage() {
           </h1>
           <div className="evidence-header-divider" />
           <p className="evidence-subtitle">
-            Click any drawer to inspect case files &bull; Use keyboard &uarr;&darr; &larr;&rarr; to navigate
+            Click any drawer to inspect case files &bull; Use WASD / Arrow keys or Scroll wheel to navigate
           </p>
         </div>
 
@@ -242,6 +272,5 @@ export default function ProjectsPage() {
         </Suspense>
       )}
       </div>
-    </ViewportScaleStage>
   )
 }

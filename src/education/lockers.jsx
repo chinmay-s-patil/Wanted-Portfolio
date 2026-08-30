@@ -56,21 +56,21 @@ const lockers = [
     label: 'B.Tech',
     number: '021',
     color: '#854d0e', // Aged Vintage Mustard Amber
-    degree: 'Mechanical Engineering',
+    degree: 'Mechanical Engineering (Minors in AI/ML)',
     title: 'Bachelor of Technology',
     institution: 'VIT Chennai',
     shortName: 'VITC',
-    period: 'Jun 2021 – May 2025',
+    period: 'Jun 2021 – Aug 2025',
     location: 'Chennai, India',
     description:
-      'Completed comprehensive undergraduate program in mechanical engineering, developing strong fundamentals in thermodynamics, fluid mechanics, and computational methods. Gained hands-on experience through laboratory work, thesis research, and technical clubs.',
-    note: 'Four years, one thesis, endless late-night lab runs.',
+      'Completed Bachelor of Mechanical Engineering with Minors in AI/ML (CGPA: 8.83). Developed strong fundamentals in computational fluid dynamics, thermal management, machine learning, and fracture mechanics.',
+    note: 'CGPA: 8.83 • Minors in AI/ML • Four years of research & CFD laboratory investigations.',
     highlights: [
+      'CGPA: 8.83 / 10.0 (Minors in AI/ML)',
       'Thesis: Optimization of Pyrolysis-Based Plastic Oil Yield',
-      'Honors distinction awarded',
-      'Key courses: Heat Transfer, Fluid Mechanics, Engineering Analysis'
+      'Key courses: Heat Transfer, Fluid Mechanics, Machine Learning, Neural Networks'
     ],
-    skills: ['Fluid Mechanics', 'CFD', 'Heat Transfer', 'Thermodynamics', 'Engineering Analysis', 'Mechanical Design'],
+    skills: ['Fluid Mechanics', 'CFD', 'Heat Transfer', 'AI/ML', 'Thermodynamics', 'Engineering Analysis', 'Mechanical Design'],
     images: [
       '/Education/VITC/VITC (1).jpeg',
       '/Education/VITC/VITC (2).JPG',
@@ -93,12 +93,12 @@ const lockers = [
       {
         type: 'transcript',
         title: 'Academic Transcript',
-        url: '/files/vitc-transcript.pdf',
-        size: '1.8MB'
+        url: 'https://drive.google.com/file/d/1WQcrnmOx30-Jz3lql7obEEloObI4PO_-/view?usp=sharing',
+        size: 'PDF'
       }
     ],
-    gpa: 'Honors',
-    focus: 'Thermal & Fluid Systems'
+    gpa: '8.83 CGPA',
+    focus: 'Mechanical & AI/ML'
   },
 
   // REAL LOCKER: Ph.D. TBD (Row 2, Pos 5)

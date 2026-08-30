@@ -145,8 +145,8 @@ export function TicketDispenser({
       <div className={styles.boothMachine}>
         {/* Marquee — ribbed cream panel, bold red type, bottom bulbs */}
         <div className={styles.boothRoofSign} aria-hidden="false">
-          <span className={styles.boothRoofSignLine}>TICKETS TO</span>
-          <span className={styles.boothRoofSignLine}>ALL MOVIES</span>
+          <span className={styles.boothRoofSignKicker}>FLUID DYNAMICS CINEMA</span>
+          <span className={styles.boothRoofSignLine}>OPENFOAM DRIVE-IN</span>
           <div className={styles.boothMarqueeLights}>
             <span className={`${styles.boothBulb} ${styles.boothBulbRed}`} />
             <span className={`${styles.boothBulb} ${styles.boothBulbTeal}`} />

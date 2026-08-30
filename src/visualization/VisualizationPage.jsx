@@ -111,13 +111,13 @@ export default function VisualizationPage() {
   }, [powerState])
 
   return (
-    <ViewportScaleStage>
-      <div style={{
-        width: '100%',
-        height: '100%',
-        background: 'radial-gradient(ellipse at 50% 30%, #2e221b 0%, #17110e 60%, #0a0705 100%)',
-        overflow: 'hidden',
-        position: 'relative',
+    <div style={{
+      width: '100vw',
+      height: '100vh',
+      minHeight: '100vh',
+      background: 'radial-gradient(ellipse at 50% 30%, #2e221b 0%, #17110e 60%, #0a0705 100%)',
+      overflow: 'hidden',
+      position: 'relative',
       fontFamily: "'Tahoma', 'MS Sans Serif', sans-serif",
       display: 'flex',
       alignItems: 'center',
@@ -127,6 +127,57 @@ export default function VisualizationPage() {
       WebkitUserSelect: 'none'
     }}>
       <style>{`
+        /* GUARANTEED 100% ZERO SCROLLBARS ACROSS ALL VISUALIZATION ELEMENTS */
+        ::-webkit-scrollbar,
+        *::-webkit-scrollbar {
+          display: none !important;
+          width: 0 !important;
+          height: 0 !important;
+        }
+
+        html, body, #root, .workstation-wrapper, .icon-grid {
+          scrollbar-width: none !important;
+          -ms-overflow-style: none !important;
+        }
+
+        .workstation-wrapper {
+          display: flex;
+          align-items: flex-end;
+          justify-content: center;
+          gap: 1.75rem;
+          max-width: 100%;
+          max-height: 100%;
+          position: relative;
+        }
+
+        /* IF AND ONLY IF WINDOW IS TOO SLIM (<= 1050px) -> CPU PUT AT BOTTOM OF PC */
+        @media (max-width: 1050px) {
+          .workstation-wrapper {
+            flex-direction: column !important;
+            align-items: center !important;
+            justify-content: center !important;
+            gap: 1.2rem !important;
+            transform: scale(clamp(0.58, 85vh / 960px, 0.94));
+            transform-origin: center center;
+          }
+
+          .workstation-monitor {
+            width: min(92vw, 850px) !important;
+            height: min(56vh, 520px) !important;
+          }
+
+          .workstation-cpu {
+            width: min(90vw, 760px) !important;
+            height: auto !important;
+            max-height: 220px !important;
+            flex-direction: row !important;
+            flex-wrap: wrap !important;
+            justify-content: space-between !important;
+            align-items: center !important;
+            padding: 0.8rem 1.2rem !important;
+          }
+        }
+
         @keyframes pulseLed {
           0%, 100% { opacity: 1; filter: drop-shadow(0 0 6px rgba(0, 255, 128, 0.8)); }
           50% { opacity: 0.7; filter: drop-shadow(0 0 2px rgba(0, 255, 128, 0.4)); }
@@ -202,19 +253,6 @@ export default function VisualizationPage() {
           overflow-x: auto;
         }
 
-        .icon-grid::-webkit-scrollbar {
-          height: 8px;
-        }
-
-        .icon-grid::-webkit-scrollbar-track {
-          background: rgba(0, 0, 0, 0.2);
-        }
-
-        .icon-grid::-webkit-scrollbar-thumb {
-          background: rgba(255, 255, 255, 0.3);
-          border-radius: 4px;
-        }
-
         .system-icon-inert {
           cursor: default;
           user-select: none;
@@ -243,22 +281,40 @@ export default function VisualizationPage() {
           letterSpacing: '0.05em'
         }}
       >
-        &#9664; BACK TO HQ
+        &#9664; BACK TO OFFICE
       </button>
 
-      {/* Workstation Desk Setup Wrapper */}
+      {/* Top Header Title Block */}
       <div style={{
-        display: 'flex',
-        alignItems: 'flex-end',
-        justifyContent: 'center',
-        gap: '1.75rem',
-        maxWidth: '100%',
-        maxHeight: '100%',
-        position: 'relative'
+        position: 'absolute', top: '1.2rem', left: '50%', transform: 'translateX(-50%)',
+        textAlign: 'center', zIndex: 100, pointerEvents: 'none'
       }}>
+        <div style={{
+          fontSize: '0.72rem', color: '#38bdf8', fontWeight: 800, letterSpacing: '0.25em',
+          marginBottom: '0.2rem', textTransform: 'uppercase', fontFamily: "'Courier Prime', monospace"
+        }}>
+          HARDWARE ARCHIVE & SIMULATION
+        </div>
+        <h1 style={{
+          fontSize: 'clamp(1.4rem, 2.5vw, 2.2rem)', color: '#f8fafc', margin: '0 0 0.2rem',
+          fontFamily: "'MS Sans Serif', 'Tahoma', sans-serif", fontWeight: 700, letterSpacing: '0.08em',
+          textShadow: '0 2px 10px rgba(0,0,0,0.9)'
+        }}>
+          Viz-Comp 2000 Pro
+        </h1>
+        <p style={{
+          fontSize: 'clamp(0.72rem, 1vw, 0.82rem)', color: '#a09080', margin: 0,
+          fontStyle: 'italic', fontFamily: "'Courier Prime', monospace"
+        }}>
+          Vintage CRT workstation & interactive desktop environment &bull; Select any visualization to execute
+        </p>
+      </div>
+
+      {/* Workstation Desk Setup Wrapper */}
+      <div className="workstation-wrapper">
 
         {/* MONITOR ASSEMBLY */}
-        <div style={{
+        <div className="workstation-monitor" style={{
           width: 'min(1140px, 80vw)',
           height: 'min(780px, 86vh)',
           position: 'relative',
@@ -739,7 +795,7 @@ export default function VisualizationPage() {
         </div>
 
         {/* REFINED HIGH-FIDELITY VINTAGE CPU TOWER */}
-        <div style={{
+        <div className="workstation-cpu" style={{
           width: '240px', height: 'min(750px, 84vh)', flexShrink: 0,
           background: 'linear-gradient(160deg, #2c2825 0%, #1a1715 60%, #100e0d 100%)',
           borderRadius: '12px', border: '3px solid #141210',
@@ -909,7 +965,6 @@ export default function VisualizationPage() {
         </div>
 
       </div>
-      </div>
-    </ViewportScaleStage>
+    </div>
   )
 }

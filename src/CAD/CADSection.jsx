@@ -129,20 +129,20 @@ export default function CADSection() {
   }
 
   return (
-    <ViewportScaleStage>
-      <div className="cad-root">
-        <style>{`
-          @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Orbitron:wght@400;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap');
+    <div className="cad-root">
+      <style>{`
+        @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Orbitron:wght@400;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap');
 
-          .cad-root {
-            width: 100%;
-            height: 100%;
-            background: 
-              radial-gradient(circle at 50% 25%, rgba(56, 189, 248, 0.12) 0%, transparent 60%),
-              radial-gradient(circle at 50% 50%, #0b1320 0%, #060b14 60%, #03060c 100%);
-            overflow: hidden;
-            position: relative;
-            font-family: 'Share Tech Mono', 'JetBrains Mono', monospace;
+        .cad-root {
+          width: 100vw;
+          height: 100vh;
+          min-height: 100vh;
+          background: 
+            radial-gradient(circle at 50% 25%, rgba(56, 189, 248, 0.12) 0%, transparent 60%),
+            radial-gradient(circle at 50% 50%, #0b1320 0%, #060b14 60%, #03060c 100%);
+          overflow: hidden;
+          position: relative;
+          font-family: 'Share Tech Mono', 'JetBrains Mono', monospace;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -183,7 +183,7 @@ export default function CADSection() {
           }
 
           .cad-back-btn {
-            position: absolute;
+            position: fixed;
             top: 1.5rem; left: 1.5rem;
             background: rgba(11, 19, 32, 0.92);
             border: 1.5px solid rgba(56, 189, 248, 0.35);
@@ -910,41 +910,107 @@ export default function CADSection() {
           letter-spacing: 0.1em;
         }
 
-        /* Responsive */
-        @media (max-width: 1300px) {
-          .cad-main { gap: 3rem; }
+        /* GUARANTEED 100% ZERO SCROLLBARS ACROSS CAD SECTION */
+        .cad-root ::-webkit-scrollbar,
+        .cad-root *::-webkit-scrollbar {
+          display: none !important;
+          width: 0 !important;
+          height: 0 !important;
+        }
+
+        .cad-root,
+        .cad-root * {
+          scrollbar-width: none !important;
+          -ms-overflow-style: none !important;
+        }
+
+        /* Responsive Scaling & Slim Viewport Optimization */
+        @media (max-width: 1380px) {
+          .cad-main { gap: 2rem; }
           .left-panel { width: 260px; }
           .filament-rack-wrapper { width: 260px; }
           .right-panel { width: 240px; }
         }
-        @media (max-width: 1100px) {
+
+        /* SLIM VIEWPORT: KEEP SIDE-BY-SIDE 3-COLUMN LAYOUT, SHOW IMAGES ONLY (NO TEXT BLOAT, NO WASTED SPACE) */
+        @media (max-width: 1150px) {
           .cad-main {
-            flex-direction: column;
-            overflow-y: auto;
-            height: 100vh;
-            padding: 1rem 0;
-            align-items: center;
-            gap: 1.5rem;
+            display: flex !important;
+            flex-direction: row !important;
+            align-items: stretch !important;
+            justify-content: center !important;
+            gap: 0.75rem !important;
+            transform: scale(clamp(0.48, min(96vw / 980px, 96vh / 760px), 0.95));
+            transform-origin: center center;
           }
-          .left-panel, .right-panel, .filament-rack-wrapper {
-            width: 100%;
-            max-width: 500px;
+
+          .left-panel {
+            width: 220px !important;
+            flex-shrink: 0 !important;
           }
+
+          .right-panel {
+            width: 210px !important;
+            flex-shrink: 0 !important;
+            display: flex !important;
+            flex-direction: column !important;
+            justify-content: space-between !important;
+            height: 100% !important;
+          }
+
+          .filament-rack-wrapper {
+            width: 110px !important;
+            flex-shrink: 0 !important;
+            padding: 0.75rem 0.4rem !important;
+          }
+
+          .filament-rack {
+            gap: 0.45rem !important;
+          }
+
+          .spool {
+            padding: 0.3rem !important;
+            gap: 0 !important;
+            justify-content: center !important;
+            align-items: center !important;
+            min-height: 52px !important;
+            border-radius: 6px !important;
+          }
+
+          .spool-body {
+            display: none !important;
+          }
+
+          .spool-filament {
+            display: none !important;
+          }
+
+          .spool-img-wrap {
+            width: 48px !important;
+            height: 48px !important;
+            border-radius: 4px !important;
+          }
+
           .printer-column {
-            width: 100%;
-            max-width: 700px;
-            flex: none;
+            flex: 1 !important;
+            max-width: 660px !important;
           }
-          .printer-rig { aspect-ratio: 16/10; }
+
+          .printer-rig {
+            height: min(480px, 54vh) !important;
+            aspect-ratio: auto !important;
+          }
         }
       `}</style>
 
-      <button className="cad-back-btn" onClick={() => navigate('/hub')}>
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-          <path d="M19 12H5M12 19l-7-7 7-7"/>
-        </svg>
-        BACK
-      </button>
+      {!selectedSpool && (
+        <button className="cad-back-btn" onClick={() => navigate('/hub')}>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M19 12H5M12 19l-7-7 7-7"/>
+          </svg>
+          BACK TO OFFICE
+        </button>
+      )}
 
       <div className="cad-main">
         {/* LEFT PANEL */}
@@ -1148,7 +1214,6 @@ export default function CADSection() {
         )}
       </div>
     </div>
-  </ViewportScaleStage>
   )
 }
 
@@ -1272,7 +1337,7 @@ function PrinterModelViewer({ project, wireframe, showGrid, autoRotate, showAxes
     }
 
     ctrlRef.current.target = new THREE.Vector3()
-    ctrlRef.current.spherical = new THREE.Spherical(3.5, Math.PI / 3, Math.PI / 4)
+    ctrlRef.current.spherical = new THREE.Spherical(2.2, Math.PI / 3, Math.PI / 4)
     ctrlRef.current.panOffset = new THREE.Vector3()
 
     loadModel(project.gltfFile)
@@ -1415,7 +1480,7 @@ function PrinterModelViewer({ project, wireframe, showGrid, autoRotate, showAxes
         const size = box.getSize(new THREE.Vector3())
         model.position.sub(center)
         const maxDim = Math.max(size.x, size.y, size.z)
-        const scale = 0.5 / maxDim
+        const scale = 1.95 / maxDim
         model.scale.setScalar(scale)
 
         // Compute world-space bounds AFTER centering and scaling

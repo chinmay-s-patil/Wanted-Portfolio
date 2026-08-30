@@ -16,8 +16,9 @@
 	--amber: #eab308;
 
 	position: relative;
-	width: 100%;
-	height: 100%;
+	width: 100vw;
+	height: 100vh;
+	min-height: 100vh;
 	box-sizing: border-box;
 	display: flex;
 	align-items: center;
@@ -37,9 +38,10 @@
 
 /* Back to Hub Button */
 .rotary-back-btn {
-	position: absolute;
+	position: fixed;
 	top: 1.5rem;
 	left: 1.5rem;
+	z-index: 1000;
 	display: inline-flex;
 	align-items: center;
 	gap: 0.5rem;

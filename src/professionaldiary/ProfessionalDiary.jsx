@@ -182,30 +182,30 @@ export default function ProfessionalDiary() {
   };
 
   return (
-    <ViewportScaleStage>
-      <div className="diary-container">
-        <style>{`
-          @import url('https://fonts.googleapis.com/css2?family=Caveat:wght@400;500;600;700&display=swap');
-          @import url('https://fonts.googleapis.com/css2?family=Crimson+Text:ital,wght@0,400;0,600;0,700;1,400&display=swap');
-          @import url('https://fonts.googleapis.com/css2?family=Courier+Prime:wght@400;700&display=swap');
+    <div className="diary-container">
+      <style>{`
+        @import url('https://fonts.googleapis.com/css2?family=Caveat:wght@400;500;600;700&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Crimson+Text:ital,wght@0,400;0,600;0,700;1,400&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Courier+Prime:wght@400;700&display=swap');
 
-          :root {
-            --leather-dark: #1a0f08;
-            --leather-mid: #2a1a10;
-            --leather-light: #3d2817;
-            --paper-base: #f4e8d0;
-            --paper-light: #f9f3e9;
-            --paper-aged: #e8d9bc;
-            --ink-dark: #2a1a10;
-            --ink-mid: #5d4a2a;
-            --ink-light: #7a6a55;
-            --accent-gold: #c4a574;
-            --accent-warm: #8b7355;
-          }
+        :root {
+          --leather-dark: #1a0f08;
+          --leather-mid: #2a1a10;
+          --leather-light: #3d2817;
+          --paper-base: #f4e8d0;
+          --paper-light: #f9f3e9;
+          --paper-aged: #e8d9bc;
+          --ink-dark: #2a1a10;
+          --ink-mid: #5d4a2a;
+          --ink-light: #7a6a55;
+          --accent-gold: #c4a574;
+          --accent-warm: #8b7355;
+        }
 
-          .diary-container {
-            width: 100%;
-            height: 100%;
+        .diary-container {
+          width: 100vw;
+          height: 100vh;
+          min-height: 100vh;
             background: linear-gradient(135deg, #0d0906 0%, #1a0f08 40%, #0d0906 100%);
             display: flex;
             align-items: center;
@@ -1233,9 +1233,34 @@ export default function ProfessionalDiary() {
       `}</style>
 
       <a href="/hub" className="back-btn">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
-        Back
+        ← Back to Office
       </a>
+
+      {/* Top Header Title Block */}
+      <div style={{
+        position: 'absolute', top: '1.2rem', left: '50%', transform: 'translateX(-50%)',
+        textAlign: 'center', zIndex: 100, pointerEvents: 'none'
+      }}>
+        <div style={{
+          fontSize: '0.72rem', color: '#d4af37', fontWeight: 800, letterSpacing: '0.25em',
+          marginBottom: '0.2rem', textTransform: 'uppercase', fontFamily: "'Special Elite', monospace"
+        }}>
+          CAREER TIMELINE & ARCHIVE
+        </div>
+        <h1 style={{
+          fontSize: 'clamp(1.4rem, 2.5vw, 2.2rem)', color: '#f5efe6', margin: '0 0 0.2rem',
+          fontFamily: "'Playfair Display', serif", fontWeight: 700, letterSpacing: '0.08em',
+          textShadow: '0 2px 10px rgba(0,0,0,0.9)'
+        }}>
+          Professional Diary
+        </h1>
+        <p style={{
+          fontSize: 'clamp(0.72rem, 1vw, 0.82rem)', color: '#a39b8b', margin: 0,
+          fontStyle: 'italic', fontFamily: "'Special Elite', monospace"
+        }}>
+          Interactive leatherbound journal of engineering roles, milestones & experience
+        </p>
+      </div>
 
       <div className="book-wrapper">
         <div className="book-cover">
@@ -1449,7 +1474,7 @@ export default function ProfessionalDiary() {
                   Well... I didn&apos;t work before this! You&apos;ve reached the start of the career archives.
                 </div>
                 <div className="locked-actions">
-                  <a href="/hub" className="locked-cta">Back to Hub</a>
+                  <a href="/hub" className="locked-cta">← Back to Office</a>
                   <button className="locked-close" onClick={() => setModalType(null)}>Close</button>
                 </div>
               </>
@@ -1458,6 +1483,5 @@ export default function ProfessionalDiary() {
         </div>
       )}
       </div>
-    </ViewportScaleStage>
   );
 }
