@@ -71,11 +71,19 @@ export default function Payphone({
     fullClone.position.x = -centerX
     fullClone.position.y = -centerY
     fullClone.position.z = -centerZ
+    fullClone.updateMatrix()
+    fullClone.updateMatrixWorld(true)
+
     const outlineWrapper = new THREE.Group()
     outlineWrapper.add(outlineClone)
     outlineClone.position.x = -centerX
     outlineClone.position.y = -centerY
     outlineClone.position.z = -centerZ
+    outlineClone.updateMatrix()
+    outlineClone.updateMatrixWorld(true)
+
+    mainWrapper.traverse((c) => { if (c !== mainWrapper) c.matrixAutoUpdate = false; c.frustumCulled = true })
+    outlineWrapper.traverse((c) => { if (c !== outlineWrapper) c.matrixAutoUpdate = false; c.frustumCulled = true })
     return { payphoneScene: mainWrapper, outlineScene: outlineWrapper }
   }, [scene])
   if (!payphoneScene) return null

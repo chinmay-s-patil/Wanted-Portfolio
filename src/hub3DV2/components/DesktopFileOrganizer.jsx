@@ -1,11 +1,6 @@
-import React from 'react'
+import React, { useRef, useEffect } from 'react'
 import * as THREE from 'three'
-/**
- * DesktopFileOrganizer Component
- *
- * Tiered office file tray organizer holding case folders and documents.
- * Placed on the workstation desk to enhance the active office atmosphere.
- */
+
 export default function DesktopFileOrganizer({
   position = [1.9, 0.51, -5.2],
   scale = [1, 1, 1],

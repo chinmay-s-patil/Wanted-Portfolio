@@ -137,6 +137,16 @@ export default function PrinterTable({
     outlineClone.position.y = -printerBox.min.y
     outlineWrapper.scale.setScalar(printerScaleFactor)
     outlineWrapper.position.y = tableTopY + 0.002
+    tableWrapper.updateMatrix()
+    tableWrapper.updateMatrixWorld(true)
+    printerWrapper.updateMatrix()
+    printerWrapper.updateMatrixWorld(true)
+    outlineWrapper.updateMatrix()
+    outlineWrapper.updateMatrixWorld(true)
+
+    tableWrapper.traverse((c) => { if (c !== tableWrapper) c.matrixAutoUpdate = false; c.frustumCulled = true })
+    printerWrapper.traverse((c) => { if (c !== printerWrapper) c.matrixAutoUpdate = false; c.frustumCulled = true })
+    outlineWrapper.traverse((c) => { if (c !== outlineWrapper) c.matrixAutoUpdate = false; c.frustumCulled = true })
     return {
       tableGroup: tableWrapper,
       printerGroup: printerWrapper,

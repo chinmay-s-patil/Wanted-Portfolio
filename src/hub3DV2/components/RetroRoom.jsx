@@ -1,16 +1,7 @@
-import React, { useMemo } from 'react'
+import React, { useMemo, useRef, useEffect } from 'react'
 import * as THREE from 'three'
 import { generateWoodTexture, generateWallTexture } from '../utils/textureUtils'
-/**
- * RetroRoom Component
- *
- * Fully enclosed retro police precinct / detective lounge architecture:
- * - Aged dark mahogany floor & wainscoting
- * - Deep crimson vintage woven area rug under coffee table & sofa
- * - Complete 4-wall enclosure with dark charcoal-slate pinstripe wallpaper
- * - Baseboards & crown moldings
- * - Warm brass wall sconces providing atmospheric amber lighting
- */
+
 export default function RetroRoom() {
   const floorWoodTexture = useMemo(() => {
     const tex = generateWoodTexture()
@@ -27,6 +18,7 @@ export default function RetroRoom() {
     tex.repeat.set(4, 1)
     return tex
   }, [])
+
   return (
     <group>
       {/* 1. Real Hardwood Floor (Dark Aged Mahogany) */}

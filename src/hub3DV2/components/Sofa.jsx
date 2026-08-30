@@ -45,12 +45,16 @@ const Sofa = React.memo(function Sofa({
     })
     const centerX = (box.min.x + box.max.x) / 2
     const centerZ = (box.min.z + box.max.z) / 2
-    const wrapper = new THREE.Group()
-    wrapper.matrixAutoUpdate = false
-    wrapper.add(cloned)
     cloned.position.x = -centerX
     cloned.position.z = -centerZ
     cloned.position.y = -box.min.y + 0.003
+    cloned.updateMatrix()
+    cloned.updateMatrixWorld(true)
+    const wrapper = new THREE.Group()
+    wrapper.add(cloned)
+    wrapper.updateMatrix()
+    wrapper.updateMatrixWorld(true)
+    wrapper.traverse((c) => { if (c !== wrapper) c.matrixAutoUpdate = false; c.frustumCulled = true })
     return wrapper
   }, [scene])
   if (!clonedScene) return null

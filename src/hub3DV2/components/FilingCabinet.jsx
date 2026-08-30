@@ -90,7 +90,9 @@ export default function FilingCabinet({
     const rightCabinet = singleCabinet.clone(true)
     rightCabinet.position.x = width / 2
     doubleGroup.add(rightCabinet)
+    doubleGroup.updateMatrix()
     doubleGroup.updateMatrixWorld(true)
+    doubleGroup.traverse((c) => { if (c !== doubleGroup) c.matrixAutoUpdate = false; c.frustumCulled = true })
     return doubleGroup
   }, [scene])
   if (!joinedScene) return null

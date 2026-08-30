@@ -123,7 +123,7 @@ export default function DraggableMiniTvPlayer() {
   }, [isTvPaused])
 
   // Hide mini player if no active egg OR user is inside 3D precinct lounge (where 3D TV is present)
-  const isInside3DHub = location.pathname === '/hub3DV2' || location.pathname === '/hub3D'
+  const isInside3DHub = location.pathname === '/hub' || location.pathname === '/hub3DV2' || location.pathname === '/hub3D'
   if (!activeEgg || isInside3DHub) return null
 
   const data = activeEgg === 'nightMountain'

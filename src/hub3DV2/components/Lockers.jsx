@@ -57,7 +57,10 @@ export default function Lockers({
       cloned.position.x = -centerX
       cloned.position.z = -centerZ
       cloned.position.y = -box.min.y + 0.002
+      cloned.updateMatrix()
+      cloned.updateMatrixWorld(true)
     }
+    cloned.traverse((c) => { if (c !== cloned) c.matrixAutoUpdate = false; c.frustumCulled = true })
     return cloned
   }, [scene])
   if (!clonedScene) return null

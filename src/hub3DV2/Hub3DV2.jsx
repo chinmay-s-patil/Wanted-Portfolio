@@ -1,12 +1,33 @@
 'use client'
 
-import React, { useState, useEffect, Suspense, useRef } from 'react'
+import React, { useState, useEffect, Suspense, useRef, useMemo } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Canvas, useFrame, useThree } from '@react-three/fiber'
-import { PerspectiveCamera, OrbitControls } from '@react-three/drei'
+import { PerspectiveCamera, OrbitControls, AdaptiveDpr, AdaptiveEvents } from '@react-three/drei'
 import * as THREE from 'three'
+import { getInitialDprBaseline } from '../common/gpuDetect'
 import { Sofa, CenterTable, Newspaper, Binder, TvTable, Lockers, Terminal, FilingCabinet, OfficeAssets, RetroRoom, RetroFloorLamp, WASDFreecam, PrinterTable, Payphone, HubHelpGuideModal, OldCamera, FilmRollPile, RadarTablet, PrecinctDoor, WallKeychains, GrandfatherClock, AmbientDustParticles, PrecinctWallClock, DetectiveCoffeeMug, DetectiveCoffeeMugSet, RetroDeskFan, TableLamp, ScatteredPages, Globe, WaterDispenser, Fireplace, Trophy, AttributionModal, EvidenceBox, EvidenceBoxSet } from './components'
 import { Piano, Violin, TvRemote, McNaughtFrame, WindowAndTelescope, useEasterEgg } from './easterEgg'
+
+function AdaptivePerformanceMonitor() {
+  const { performance } = useThree()
+  const frameTimes = useRef([])
+
+  useFrame((_, delta) => {
+    frameTimes.current.push(delta)
+    if (frameTimes.current.length > 30) {
+      frameTimes.current.shift()
+      const avgDelta = frameTimes.current.reduce((a, b) => a + b, 0) / frameTimes.current.length
+      const avgFps = 1 / avgDelta
+
+      if (avgFps < 28) {
+        performance.regress()
+      }
+    }
+  })
+
+  return null
+}
 
 const EVIDENCE_BOX_DATA = [
   { position: [2.8, 3.02, -5.95], rotation: [0, 0.15, 0], labelType: 'CASE FILES', caseNumber: 'CASE #7821-A' },
@@ -128,6 +149,7 @@ class HubV2ErrorBoundary extends React.Component {
 }
 
 export default function Hub3DV2() {
+  const initialDpr = useMemo(() => getInitialDprBaseline(), [])
   const [showHelpModal, setShowHelpModal] = useState(false)
   const [showAttributionModal, setShowAttributionModal] = useState(false)
   const [highlightAll, setHighlightAll] = useState(false)
@@ -449,7 +471,10 @@ export default function Hub3DV2() {
         <AttributionModal isOpen={showAttributionModal} onClose={() => setShowAttributionModal(false)} />
 
         {/* Three.js Canvas with High Performance & Moody Retro Lighting */}
-        <Canvas dpr={[1, 1.5]} performance={{ min: 0.5 }} gl={{ antialias: true, alpha: false, powerPreference: 'high-performance' }}>
+        <Canvas dpr={initialDpr} performance={{ min: 0.5 }} gl={{ antialias: true, alpha: false, powerPreference: 'high-performance' }}>
+          <AdaptiveDpr pixelated />
+          <AdaptiveEvents />
+          <AdaptivePerformanceMonitor />
           <WebGLContextManager />
           <PerformanceStatsCollector visible={showFpsCounter} onUpdate={setFpsStats} />
           <PerspectiveCamera makeDefault position={[0, 2.0, -4.8]} fov={50} near={0.1} far={100} />
@@ -742,6 +767,7 @@ export default function Hub3DV2() {
               position={[-0.75, -0.01, 2.60]}
               scale={[1, 1, 1]}
               rotation={[0, Math.PI/6, 0]}
+              isTvOn={Boolean(activeEgg)}
               isActive={Boolean(activeEgg)}
               isPaused={isTvPaused}
               onClick={() => {

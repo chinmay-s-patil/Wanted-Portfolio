@@ -95,6 +95,10 @@ export default function CenterTable({
         1.0 / rawSize.z
       )
     }
+    cloned.updateMatrix()
+    wrapper.updateMatrix()
+    wrapper.updateMatrixWorld(true)
+    wrapper.traverse((c) => { if (c !== wrapper) c.matrixAutoUpdate = false; c.frustumCulled = true })
     return wrapper
   }, [scene])
   if (!clonedScene) return null

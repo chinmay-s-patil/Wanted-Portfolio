@@ -1,11 +1,6 @@
-import React from 'react'
+import React, { useRef, useEffect } from 'react'
 import * as THREE from 'three'
-/**
- * BankerLamp Component
- *
- * Classic vintage emerald-green glass and heavy brass Banker's Lamp.
- * Placed on the workstation desk to add authentic retro office warmth.
- */
+
 export default function BankerLamp({
   position = [1.5, 0.51, -5.2],
   scale = [1, 1, 1],

@@ -45,14 +45,13 @@ export default function TableLamp({
     cloned.scale.setScalar(normScale)
     cloned.position.x = -centerX * normScale
     cloned.position.z = -centerZ * normScale
-    cloned.position.y = -box.min.y * normScale
+    cloned.updateMatrix()
     const wrapper = new THREE.Group()
     wrapper.add(cloned)
-    // Raw Bulb position is [0.0, 44.442, 3.307] in model space
-    const bulbLocalY = (44.442 - box.min.y) * normScale
-    const bulbLocalZ = (3.307 - centerZ) * normScale
-    const bulbLocalX = (0.0 - centerX) * normScale
-    return { wrapper, bulbPos: [bulbLocalX, bulbLocalY, bulbLocalZ] }
+    wrapper.updateMatrix()
+    wrapper.updateMatrixWorld(true)
+    wrapper.traverse((c) => { if (c !== wrapper) c.matrixAutoUpdate = false; c.frustumCulled = true })
+    return { wrapper, bulbPos: [0, 0.45, 0] }
   }, [scene])
   if (!lampData) return null
   return (

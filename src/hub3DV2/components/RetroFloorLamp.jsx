@@ -1,8 +1,6 @@
-import React from 'react'
+import React, { useRef, useEffect } from 'react'
 import * as THREE from 'three'
-/**
- * Mid-Century Retro Brass Floor Lamp mesh fixture with warm bulb glow.
- */
+
 export default function RetroFloorLamp({ position = [2.6, -0.6, 0.5] }) {
   return (
     <group position={position}>

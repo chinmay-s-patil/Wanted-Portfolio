@@ -1,7 +1,8 @@
-import React, { useRef } from 'react'
+import React, { useRef, useMemo } from 'react'
 import { Canvas, useFrame } from '@react-three/fiber'
-import { ContactShadows, Environment, Lightformer } from '@react-three/drei'
+import { ContactShadows, Environment, Lightformer, AdaptiveDpr, AdaptiveEvents } from '@react-three/drei'
 import * as THREE from 'three'
+import { getInitialDprBaseline } from '../common/gpuDetect'
 import CabinetGroup from './CabinetGroup'
 import { useCabinetStore } from './useCabinetStore'
 import projectsData from './projectsData'
@@ -104,10 +105,13 @@ function StudioEnvironment() {
 }
 
 export default function CabinetScene({ onSelectProject }) {
+  const initialDpr = useMemo(() => getInitialDprBaseline(), [])
+
   return (
     <Canvas
       shadows
-      dpr={[1, 1.5]}
+      dpr={initialDpr}
+      performance={{ min: 0.5 }}
       gl={{ alpha: true, antialias: true }}
       camera={{
         position: [3.2, 2.4, 4.6],
@@ -117,6 +121,8 @@ export default function CabinetScene({ onSelectProject }) {
       }}
       style={{ width: '100%', height: '100%', display: 'block', background: 'transparent' }}
     >
+      <AdaptiveDpr pixelated />
+      <AdaptiveEvents />
       <CameraController />
       <SceneLighting />
       <StudioEnvironment />

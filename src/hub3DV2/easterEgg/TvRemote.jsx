@@ -13,6 +13,7 @@ export default function TvRemote({
   position = [0.35, -0.24, 2.60],
   scale = [1, 1, 1],
   rotation = [0, 0.4, 0],
+  isTvOn = false,
   isActive = false,
   outlineColor = '#ffea00',
   outlineThickness = 0.008,
@@ -62,7 +63,9 @@ export default function TvRemote({
 
   if (!remoteGroup) return null
 
-  const showHighlight = hovered || isActive
+  const tvPlaying = isTvOn || isActive
+  // Highlight ONLY comes up when something is playing on the TV
+  const showHighlight = tvPlaying && (hovered || true)
 
   return (
     <group
@@ -70,17 +73,21 @@ export default function TvRemote({
       rotation={rotation}
       scale={scale}
       onPointerOver={(e) => {
-        e.stopPropagation()
-        setHovered(true)
-        document.body.style.cursor = 'pointer'
+        if (tvPlaying) {
+          e.stopPropagation()
+          setHovered(true)
+          document.body.style.cursor = 'pointer'
+        }
       }}
       onPointerOut={() => {
         setHovered(false)
         document.body.style.cursor = 'auto'
       }}
       onClick={(e) => {
-        e.stopPropagation()
-        if (onClick) onClick(e)
+        if (tvPlaying) {
+          e.stopPropagation()
+          if (onClick) onClick(e)
+        }
       }}
     >
       <primitive object={remoteGroup} />

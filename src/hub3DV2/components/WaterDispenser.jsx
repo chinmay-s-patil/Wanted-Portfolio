@@ -87,9 +87,12 @@ export default function WaterDispenser({
     cloned.position.x = -centerX * normScale
     cloned.position.z = -centerZ * normScale
     cloned.position.y = -box.min.y * normScale
-
+    cloned.updateMatrix()
     const wrapper = new THREE.Group()
     wrapper.add(cloned)
+    wrapper.updateMatrix()
+    wrapper.updateMatrixWorld(true)
+    wrapper.traverse((c) => { if (c !== wrapper) c.matrixAutoUpdate = false; c.frustumCulled = true })
     return wrapper
   }, [scene])
 
@@ -101,7 +104,7 @@ export default function WaterDispenser({
       <primitive object={dispenserGroup} />
 
       {/* 1. Cup sitting inside the dispenser tray alcove */}
-      <WaterCup position={[0, 0.68, 0.12]} rotation={[0, 0.2, 0]} filled={true} />
+      {/* <WaterCup position={[0, 0.68, 0.12]} rotation={[0, 0.2, 0]} filled={true} /> */}
 
       {/* 2. Cups scattered on the ground around the base */}
       <WaterCup position={[0.22, 0.02, 0.24]} rotation={[Math.PI / 2, 0, 0.8]} filled={false} />

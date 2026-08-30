@@ -49,7 +49,10 @@ export default function Trophy({
       cloned.position.x = -center.x
       cloned.position.z = -center.z
       cloned.position.y = -box.min.y
+      cloned.updateMatrix()
+      cloned.updateMatrixWorld(true)
     }
+    cloned.traverse((c) => { if (c !== cloned) c.matrixAutoUpdate = false; c.frustumCulled = true })
     return cloned
   }, [scene])
 

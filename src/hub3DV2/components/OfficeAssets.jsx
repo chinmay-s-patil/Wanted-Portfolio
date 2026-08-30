@@ -610,6 +610,16 @@ export default function OfficeAssets({
       detectedLampPos = [-0.65, 0.92, 0.45]
     }
 
+    fullClone.traverse((child) => {
+      if (child !== fullClone) child.matrixAutoUpdate = false
+      child.frustumCulled = true
+    })
+
+    compClone.traverse((child) => {
+      if (child !== compClone) child.matrixAutoUpdate = false
+      child.frustumCulled = true
+    })
+
     return { decorativeScene: fullClone, computerScene: compClone, lampPos: detectedLampPos }
   }, [scene, canvasTexture])
 

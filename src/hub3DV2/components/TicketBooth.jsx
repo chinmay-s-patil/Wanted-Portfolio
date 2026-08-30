@@ -89,10 +89,19 @@ export default function TicketBooth({
     outlineClone.position.x = -centerX * normScale
     outlineClone.position.z = -centerZ * normScale
     outlineClone.position.y = -box.min.y * normScale + 0.002
+    fullClone.updateMatrix()
+    fullClone.updateMatrixWorld(true)
+    outlineClone.updateMatrix()
+    outlineClone.updateMatrixWorld(true)
+
     const mainWrapper = new THREE.Group()
     mainWrapper.add(fullClone)
     const outlineWrapper = new THREE.Group()
     outlineWrapper.add(outlineClone)
+
+    mainWrapper.traverse((c) => { if (c !== mainWrapper) c.matrixAutoUpdate = false; c.frustumCulled = true })
+    outlineWrapper.traverse((c) => { if (c !== outlineWrapper) c.matrixAutoUpdate = false; c.frustumCulled = true })
+
     return { boothScene: mainWrapper, outlineScene: outlineWrapper }
   }, [scene])
   if (!boothScene) return null

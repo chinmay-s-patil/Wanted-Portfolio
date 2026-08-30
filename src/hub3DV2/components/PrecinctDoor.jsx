@@ -13,6 +13,7 @@ export default function PrecinctDoor({
   position = [-7.9, 0.6, -4.2],
   scale = [1, 1, 1],
   rotation = [0, Math.PI / 2, 0],
+  doorColor = '#cda472', // Warm Natural Golden Birch Wood
   outlineColor = '#ff3366',
   outlineThickness = 0.008,
   alwaysShowOutline = false,
@@ -23,10 +24,10 @@ export default function PrecinctDoor({
   const doorScene = useMemo(() => {
     const group = new THREE.Group()
 
-    // 1. Heavy Outer Door Frame (Steel/Iron)
+    // 1. Heavy Outer Door Frame (Warm Steel/Bronze Trim)
     const frameMat = new THREE.MeshStandardMaterial({
-      color: '#1a1d24',
-      roughness: 0.5,
+      color: '#323745',
+      roughness: 0.4,
       metalness: 0.7
     })
     const frameMesh = new THREE.Mesh(new THREE.BoxGeometry(1.24, 2.54, 0.12), frameMat)
@@ -35,18 +36,18 @@ export default function PrecinctDoor({
 
     // Inner Door Frame Recess Cutout
     const frameInnerMat = new THREE.MeshStandardMaterial({
-      color: '#0d0e12',
-      roughness: 0.6
+      color: '#1a1d26',
+      roughness: 0.5
     })
     const frameInner = new THREE.Mesh(new THREE.BoxGeometry(1.12, 2.42, 0.13), frameInnerMat)
     frameInner.position.set(0, 0, 0)
     group.add(frameInner)
 
-    // 2. Door Panel Body (Dark Metallic Steel / Heavy Wood)
+    // 2. Main Door Panel Body (Warm Natural Golden Birch Wood)
     const doorMat = new THREE.MeshStandardMaterial({
-      color: '#282c37',
-      roughness: 0.55,
-      metalness: 0.6
+      color: doorColor,
+      roughness: 0.5,
+      metalness: 0.1
     })
     const doorPanel = new THREE.Mesh(new THREE.BoxGeometry(1.08, 2.38, 0.08), doorMat)
     doorPanel.position.set(0, 0, 0.01)
@@ -54,8 +55,8 @@ export default function PrecinctDoor({
 
     // 3. Lower Kickplate (Polished Brass)
     const brassMat = new THREE.MeshStandardMaterial({
-      color: '#d4af37',
-      roughness: 0.35,
+      color: '#c59b27',
+      roughness: 0.3,
       metalness: 0.85
     })
     const kickplate = new THREE.Mesh(new THREE.BoxGeometry(1.04, 0.35, 0.09), brassMat)
@@ -64,7 +65,7 @@ export default function PrecinctDoor({
 
     // 4. Upper Security Wire Glass Window Frame
     const windowFrameMat = new THREE.MeshStandardMaterial({
-      color: '#181a20',
+      color: '#242936',
       roughness: 0.4,
       metalness: 0.8
     })
@@ -72,11 +73,11 @@ export default function PrecinctDoor({
     windowFrame.position.set(0, 0.55, 0.01)
     group.add(windowFrame)
 
-    // Security Wire Glass Pane (Frosted Cyan Tint)
+    // Security Wire Glass Pane (Frosted Cyan Tint with Glow)
     const glassMat = new THREE.MeshStandardMaterial({
-      color: '#002b36',
-      emissive: '#003847',
-      emissiveIntensity: 0.6,
+      color: '#004455',
+      emissive: '#005566',
+      emissiveIntensity: 0.9,
       roughness: 0.1,
       metalness: 0.1,
       transparent: true,
@@ -128,7 +129,7 @@ export default function PrecinctDoor({
     })
 
     return group
-  }, [])
+  }, [doorColor])
 
   const handlePointerOver = (e) => {
     e.stopPropagation()
@@ -151,6 +152,9 @@ export default function PrecinctDoor({
       onClick={onClick}
     >
       <primitive object={doorScene} />
+
+      {/* Dedicated Warm Door Lighting to illuminate Birch Wood Panel */}
+      <pointLight position={[0.2, 0.8, 0.5]} intensity={2.2} color="#ffe2b3" distance={5.0} decay={1.5} />
       {(isHoveredGroup || alwaysShowOutline) && (
         <TightSilhouetteOutline
           scene={doorScene}

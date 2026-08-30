@@ -71,9 +71,12 @@ export default function TvTable({
     const centerZ = (box.min.z + box.max.z) / 2
     if (isFinite(centerX) && isFinite(centerZ)) {
       cloned.position.x = -centerX
-    cloned.position.z = -centerZ
-    cloned.position.y = -box.min.y + 0.003
+      cloned.position.z = -centerZ
+      cloned.position.y = -box.min.y + 0.003
+      cloned.updateMatrix()
+      cloned.updateMatrixWorld(true)
     }
+    cloned.traverse((c) => { if (c !== cloned) c.matrixAutoUpdate = false; c.frustumCulled = true })
     return cloned
   }, [scene, isScreenOn])
 
