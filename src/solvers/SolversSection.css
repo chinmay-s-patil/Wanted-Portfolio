@@ -211,6 +211,7 @@
 .terminal-scrollback {
   flex: 1;
   overflow-y: auto;
+  overflow-x: hidden;
   padding: 1rem;
   font-family: 'JetBrains Mono', ui-monospace, monospace;
   font-size: 0.82rem;
@@ -333,13 +334,21 @@
 }
 
 .banner-line {
-  white-space: pre;
-  overflow-x: auto;
+  white-space: pre-wrap;
+  word-break: break-word;
+  overflow-wrap: break-word;
 }
 
 .banner-logo {
   color: #00ff41;
   text-shadow: 0 0 6px rgba(0, 255, 65, 0.2);
+  white-space: pre;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.banner-logo::-webkit-scrollbar {
+  display: none;
 }
 
 .banner-keyword {
@@ -349,6 +358,8 @@
 
 .banner-text {
   color: #33ff33;
+  padding-left: 4ch;
+  text-indent: -4ch;
 }
 
 /* ─── Input Line ─── */
@@ -418,6 +429,7 @@
   border-radius: 8px;
   padding: 1.25rem;
   overflow-y: auto;
+  overflow-x: hidden;
   box-shadow:
     0 0 20px rgba(0, 255, 65, 0.05),
     inset 0 0 40px rgba(0, 255, 65, 0.02);
@@ -504,6 +516,9 @@
   cursor: pointer;
   transition: all 0.15s ease;
   text-align: left;
+  white-space: normal;
+  word-break: break-word;
+  overflow-wrap: anywhere;
 }
 
 .accessible-variant-btn:hover {

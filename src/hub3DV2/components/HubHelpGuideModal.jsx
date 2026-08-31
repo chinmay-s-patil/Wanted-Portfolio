@@ -1,21 +1,24 @@
 import React from 'react'
 import { useNavigate } from 'react-router-dom'
+
 /**
  * HubHelpGuideModal Component
  *
  * Retro police precinct evidence directory & portfolio guide overlay.
- * Opens when the Evidence Board is clicked.
+ * Opens when the Evidence Board or Help Guide button is clicked.
  * Allows users to visit any portfolio section directly or understand room models.
  */
 export default function HubHelpGuideModal({ isOpen, onClose }) {
   const navigate = useNavigate()
+
   if (!isOpen) return null
+
   const sections = [
     {
       id: 'computer',
       icon: '🖥️',
       title: 'Computer Terminal',
-      tagline: 'Visualization & Graphics',
+      tagline: 'Data & Flow Visualization',
       route: '/visualization',
       desc: 'Explore interactive 3D WebGL data visualizations, custom shaders, and real-time graphics rendering.',
       location: 'Desktop workstation on the back desk'
@@ -24,7 +27,7 @@ export default function HubHelpGuideModal({ isOpen, onClose }) {
       id: 'printer',
       icon: '🖨️',
       title: '3D Printer Workstation',
-      tagline: 'CAD Models & Engineering',
+      tagline: 'CAD & Mechanical Showcase',
       route: '/cad',
       desc: 'Browse parametric 3D CAD models, rapid prototyping projects, and physical engineering designs.',
       location: 'Worktable on the right side wall'
@@ -33,7 +36,7 @@ export default function HubHelpGuideModal({ isOpen, onClose }) {
       id: 'cabinet',
       icon: '🗄️',
       title: 'Filing Cabinets',
-      tagline: 'Project Archive & Repos',
+      tagline: 'Projects & Repos',
       route: '/projects',
       desc: 'Full repository archive of software engineering projects, open-source code, and technical builds.',
       location: 'Double steel cabinet towers by the right wall'
@@ -42,8 +45,8 @@ export default function HubHelpGuideModal({ isOpen, onClose }) {
       id: 'newspaper',
       icon: '📜',
       title: 'Crime Scene Newspaper',
-      tagline: 'Biography & Case File',
-      route: '/about',
+      tagline: 'Detective Dossier & Landing',
+      route: '/',
       desc: 'Read the lead case story detailing background, career experience, and technical skill breakdown.',
       location: 'Front center coffee table'
     },
@@ -51,16 +54,25 @@ export default function HubHelpGuideModal({ isOpen, onClose }) {
       id: 'binder',
       icon: '📓',
       title: 'Detective Case Binder',
-      tagline: 'Education & Certifications',
+      tagline: 'Professional Diary',
+      route: '/professionaldiary',
+      desc: 'Inspect academic journal entries, detective log, technical notes, and professional experience.',
+      location: 'Beside the newspaper on the coffee table'
+    },
+    {
+      id: 'lockers',
+      icon: '🗄️',
+      title: 'Locker Wall',
+      tagline: 'Education & Credentials',
       route: '/education',
       desc: 'Inspect academic records, university degrees, specialized certifications, and coursework.',
-      location: 'Beside the newspaper on the coffee table'
+      location: 'Storage locker bank along the left wall'
     },
     {
       id: 'ticketbooth',
       icon: '🎟️',
       title: 'Drive-In Ticket Booth',
-      tagline: 'OpenFOAM CFD Cinema',
+      tagline: 'OpenFOAM Simulations',
       route: '/openfoam',
       desc: 'Vintage drive-in cinema ticket kiosk linking to OpenFOAM CFD fluid dynamic case studies.',
       location: 'Standing in the back-left corner section of the lounge'
@@ -69,7 +81,7 @@ export default function HubHelpGuideModal({ isOpen, onClose }) {
       id: 'radartablet',
       icon: '📡',
       title: 'Tactical Radar Tablet',
-      tagline: 'Algorithmic Solvers',
+      tagline: 'Algorithmic & Physics Solvers',
       route: '/solvers',
       desc: 'Rugged military radar tablet with glowing CRT screen linking to algorithmic & physics solvers.',
       location: 'Mounted on the left side of the main workstation desk'
@@ -84,37 +96,21 @@ export default function HubHelpGuideModal({ isOpen, onClose }) {
       location: 'Standing in the lounge near the TV console'
     },
     {
-      id: 'tv',
-      icon: '📺',
-      title: 'Retro Television Console',
-      tagline: 'Events & Presentations',
-      route: '/events',
-      desc: 'Watch project demonstration videos, tech talk recordings, and media presentations.',
-      location: 'Wooden TV console on the front wall'
-    },
-    {
-      id: 'lockers',
-      icon: '🗄️',
-      title: 'Locker Wall',
-      tagline: 'Personal Wiki & Docs',
-      route: '/wiki',
-      desc: 'Technical documentation, engineering notes, cheat sheets, and personal knowledge base.',
-      location: 'Storage locker bank along the left wall'
-    },
-    {
       id: 'payphone',
       icon: '📞',
       title: 'Vintage Payphone',
-      tagline: 'Contact & Communications',
-      route: '/contact',
+      tagline: 'Contact Precinct',
+      route: '/contactme',
       desc: 'Direct communication channels, email links, social handles, and message transmission.',
       location: 'Mounted on the left precinct wall'
     }
   ]
+
   const handleVisit = (route) => {
     onClose()
     navigate(route)
   }
+
   return (
     <div
       style={{
@@ -131,6 +127,28 @@ export default function HubHelpGuideModal({ isOpen, onClose }) {
       }}
       onClick={onClose}
     >
+      <style>{`
+        .help-guide-scrollback {
+          scrollbar-width: thin;
+          scrollbar-color: #c59b27 rgba(20, 16, 12, 0.8);
+        }
+        .help-guide-scrollback::-webkit-scrollbar {
+          width: 8px;
+        }
+        .help-guide-scrollback::-webkit-scrollbar-track {
+          background: rgba(20, 16, 12, 0.8);
+          border-radius: 4px;
+        }
+        .help-guide-scrollback::-webkit-scrollbar-thumb {
+          background: linear-gradient(180deg, #c59b27 0%, #8a6a16 100%);
+          border-radius: 4px;
+          border: 1px solid rgba(255, 234, 159, 0.2);
+        }
+        .help-guide-scrollback::-webkit-scrollbar-thumb:hover {
+          background: #ffea9f;
+        }
+      `}</style>
+
       <div
         style={{
           background: 'linear-gradient(135deg, #1d1814 0%, #120e0b 100%)',
@@ -218,11 +236,13 @@ export default function HubHelpGuideModal({ isOpen, onClose }) {
         >
           <span style={{ fontSize: '20px' }}>🔍</span>
           <span>
-            <strong>Investigator's Clue:</strong> Not everything worth finding is highlighted. Try double-clicking.
+            <strong>Investigator's Clue:</strong> Not everything worth finding is highlighted. Try double-clicking around the precinct.
           </span>
         </div>
+
         {/* Content Section List Grid */}
         <div
+          className="help-guide-scrollback"
           style={{
             padding: '20px 24px',
             overflowY: 'auto',
@@ -260,7 +280,7 @@ export default function HubHelpGuideModal({ isOpen, onClose }) {
                   <span style={{ fontSize: '22px' }}>{sec.icon}</span>
                   <div>
                     <h3 style={{ margin: 0, fontSize: '15px', color: '#ffea9f' }}>{sec.title}</h3>
-                    <span style={{ fontSize: '11px', color: '#c59b27', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                    <span style={{ fontSize: '11px', color: '#c59b27', textTransform: 'uppercase', letterSpacing: '0.5px', fontWeight: '600' }}>
                       {sec.tagline}
                     </span>
                   </div>
@@ -299,6 +319,7 @@ export default function HubHelpGuideModal({ isOpen, onClose }) {
             </div>
           ))}
         </div>
+
         {/* Footer */}
         <div
           style={{
