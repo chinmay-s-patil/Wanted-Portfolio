@@ -1,18 +1,20 @@
-import React, { useEffect } from 'react'
+import React, { useEffect, lazy, Suspense } from 'react'
 import { BrowserRouter, Routes, Route, useLocation, useNavigate } from 'react-router-dom'
-import EducationPage from './education/EducationPage'
-import ProjectsPage from './projects/ProjectsPage'
-import ProfessionalDiary from './professionaldiary/ProfessionalDiary'
-import DriveInSection from './OpenFoam/DriveInSection'
-import CADSection from './CAD/CADSection'
-import VisualizationPage from './visualization/VisualizationPage'
-import EventsPage from './events/EventsPage'
-import UpcomingPage from './upcoming/UpcomingPage'
-import SolversSection from './solvers/SolversSection'
-import RotaryPhoneContact from './ContactMe/RotaryPhoneContact'
 import Landing from './Landing-newspaper/Landing'
-import Hub3DV2 from './hub3DV2/Hub3DV2'
-import { EasterEggProvider, DraggableMiniTvPlayer } from './hub3DV2/easterEgg'
+import { EasterEggProvider } from './hub3DV2/easterEgg/EasterEggContext'
+import DraggableMiniTvPlayer from './hub3DV2/easterEgg/DraggableMiniTvPlayer'
+
+const EducationPage = lazy(() => import('./education/EducationPage'))
+const ProjectsPage = lazy(() => import('./projects/ProjectsPage'))
+const ProfessionalDiary = lazy(() => import('./professionaldiary/ProfessionalDiary'))
+const DriveInSection = lazy(() => import('./OpenFoam/DriveInSection'))
+const CADSection = lazy(() => import('./CAD/CADSection'))
+const VisualizationPage = lazy(() => import('./visualization/VisualizationPage'))
+const EventsPage = lazy(() => import('./events/EventsPage'))
+const UpcomingPage = lazy(() => import('./upcoming/UpcomingPage'))
+const SolversSection = lazy(() => import('./solvers/SolversSection'))
+const RotaryPhoneContact = lazy(() => import('./ContactMe/RotaryPhoneContact'))
+const Hub3DV2 = lazy(() => import('./hub3DV2/Hub3DV2'))
 
 const ROUTE_PAGE_TITLES = {
   '/': 'Wanted Portfolio | Detective Dossier',
@@ -65,22 +67,24 @@ function App() {
       <EasterEggProvider>
         <PageTitleUpdater />
         <DraggableMiniTvPlayer />
-        <Routes>
-          <Route path="/" element={<Landing />} />
-          <Route path="/hub" element={<Hub3DV2 />} />
-          <Route path="/education" element={<EducationPage />} />
-          <Route path="/projects" element={<ProjectsPage />} />
-          <Route path="/professionaldiary" element={<ProfessionalDiary />} />
-          <Route path="/openfoam" element={<DriveInSection />} />
-          <Route path="/cad" element={<CADSection />} />
-          <Route path="/visualization" element={<VisualizationPage />} />
-          <Route path="/events" element={<EventsPage />} />
-          <Route path="/upcoming" element={<UpcomingPage />} />
-          <Route path="/solvers" element={<SolversSection />} />
-          <Route path="/contactme" element={<RotaryPhoneContact />} />
-          <Route path="/hub3D" element={<Hub3DV2 />} />
-          <Route path="/hub3DV2" element={<Hub3DV2 />} />
-        </Routes>
+        <Suspense fallback={<div style={{ minHeight: '100vh', background: '#1a1a1a' }} />}>
+          <Routes>
+            <Route path="/" element={<Landing />} />
+            <Route path="/hub" element={<Hub3DV2 />} />
+            <Route path="/education" element={<EducationPage />} />
+            <Route path="/projects" element={<ProjectsPage />} />
+            <Route path="/professionaldiary" element={<ProfessionalDiary />} />
+            <Route path="/openfoam" element={<DriveInSection />} />
+            <Route path="/cad" element={<CADSection />} />
+            <Route path="/visualization" element={<VisualizationPage />} />
+            <Route path="/events" element={<EventsPage />} />
+            <Route path="/upcoming" element={<UpcomingPage />} />
+            <Route path="/solvers" element={<SolversSection />} />
+            <Route path="/contactme" element={<RotaryPhoneContact />} />
+            <Route path="/hub3D" element={<Hub3DV2 />} />
+            <Route path="/hub3DV2" element={<Hub3DV2 />} />
+          </Routes>
+        </Suspense>
       </EasterEggProvider>
     </BrowserRouter>
   )

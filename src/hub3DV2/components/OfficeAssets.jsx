@@ -149,12 +149,11 @@ const attachCurvedCrtScreen = (root, material) => {
   let bodyMesh = null
   root.traverse((child) => {
     if (bodyMesh || !child.isMesh) return
-    // Body mesh sits under Monitor_6 / Object_16 with M_Computer_2048
     let node = child
     let underMonitor = false
     while (node) {
       const n = node.name || ''
-      if (n === 'Object_16' || n.startsWith('Monitor_6')) {
+      if (n === 'Object_16' || n === 'Object_10' || n.startsWith('Monitor_6') || n.startsWith('Computer_5')) {
         underMonitor = true
         break
       }
@@ -163,7 +162,7 @@ const attachCurvedCrtScreen = (root, material) => {
     if (!underMonitor) return
 
     const mats = Array.isArray(child.material) ? child.material : [child.material]
-    if (mats.some(isComputerBodyMaterial)) {
+    if (mats.some(isComputerBodyMaterial) || mats.some(isMonitorScreenMaterial)) {
       bodyMesh = child
     }
   })
@@ -549,10 +548,10 @@ export default function OfficeAssets({
         if (mats.some(isMonitorScreenMaterial)) {
           if (Array.isArray(child.material)) {
             child.material = child.material.map((mat) =>
-              isMonitorScreenMaterial(mat) ? bezelMat : mat
+              isMonitorScreenMaterial(mat) ? screenMat : mat
             )
           } else {
-            child.material = bezelMat
+            child.material = screenMat
           }
         }
       }

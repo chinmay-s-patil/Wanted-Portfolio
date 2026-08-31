@@ -61,29 +61,9 @@ export default function Landing() {
         Clickable Zones
       </button>
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=IM+Fell+English:ital@0;1&family=UnifrakturMaguntia&display=swap');
-
         @keyframes fadeIn {
-          from { opacity: 0; transform: translateY(20px); }
+          from { opacity: 0; transform: translateY(16px); }
           to { opacity: 1; transform: translateY(0); }
-        }
-
-        @keyframes float {
-          0%, 100% { transform: translateY(0px) rotate(-0.3deg); }
-          50% { transform: translateY(-4px) rotate(-0.3deg); }
-        }
-
-        @keyframes grain {
-          0%, 100% { transform: translate(0, 0); }
-          10% { transform: translate(-1%, -1%); }
-          20% { transform: translate(1%, -1%); }
-          30% { transform: translate(-1%, 1%); }
-          40% { transform: translate(1%, 1%); }
-          50% { transform: translate(-1%, -1%); }
-          60% { transform: translate(1%, -1%); }
-          70% { transform: translate(-1%, 1%); }
-          80% { transform: translate(-1%, -1%); }
-          90% { transform: translate(1%, 1%); }
         }
 
         .newspaper-container,
@@ -95,7 +75,7 @@ export default function Landing() {
         }
 
         .newspaper-container {
-          animation: fadeIn 1.2s ease-out, float 10s ease-in-out infinite;
+          animation: fadeIn 0.8s ease-out;
           position: relative;
           overflow: hidden;
         }
@@ -103,14 +83,12 @@ export default function Landing() {
         .newspaper-container::before {
           content: '';
           position: absolute;
-          top: -50%;
-          left: -50%;
-          width: 200%;
-          height: 200%;
+          inset: 0;
+          width: 100%;
+          height: 100%;
           background-image:
-            repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0, 0, 0, 0.02) 2px, rgba(0, 0, 0, 0.02) 4px),
-            repeating-linear-gradient(90deg, transparent, transparent 2px, rgba(0, 0, 0, 0.02) 2px, rgba(0, 0, 0, 0.02) 4px);
-          animation: grain 0.5s steps(10) infinite;
+            repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0, 0, 0, 0.015) 2px, rgba(0, 0, 0, 0.015) 4px),
+            repeating-linear-gradient(90deg, transparent, transparent 2px, rgba(0, 0, 0, 0.015) 2px, rgba(0, 0, 0, 0.015) 4px);
           pointer-events: none;
           z-index: 1;
         }
@@ -209,15 +187,11 @@ export default function Landing() {
         width: '100%',
         maxWidth: '1100px',
         background: '#f5f0e8',
-        backgroundImage: `
-          linear-gradient(rgba(245, 240, 232, 0.95), rgba(245, 240, 232, 0.95)),
-          url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100' height='100' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E")
-        `,
+        backgroundImage: 'linear-gradient(180deg, #f7f2ea 0%, #f1ebe1 100%)',
         boxShadow: `
-          0 30px 80px rgba(0, 0, 0, 0.7),
+          0 20px 50px rgba(0, 0, 0, 0.6),
           0 0 0 1px #d4cfc7,
-          0 0 0 3px #8b8378,
-          0 0 40px rgba(0, 0, 0, 0.5)
+          0 0 0 3px #8b8378
         `,
         borderRadius: '1px',
         transform: 'rotate(-0.4deg)',
@@ -363,6 +337,8 @@ export default function Landing() {
                   src="/Me2-3x8.jpg"
                   alt="Chinmay S. Patil — Panoramic"
                   draggable={false}
+                  decoding="async"
+                  loading="eager"
                   style={{
                     position: 'absolute',
                     top: 0,
@@ -640,6 +616,8 @@ export default function Landing() {
                       src="/portrait.jpg"
                       alt="Chinmay S. Patil"
                       draggable={false}
+                      decoding="async"
+                      loading="eager"
                       style={{
                         width: '100%',
                         height: '100%',
