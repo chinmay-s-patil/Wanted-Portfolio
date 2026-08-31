@@ -4,7 +4,8 @@ import * as THREE from 'three'
 import TightSilhouetteOutline from '../utils/TightSilhouetteOutline'
 
 const MODEL_PATH = '/hubModels/EasterEggs/TVRemote/tv_remote/optimized_tv_remote.glb'
-useGLTF.preload(MODEL_PATH)
+// Centralized in Hub3DV2 preloadInBatches
+// useGLTF.preload(MODEL_PATH)
 
 /**
  * TvRemote Component (Easter Egg TV Remote Pause Button)

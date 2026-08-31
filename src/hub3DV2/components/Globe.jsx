@@ -4,7 +4,8 @@ import { useGLTF } from '@react-three/drei'
 import * as THREE from 'three'
 
 const MODEL_PATH = '/hubModels/Props/Globe2/antique_globe (1)/optimized_globe.glb'
-useGLTF.preload(MODEL_PATH)
+// Centralized in Hub3DV2 preloadInBatches
+// useGLTF.preload(MODEL_PATH)
 
 /**
  * Globe Component (Globe2)

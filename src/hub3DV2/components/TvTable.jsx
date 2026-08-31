@@ -4,7 +4,8 @@ import * as THREE from 'three'
 import TvEasterEggScreen from '../easterEgg/TvEasterEggScreen'
 
 const MODEL_PATH = '/hubModels/TvTable/childhood_-_a_diorama/optimized_tv.glb'
-useGLTF.preload(MODEL_PATH)
+// Centralized in Hub3DV2 preloadInBatches
+// useGLTF.preload(MODEL_PATH)
 
 /**
  * TvTable Component

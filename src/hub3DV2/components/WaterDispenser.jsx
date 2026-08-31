@@ -3,7 +3,8 @@ import { useGLTF } from '@react-three/drei'
 import * as THREE from 'three'
 
 const MODEL_PATH = '/hubModels/Props/WaterDispenser/water_dispenser.glb'
-useGLTF.preload(MODEL_PATH)
+// Centralized in Hub3DV2 preloadInBatches
+// useGLTF.preload(MODEL_PATH)
 
 /**
  * WaterCup Sub-component

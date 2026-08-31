@@ -5,7 +5,8 @@ import * as THREE from 'three'
 import TightSilhouetteOutline from '../utils/TightSilhouetteOutline'
 import useDragProtectedClick from '../utils/useDragProtectedClick'
 const MODEL_PATH = '/hubModels/Filing Cabinet/filing_cabinet_-_6mb/optimized_cabinet.glb'
-useGLTF.preload(MODEL_PATH)
+// Centralized in Hub3DV2 preloadInBatches
+// useGLTF.preload(MODEL_PATH)
 
 /**
  * FilingCabinet Component

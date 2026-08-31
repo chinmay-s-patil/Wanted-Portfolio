@@ -92,4 +92,5 @@ export default function Trophy({
   )
 }
 
-useGLTF.preload(MODEL_PATH)
+// Centralized in Hub3DV2 preloadInBatches
+// useGLTF.preload(MODEL_PATH)

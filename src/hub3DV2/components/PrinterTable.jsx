@@ -6,8 +6,10 @@ import TightSilhouetteOutline from '../utils/TightSilhouetteOutline'
 import useDragProtectedClick from '../utils/useDragProtectedClick'
 const TABLE_MODEL_PATH = '/hubModels/Table/office_table.glb'
 const PRINTER_MODEL_PATH = '/hubModels/3DPrinter/3d_printer.glb'
-useGLTF.preload(TABLE_MODEL_PATH)
-useGLTF.preload(PRINTER_MODEL_PATH)
+// Centralized in Hub3DV2 preloadInBatches
+// useGLTF.preload(TABLE_MODEL_PATH)
+// Centralized in Hub3DV2 preloadInBatches
+// useGLTF.preload(PRINTER_MODEL_PATH)
 /**
  * PrinterTable Component
  *

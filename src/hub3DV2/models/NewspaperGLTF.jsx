@@ -4,7 +4,8 @@ import * as THREE from 'three'
 
 const MODEL_PATH = '/hubModels/Newspaper/newspaper/optimized_newspaper.glb'
 
-useGLTF.preload(MODEL_PATH)
+// Centralized in Hub3DV2 preloadInBatches
+// useGLTF.preload(MODEL_PATH)
 
 export default function NewspaperGLTF({
   position = [0.1, -0.36, 1.65],

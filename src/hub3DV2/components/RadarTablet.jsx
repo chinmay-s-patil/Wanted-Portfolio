@@ -7,7 +7,8 @@ import TightSilhouetteOutline from '../utils/TightSilhouetteOutline'
 import useDragProtectedClick from '../utils/useDragProtectedClick'
 
 const MODEL_PATH = '/hubModels/RadarTablet/packed_radar.glb'
-useGLTF.preload(MODEL_PATH)
+// Centralized in Hub3DV2 preloadInBatches
+// useGLTF.preload(MODEL_PATH)
 
 // 4:3 Aspect ratio canvas matching the rectangular screen bezel cutout
 const SCREEN_W = 640

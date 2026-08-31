@@ -2,7 +2,8 @@ import React, { useMemo } from 'react'
 import { useGLTF } from '@react-three/drei'
 import * as THREE from 'three'
 const MODEL_PATH = '/hubModels/SofaSet/couchsofa_set/optimized_sofa.glb'
-useGLTF.preload(MODEL_PATH)
+// Centralized in Hub3DV2 preloadInBatches
+// useGLTF.preload(MODEL_PATH)
 
 /**
  * Sofa Component (couchsofa_set)

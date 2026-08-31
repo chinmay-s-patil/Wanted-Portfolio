@@ -3,7 +3,8 @@ import { useGLTF } from '@react-three/drei'
 import * as THREE from 'three'
 
 const MODEL_PATH = '/hubModels/EasterEggs/Piano/old_piano/optimized_piano.glb'
-useGLTF.preload(MODEL_PATH)
+// Centralized in Hub3DV2 preloadInBatches
+// useGLTF.preload(MODEL_PATH)
 
 /**
  * Piano Component (Easter Egg)

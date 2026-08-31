@@ -7,7 +7,8 @@ import { nightMountainAttribution } from './easterEggsData'
 const TELESCOPE_MODEL_PATH = '/hubModels/EasterEggs/Telescope/telescope/optimized_telescope.glb'
 const SKY_IMAGE_PATH = '/manuel-will-gd3t5Dtbwkw-unsplash.jpg'
 
-useGLTF.preload(TELESCOPE_MODEL_PATH)
+// Centralized in Hub3DV2 preloadInBatches
+// useGLTF.preload(TELESCOPE_MODEL_PATH)
 
 /**
  * Telescope Model Sub-component

@@ -7,7 +7,8 @@ import TightSilhouetteOutline from '../utils/TightSilhouetteOutline'
 import useDragProtectedClick from '../utils/useDragProtectedClick'
 
 const MODEL_PATH = '/hubModels/OfficeAssets/office_-_assets/optimized_office.glb'
-useGLTF.preload(MODEL_PATH)
+// Centralized in Hub3DV2 preloadInBatches
+// useGLTF.preload(MODEL_PATH)
 
 const SCREEN_W = 512
 const SCREEN_H = 512

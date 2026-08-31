@@ -5,7 +5,8 @@ import * as THREE from 'three'
 import TightSilhouetteOutline from '../utils/TightSilhouetteOutline'
 import useDragProtectedClick from '../utils/useDragProtectedClick'
 const MODEL_PATH = '/hubModels/OldCamera/antique_wet_plate_camera_on_tripod_-_game_model/optimized_camera.glb'
-useGLTF.preload(MODEL_PATH)
+// Centralized in Hub3DV2 preloadInBatches
+// useGLTF.preload(MODEL_PATH)
 
 /**
  * OldCamera Component

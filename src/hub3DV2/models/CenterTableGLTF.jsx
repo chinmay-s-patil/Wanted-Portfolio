@@ -5,7 +5,8 @@ import { generateWoodTexture } from '../utils/textureUtils'
 
 const MODEL_PATH = '/hubModels/CenterTable/CENTER TABLE.glb'
 
-useGLTF.preload(MODEL_PATH)
+// Centralized in Hub3DV2 preloadInBatches
+// useGLTF.preload(MODEL_PATH)
 
 export default function CenterTableGLTF({
   position = [0, -0.6, 1.65],

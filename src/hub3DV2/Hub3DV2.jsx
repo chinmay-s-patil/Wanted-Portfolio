@@ -3,11 +3,52 @@
 import React, { useState, useEffect, Suspense, useRef, useMemo } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Canvas, useFrame, useThree } from '@react-three/fiber'
-import { PerspectiveCamera, OrbitControls, AdaptiveDpr, AdaptiveEvents } from '@react-three/drei'
+import { PerspectiveCamera, OrbitControls, AdaptiveDpr, AdaptiveEvents, useGLTF, Html } from '@react-three/drei'
 import * as THREE from 'three'
 import { getInitialDprBaseline } from '../common/gpuDetect'
 import { Sofa, CenterTable, Newspaper, Binder, TvTable, Lockers, Terminal, FilingCabinet, OfficeAssets, RetroRoom, RetroFloorLamp, WASDFreecam, PrinterTable, Payphone, HubHelpGuideModal, OldCamera, FilmRollPile, RadarTablet, PrecinctDoor, WallKeychains, GrandfatherClock, AmbientDustParticles, PrecinctWallClock, DetectiveCoffeeMug, DetectiveCoffeeMugSet, RetroDeskFan, TableLamp, ScatteredPages, Globe, WaterDispenser, Fireplace, Trophy, AttributionModal, EvidenceBox, EvidenceBoxSet } from './components'
 import { Piano, Violin, TvRemote, McNaughtFrame, WindowAndTelescope, useEasterEgg } from './easterEgg'
+
+const ALL_HUB_MODELS = [
+  '/hubModels/OfficeAssets/office_-_assets/optimized_office.glb',
+  '/hubModels/Lockers2/school_locker_row/optimized_lockers.glb',
+  '/hubModels/Filing Cabinet/filing_cabinet_-_6mb/optimized_cabinet.glb',
+  '/hubModels/CenterTable/CENTER TABLE.glb',
+  '/hubModels/SofaSet/couchsofa_set/optimized_sofa.glb',
+  '/hubModels/TvTable/childhood_-_a_diorama/optimized_tv.glb',
+  '/hubModels/Newspaper/newspaper/optimized_newspaper.glb',
+  '/hubModels/Binder/binder_notebook/optimized_binder.glb',
+  '/hubModels/RadarTablet/packed_radar.glb',
+  '/hubModels/Table/office_table.glb',
+  '/hubModels/3DPrinter/3d_printer.glb',
+  '/hubModels/OldPayphone/packed_payphone.glb',
+  '/hubModels/OldCamera/antique_wet_plate_camera_on_tripod_-_game_model/optimized_camera.glb',
+  '/hubModels/TicketBooth/ticket_booth/optimized_booth.glb',
+  '/hubModels/GrandfatherClock/fixed_grandfather_clock.glb',
+  '/hubModels/TableLamp/packed_table_lamp.glb',
+  '/hubModels/Props/FirePlace/antique_fireplace.glb',
+  '/hubModels/Props/Globe2/antique_globe (1)/optimized_globe.glb',
+  '/hubModels/Props/WaterDispenser/water_dispenser.glb',
+  '/hubModels/Trophy/low_poly_trophy.glb',
+  '/hubModels/FilmRolls/packed_film_35mm.glb',
+  '/hubModels/FilmRolls/packed_kodak_400.glb',
+  '/hubModels/FilmRolls/packed_kodak_gold.glb',
+  '/hubModels/EasterEggs/Piano/old_piano/optimized_piano.glb',
+  '/hubModels/EasterEggs/ViolinStanding/violin/optimized_violin.glb',
+  '/hubModels/EasterEggs/Telescope/telescope/optimized_telescope.glb',
+  '/hubModels/EasterEggs/TVRemote/tv_remote/optimized_tv_remote.glb'
+]
+
+async function preloadInBatches(paths, batchSize = 4, onProgress) {
+  let done = 0
+  onProgress?.(0)
+  for (let i = 0; i < paths.length; i += batchSize) {
+    const batch = paths.slice(i, i + batchSize)
+    await Promise.all(batch.map((p) => useGLTF.preload(p)))
+    done += batch.length
+    onProgress?.(Math.min(1, done / paths.length))
+  }
+}
 
 function AdaptivePerformanceMonitor() {
   const { performance } = useThree()
@@ -94,19 +135,63 @@ function PerformanceStatsCollector({ visible, onUpdate }) {
   return null
 }
 
-function LoadingSpinner() {
+function LoadingSpinner({ progress = 0 }) {
   const meshRef = useRef()
   useFrame(({ clock }) => {
     if (meshRef.current) {
-      meshRef.current.rotation.y = clock.getElapsedTime() * 2
+      meshRef.current.rotation.y = clock.getElapsedTime() * 2.5
+      meshRef.current.rotation.x = clock.getElapsedTime() * 1.2
     }
   })
 
+  const percent = Math.round(progress * 100)
+
   return (
-    <mesh ref={meshRef} position={[0, 0, 0]}>
-      <octahedronGeometry args={[0.3, 0]} />
-      <meshStandardMaterial color="#00ffff" wireframe emissive="#00ffff" emissiveIntensity={0.8} />
-    </mesh>
+    <group position={[0, 0.4, 0]}>
+      <mesh ref={meshRef}>
+        <octahedronGeometry args={[0.35, 0]} />
+        <meshStandardMaterial color="#00ffff" wireframe emissive="#00ffff" emissiveIntensity={0.8} />
+      </mesh>
+      <Html center position={[0, -0.6, 0]}>
+        <div style={{
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          gap: '0.4rem',
+          pointerEvents: 'none',
+          userSelect: 'none'
+        }}>
+          <div style={{
+            color: '#38bdf8',
+            fontFamily: 'Inter, sans-serif',
+            fontSize: '0.9rem',
+            fontWeight: 600,
+            letterSpacing: '0.04em',
+            textShadow: '0 2px 8px rgba(0,0,0,0.8)',
+            whiteSpace: 'nowrap'
+          }}>
+            Loading 3D Precinct... {percent}%
+          </div>
+          <div style={{
+            width: '180px',
+            height: '5px',
+            background: 'rgba(22, 27, 34, 0.85)',
+            borderRadius: '4px',
+            overflow: 'hidden',
+            border: '1px solid rgba(56, 189, 248, 0.4)',
+            boxShadow: '0 4px 12px rgba(0,0,0,0.6)'
+          }}>
+            <div style={{
+              height: '100%',
+              width: `${percent}%`,
+              background: 'linear-gradient(90deg, #38bdf8, #38ef7d)',
+              borderRadius: '4px',
+              transition: 'width 0.2s ease-out'
+            }} />
+          </div>
+        </div>
+      </Html>
+    </group>
   )
 }
 
@@ -162,6 +247,24 @@ export default function Hub3DV2() {
   const { activeEgg, setActiveEgg, isTvPaused, setIsTvPaused, triggerEgg } = useEasterEgg()
   const controlsRef = useRef()
 
+  const [loadProgress, setLoadProgress] = useState(0)
+  const [isPreloading, setIsPreloading] = useState(true)
+
+  useEffect(() => {
+    let isMounted = true
+    preloadInBatches(ALL_HUB_MODELS, 4, (ratio) => {
+      if (isMounted) setLoadProgress(ratio)
+    }).then(() => {
+      if (isMounted) {
+        setLoadProgress(1)
+        setTimeout(() => {
+          if (isMounted) setIsPreloading(false)
+        }, 200)
+      }
+    })
+    return () => { isMounted = false }
+  }, [])
+
   const handleResetCamera = () => {
     if (controlsRef.current) {
       controlsRef.current.object.position.set(0, 2.0, -4.8)
@@ -209,6 +312,58 @@ export default function Hub3DV2() {
             position: relative;
             overflow: hidden;
             font-family: 'Inter', sans-serif;
+          }
+
+          .hub-v2-loading-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #0d1117;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            transition: opacity 0.3s ease;
+          }
+
+          .hub-v2-loading-box {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 1rem;
+          }
+
+          .hub-v2-loading-title {
+            color: #38bdf8;
+            font-family: 'Inter', sans-serif;
+            font-size: 1.05rem;
+            font-weight: 600;
+            letter-spacing: 0.04em;
+          }
+
+          .hub-v2-loading-bar-bg {
+            width: 240px;
+            height: 6px;
+            background: rgba(48, 54, 61, 0.8);
+            border-radius: 4px;
+            overflow: hidden;
+            border: 1px solid rgba(56, 189, 248, 0.3);
+          }
+
+          .hub-v2-loading-bar-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #38bdf8, #38ef7d);
+            border-radius: 4px;
+            transition: width 0.2s ease-out;
+          }
+
+          .hub-v2-loading-percent {
+            color: #8b949e;
+            font-family: monospace;
+            font-size: 0.85rem;
           }
 
           .hub-v2-ui {
@@ -510,13 +665,15 @@ export default function Hub3DV2() {
           <RetroRoom />
           <RetroFloorLamp position={[2.6, -0.6, 0.5]} />
 
-          {/* Render Modular 3D Components with React Suspense */}
-          <Suspense fallback={<LoadingSpinner />}>
-            <Sofa
-              position={[-1, -0.6, 0.8]}
-              scale={[1.8, 1.8, 1.8]}
-              rotation={[0, 0, 0]}
-            />
+          {/* Render Modular 3D Components with React Suspense & Unified Batched Preloading */}
+          <Suspense fallback={<LoadingSpinner progress={loadProgress} />}>
+            {!isPreloading && (
+              <>
+                <Sofa
+                  position={[-1, -0.6, 0.8]}
+                  scale={[1.8, 1.8, 1.8]}
+                  rotation={[0, 0, 0]}
+                />
             <CenterTable
               position={[0.3, -0.9, 2.65]}
               scale={[1.2, 1.2, 1.2]}
@@ -788,7 +945,9 @@ export default function Hub3DV2() {
               scale={[1, 1, 1]}
               rotation={[0, Math.PI/2, 0]}
             />
-          </Suspense>
+          </>
+        )}
+      </Suspense>
 
 
         </Canvas>

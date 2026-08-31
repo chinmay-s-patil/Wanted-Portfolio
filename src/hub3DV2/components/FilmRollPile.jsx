@@ -7,9 +7,12 @@ import useDragProtectedClick from '../utils/useDragProtectedClick'
 const KODAK_400_PATH = '/hubModels/FilmRolls/packed_kodak_400.glb'
 const KODAK_GOLD_PATH = '/hubModels/FilmRolls/packed_kodak_gold.glb'
 const FILM_ROLL_35MM_PATH = '/hubModels/FilmRolls/packed_film_35mm.glb'
-useGLTF.preload(KODAK_400_PATH)
-useGLTF.preload(KODAK_GOLD_PATH)
-useGLTF.preload(FILM_ROLL_35MM_PATH)
+// Centralized in Hub3DV2 preloadInBatches
+// useGLTF.preload(KODAK_400_PATH)
+// Centralized in Hub3DV2 preloadInBatches
+// useGLTF.preload(KODAK_GOLD_PATH)
+// Centralized in Hub3DV2 preloadInBatches
+// useGLTF.preload(FILM_ROLL_35MM_PATH)
 /**
  * FilmRollPile Component
  *
